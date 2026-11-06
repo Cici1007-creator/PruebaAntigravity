@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Abrir en Google Chrome",
+      "type": "shell",
+      "command": "cmd.exe /c start chrome \"${file}\"",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "never",
+        "focus": false
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
+

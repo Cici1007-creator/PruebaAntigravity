@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-10-20T00:24:59.982968+00:00",
+  "nodes": {
+    "test_script": {
+      "code_fingerprint": "328bc9c2c680153150945ec957d50c1d8ca6789a9d961104aae04084ba1e777e",
+      "label": "test_script.py",
+      "last": "2026-10-19T01:05:16.807879+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-19T01:05:16.807879+00:00",
+          "outcome": "useful",
+          "q": "Why does SmokeTest connect Arithmetic Smoke Test to Test Framework?"
+        }
+      ],
+      "score": 0.977791713,
+      "source_file": "test_script.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "test_script_smoketest": {
+      "code_fingerprint": "328bc9c2c680153150945ec957d50c1d8ca6789a9d961104aae04084ba1e777e",
+      "label": "SmokeTest",
+      "last": "2026-10-19T01:05:16.807879+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-19T01:05:16.807879+00:00",
+          "outcome": "useful",
+          "q": "Why does SmokeTest connect Arithmetic Smoke Test to Test Framework?"
+        }
+      ],
+      "score": 0.977791713,
+      "source_file": "test_script.py",
+      "status": "tentative",
+      "uses": 1
+    },
+    "unittest": {
+      "code_fingerprint": "",
+      "label": "unittest",
+      "last": "2026-10-19T01:05:16.807879+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-19T01:05:16.807879+00:00",
+          "outcome": "useful",
+          "q": "Why does SmokeTest connect Arithmetic Smoke Test to Test Framework?"
+        }
+      ],
+      "score": 0.977791713,
+      "source_file": "",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}

@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Abrir App de la Uni en Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "file": "${workspaceFolder}/graphify-out/App de la Uni.html"
+    },
+    {
+      "name": "Abrir archivo HTML actual en Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "file": "${file}"
+    },
+    {
+      "name": "Abrir unimarket.html en Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "file": "${workspaceFolder}/graphify-out/unimarket.html"
+    }
+  ]
+}

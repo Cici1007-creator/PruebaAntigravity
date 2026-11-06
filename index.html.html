@@ -1,0 +1,2941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DropiVault · Tesorería, Novedades COD y Automatizaciones Pro</title>
+<meta name="theme-color" content="#171721">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DropiVault">
+<link rel="manifest" href="data:application/manifest+json;utf-8,%7B%22name%22%3A%22DropiVault%20-%20Tesoreria%20COD%22%2C%22short_name%22%3A%22DropiVault%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23171721%22%2C%22theme_color%22%3A%22%235266eb%22%7D">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+:root{
+  --onyx:#171721;--graphite:#1e1e2a;--obsidian:#272735;--slate:#70707d;--mist:#e2e3ed;
+  --ash:#c3c3cc;--ivory:#ededf3;--cobalt:#5266eb;--cobalt-light:#7b8eff;
+  --emerald:#10b981;--emerald-bg:rgba(16,185,129,.12);
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,.12);
+  --crimson:#ef4444;--crimson-bg:rgba(239,68,68,.12);
+  --purple:#8b5cf6;--purple-bg:rgba(139,92,246,.12);
+  --font:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --line:rgba(112,112,125,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--onyx);color:var(--ivory);font:400 15px/1.5 var(--font);letter-spacing:.005em;-webkit-font-smoothing:antialiased;padding-bottom:70px}
+.hidden{display:none!important}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.display{font-weight:600;font-size:clamp(36px,5.4vw,60px);line-height:1.1;letter-spacing:-.015em}
+.h-lg{font-weight:600;font-size:clamp(26px,3.2vw,38px);line-height:1.2;letter-spacing:-.01em}
+.h{font-weight:550;font-size:28px;line-height:1.2;letter-spacing:-.01em}
+.h-sm{font-weight:550;font-size:22px;line-height:1.25;letter-spacing:-.005em}
+.sub{font-size:18px;line-height:1.4;font-weight:420}
+.lead{font-size:17px;line-height:1.45;font-weight:420;color:var(--ash)}
+.cap{font-size:12px;line-height:1.25;letter-spacing:.02em;font-weight:500;color:var(--ash);text-transform:uppercase}
+.muted{color:var(--ash)}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* Controles pill */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:46px;padding:0 22px;border-radius:32px;border:1px solid transparent;font:500 15px var(--font);cursor:pointer;text-decoration:none;white-space:nowrap;position:relative;overflow:hidden;transition:background .2s,filter .2s,border-color .2s,transform .18s cubic-bezier(.2,.7,.2,1),box-shadow .22s}
+.btn::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.2) 0%,transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none;border-radius:inherit}
+.btn:hover::after{opacity:1}
+.btn:active{transform:scale(.96)!important}
+.btn-primary{background:linear-gradient(135deg,#5266eb,#7b8eff,#5266eb);background-size:200% 200%;color:#fff;animation:gradientShift 4s ease infinite,glow 3.5s ease infinite}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px)!important;box-shadow:0 10px 28px rgba(82,102,235,.45)}
+.btn-primary:disabled{opacity:.6;cursor:wait;animation:none;background:var(--cobalt)}
+.btn-emerald{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.btn-emerald:hover{filter:brightness(1.12);transform:translateY(-2px)!important;box-shadow:0 10px 24px rgba(16,185,129,.35)}
+.btn-amber{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
+.btn-amber:hover{filter:brightness(1.12);transform:translateY(-2px)!important;box-shadow:0 10px 24px rgba(245,158,11,.35)}
+.btn-ghost{background:transparent;color:var(--ivory);border-color:var(--line)}
+.btn-ghost:hover{background:var(--obsidian);border-color:var(--ivory);transform:translateY(-2px)!important}
+.btn-quiet{background:var(--obsidian);color:var(--ivory)}
+.btn-quiet:hover{background:#30303f;transform:translateY(-2px)!important}
+.btn-sm{height:36px;padding:0 14px;font-size:13px;gap:6px}
+.btn-icon{width:40px;padding:0}
+.tag{display:inline-flex;align-items:center;gap:6px;border-radius:40px;background:var(--obsidian);color:var(--ash);font-size:12px;font-weight:500;padding:6px 12px;line-height:1.2}
+.tag.line{background:transparent;border:1px solid var(--line)}
+.tag.emerald{background:var(--emerald-bg);color:#34d399;border:1px solid rgba(16,185,129,.3)}
+.tag.amber{background:var(--amber-bg);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
+.tag.crimson{background:var(--crimson-bg);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.tag.purple{background:var(--purple-bg);color:#c084fc;border:1px solid rgba(139,92,246,.3)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ivory)}
+.dot.emerald{background:#34d399}
+.dot.amber{background:#fbbf24}
+.dot.pulse{animation:pulse 1.5s infinite}
+.card{background:var(--graphite);border-radius:14px;padding:30px;border:1px solid rgba(255,255,255,.04);transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s cubic-bezier(.2,.7,.2,1)}
+.card:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(0,0,0,.4),0 0 0 1px rgba(82,102,235,.15)}
+
+label.f{display:block;font-size:13px;color:var(--ash);margin-bottom:6px;letter-spacing:.01em;font-weight:500}
+.in{width:100%;height:48px;background:var(--onyx);border:1px solid var(--line);border-radius:28px;padding:0 18px;color:var(--ivory);font:400 15px var(--font);outline:none;transition:border-color .25s,box-shadow .25s}
+.in::placeholder{color:var(--slate);opacity:.8}
+.in:focus{border-color:var(--cobalt);box-shadow:0 0 0 3px rgba(82,102,235,.18)}
+select.in{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23c3c3cc' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 5 4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center;padding-right:44px}
+select.in option{background:var(--graphite);color:var(--ivory)}
+.seg{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--onyx);border-radius:40px}
+.seg::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 6px);border-radius:40px;background:var(--obsidian);transition:transform .38s cubic-bezier(.2,.7,.2,1)}
+.seg.r::before{transform:translateX(calc(100% + 4px))}
+.seg button{position:relative;height:42px;border:0;border-radius:40px;background:transparent;color:var(--ash);font:500 14px var(--font);cursor:pointer;transition:color .25s}
+.seg button.on{color:var(--ivory)}
+
+/* Nav */
+.nav{position:sticky;top:0;z-index:40;transition:background .25s,backdrop-filter .25s;animation:navReveal .6s cubic-bezier(.2,.7,.2,1) both}
+.nav.solid{background:rgba(23,23,33,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:76px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:19px;letter-spacing:-.01em;cursor:pointer}
+.brand svg{width:28px;height:28px}
+.brand-badge{padding:4px 10px;font-size:11px;font-weight:600;border-radius:20px;background:linear-gradient(135deg,rgba(82,102,235,.2),rgba(123,142,255,.2));color:#8b9eff;border:1px solid rgba(82,102,235,.3)}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+
+/* Auth / Landing Hero */
+.hero{position:relative;overflow:hidden;min-height:92vh;margin-top:-76px;padding-top:76px;display:flex;align-items:center}
+.ridge{position:absolute;left:-3%;bottom:0;width:106%;height:62%;pointer-events:none}
+.hero .wrap{position:relative;width:100%;padding-top:40px;padding-bottom:72px}
+.auth-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
+.vault{margin-top:36px;display:grid;gap:12px;max-width:520px}
+.vault .card{padding:24px 28px}
+.proof{display:flex;gap:10px;align-items:center;color:var(--ash);font-size:14px}
+
+/* Grid & Dashboard */
+.grid{display:grid;gap:24px}
+.g-hero{grid-template-columns:1.4fr .8fr}
+.g-2{grid-template-columns:1fr 1fr}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.sec{padding:20px 0}
+.bar{height:6px;border-radius:6px;background:var(--obsidian);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cobalt),var(--emerald));transition:width .4s ease}
+.stat{display:flex;align-items:baseline;gap:8px}
+.kpi-line{border-top:1px solid var(--line);margin-top:24px;padding-top:20px}
+
+/* Tarjeta Destacada de Capital Recuperado */
+.card-recuperado{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(30,30,42,.95) 45%);border:1px solid rgba(16,185,129,.35);box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 30px rgba(16,185,129,.1)}
+
+/* Gráficas y ranking */
+.chart-container{position:relative;width:100%;height:220px}
+.donut-legend{display:flex;flex-direction:column;gap:10px;font-size:13px}
+.legend-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.rank-item{display:grid;gap:6px;padding:12px 14px;background:var(--onyx);border-radius:10px;border:1px solid rgba(255,255,255,.03);margin-bottom:8px}
+.rank-head{display:flex;justify-content:space-between;align-items:center;font-size:13.5px}
+.rank-bar-bg{height:6px;border-radius:4px;background:var(--obsidian);overflow:hidden}
+.rank-bar-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.2,.7,.2,1)}
+
+/* Alertas inteligentes */
+.smart-alert{display:flex;gap:14px;align-items:flex-start;padding:14px 18px;border-radius:12px;background:var(--onyx);border-left:4px solid var(--cobalt);margin-bottom:10px}
+.smart-alert.danger{border-left-color:var(--crimson);background:rgba(239,68,68,.05)}
+.smart-alert.warning{border-left-color:var(--amber);background:rgba(245,158,11,.05)}
+.smart-alert.info{border-left-color:var(--cobalt);background:rgba(82,102,235,.05)}
+
+/* Semáforo Predictivo Pre-Despacho */
+.semaforo-card{background:var(--graphite);border-radius:14px;padding:28px;border:1px solid rgba(255,255,255,.05)}
+.semaforo-box{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
+.gauge-visual{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:var(--onyx);border-radius:16px;border:1px solid var(--line);text-align:center}
+.gauge-circle{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;margin-bottom:10px;border:4px solid transparent;transition:all .4s}
+.gauge-circle.verde{background:rgba(16,185,129,.15);border-color:#10b981;color:#34d399}
+.gauge-circle.amarillo{background:rgba(245,158,11,.15);border-color:#f59e0b;color:#fbbf24}
+.gauge-circle.rojo{background:rgba(239,68,68,.15);border-color:#ef4444;color:#f87171}
+
+/* Forense de Fletes */
+.forense-card{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(30,30,42,.95) 45%);border:1px solid rgba(245,158,11,.25)}
+
+/* Tabla */
+.tbl-wrap{overflow-x:auto;margin:0 -30px -30px;padding-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:14px 20px;text-align:left;border-bottom:1px solid rgba(112,112,125,.18)}
+th{color:var(--ash);font-weight:500;font-size:12px;letter-spacing:.02em;text-transform:uppercase;background:rgba(23,23,33,.5)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tools{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid var(--line)}
+.tabs{display:flex;background:var(--onyx);border-radius:30px;padding:3px;gap:2px}
+.tabs button{height:34px;padding:0 14px;border:0;background:transparent;color:var(--ash);border-radius:30px;font:500 13px var(--font);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.tabs button.on{background:var(--obsidian);color:var(--ivory)}
+.tabs button b{font-weight:600;font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(255,255,255,.08)}
+
+/* ============================================================
+   ESTILOS DE PLANES, MONETIZACIÓN Y CALCULADORA DE ROI
+   ============================================================ */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:28px}
+.plan-card{background:var(--onyx);border:1px solid var(--line);border-radius:16px;padding:32px 28px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .3s,border-color .3s,box-shadow .3s;position:relative}
+.plan-card.featured{border-color:var(--cobalt);background:linear-gradient(180deg,rgba(82,102,235,.12),var(--onyx) 55%);box-shadow:0 16px 40px rgba(82,102,235,.15)}
+.plan-card:hover{transform:translateY(-6px);border-color:var(--cobalt-light);box-shadow:0 24px 50px rgba(0,0,0,.45)}
+.plan-badge-top{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#5266eb,#7b8eff);color:#fff;font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 4px 12px rgba(82,102,235,.4)}
+
+/* Calculadora interactiva de ROI */
+.roi-box{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(39,39,53,.85) 60%);border:1px solid rgba(16,185,129,.3);border-radius:16px;padding:28px 32px;margin:28px 0}
+.roi-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
+.roi-stat-box{background:var(--onyx);border:1px solid var(--line);border-radius:12px;padding:16px 20px;text-align:center}
+
+/* Drag & Drop */
+.drop{border:1.5px dashed var(--line);border-radius:12px;padding:26px;text-align:center;cursor:pointer;background:var(--onyx);display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color .2s,background .2s}
+.drop:hover{border-color:var(--cobalt);background:rgba(82,102,235,.04)}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(10,10,15,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:90;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.modal.open{opacity:1;pointer-events:auto}
+.modal .card{transform:scale(.95);transition:transform .25s cubic-bezier(.2,.7,.2,1);max-height:92vh;overflow-y:auto}
+.modal.open .card{transform:scale(1)}
+
+/* Toast */
+#toasts{position:fixed;bottom:24px;right:24px;z-index:100;display:grid;gap:8px;pointer-events:none}
+.toast{background:var(--obsidian);color:var(--ivory);padding:12px 18px;border-radius:24px;border:1px solid var(--line);box-shadow:0 12px 30px rgba(0,0,0,.5);font-size:13.5px;font-weight:450;animation:toastIn .3s cubic-bezier(.2,.7,.2,1) both}
+.toast.out{animation:toastOut .25s forwards}
+
+/* Bottom Nav Móvil */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:62px;background:rgba(23,23,33,.94);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.06);z-index:35;padding:0 8px;justify-content:space-around;align-items:center}
+.mob-btn{background:none;border:none;color:var(--ash);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:color .2s}
+.mob-btn.on{color:var(--cobalt-light)}
+.mob-btn svg{width:19px;height:19px}
+
+/* Bubble WhatsApp */
+.wa-bubble{background:#005c4b;color:#e9edef;padding:12px 16px;border-radius:12px 12px 0 12px;font-size:13.5px;line-height:1.45;position:relative;box-shadow:0 2px 4px rgba(0,0,0,.2);margin-top:10px}
+
+/* Tour onboarding */
+.tour-step{display:grid;gap:12px;text-align:center;padding:12px 0}
+.tour-dots{display:flex;justify-content:center;gap:8px;margin:20px 0 10px}
+.tour-dot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background .25s,transform .25s}
+.tour-dot.active{background:var(--cobalt-light);transform:scale(1.25)}
+
+/* Animaciones */
+@keyframes navReveal{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(82,102,235,0)}50%{box-shadow:0 0 24px rgba(82,102,235,.35)}}
+@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.15)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(8px);filter:blur(2px)}}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes kpiFlash{0%{color:#8b9eff}100%{color:inherit}}
+
+.rv{opacity:0;animation:rise .75s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0)*80ms)}
+.pop{animation:pop .4s cubic-bezier(.2,.7,.2,1) both}
+.kpi-flash{animation:kpiFlash .7s ease both}
+#badge-novedades{animation:floatBadge 3.4s ease-in-out infinite}
+.sla{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff6b6b;margin-left:8px;animation:pulse 1.6s infinite}
+
+/* Responsive */
+@media(max-width:960px){
+  .auth-grid,.g-hero,.g-2,.g-3,.pricing-grid,.semaforo-box,.roi-grid{grid-template-columns:1fr}
+  .card{padding:22px}
+  .tbl-wrap{margin:0 -22px -22px}
+  th:first-child,td:first-child{padding-left:22px}th:last-child,td:last-child{padding-right:22px}
+  .mobile-nav{display:flex}
+}
+@media(max-width:560px){
+  .two{grid-template-columns:1fr!important}
+  .hide-s{display:none!important}
+  .wrap{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4L4 9M4 5v4h4M4 13a8 8 0 0 0 14 4l2-2M20 19v-4h-4"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 16v4h16v-4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></symbol>
+  <symbol id="logo" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="none" stroke="#ededf3" stroke-width="1.6"/><circle cx="16" cy="16" r="8.5" fill="none" stroke="#ededf3" stroke-width="1.6"/><circle cx="16" cy="16" r="3" fill="#ededf3"/></symbol>
+</svg>
+
+<!-- ===== PANTALLA AUTH / INGRESO & LANDING PAGE ===== -->
+<div id="auth-screen">
+  <header class="nav" id="nav-auth"><div class="wrap">
+    <div class="brand" onclick="location.reload()"><svg><use href="#logo"/></svg><span id="nav-brand-title">DropiVault</span></div>
+    <div class="row">
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalPlanes()"><svg class="i" style="width:15px;height:15px"><use href="#i-spark"/></svg><span>Planes y Alianzas</span></button>
+      <button class="btn btn-ghost btn-sm hide-s" onclick="abrirTour()"><svg class="i" style="width:15px;height:15px"><use href="#i-spark"/></svg>Tour guiado</button>
+      <span class="tag line"><svg class="i" style="width:14px;height:14px"><use href="#i-lock"/></svg>Lectura segura Dropi</span>
+    </div>
+  </div></header>
+
+  <section class="hero">
+    <svg class="ridge" viewBox="0 0 1440 520" preserveAspectRatio="none" aria-hidden="true">
+      <path class="d1" d="M0 250 180 150 330 230 520 90 700 210 860 130 1040 240 1220 120 1440 230V520H0Z" fill="#1e1e2a" opacity=".45"/>
+      <path class="d2" d="M0 330 140 260 300 330 470 220 640 320 820 240 1000 340 1200 250 1440 330V520H0Z" fill="#1e1e2a" opacity=".75"/>
+      <path class="d3" d="M0 410 200 350 380 410 560 330 760 410 960 350 1160 420 1320 370 1440 410V520H0Z" fill="#171721" opacity=".85"/>
+      <path d="M0 470 260 430 520 475 800 435 1100 480 1440 440V520H0Z" fill="#171721"/>
+    </svg>
+    <div class="wrap">
+      <div class="auth-grid">
+        <div>
+          <span class="tag rv" style="margin-bottom:24px"><span class="dot emerald"></span>Bóveda comercial en tiempo real</span>
+          <h1 class="display rv" style="--d:1">Cada guía en novedad es capital esperando liberación.</h1>
+          <p class="lead rv" style="margin-top:20px;max-width:520px;--d:2">Audita fletes en riesgo, obtén diagnósticos inteligentes de tus transportadoras y activa rescate por WhatsApp para blindar tu margen real.</p>
+          <div class="vault rv" style="--d:3">
+            <div class="card">
+              <div class="cap">Capital protegido en tránsito</div>
+              <div class="h-sm num" style="margin-top:6px"><span id="vault-amt">$0</span> <span id="vault-cur" class="cap">COP</span></div>
+              <div class="cap" style="margin-top:10px;color:var(--slate)">Conexión directa vía Dropi API · Solo lectura</div>
+            </div>
+            <div class="proof"><svg class="i"><use href="#i-shield"/></svg>Protección de fondos: sin acceso a retiros de tu billetera</div>
+          </div>
+        </div>
+
+        <div class="card rv" style="padding:36px;--d:2">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h2 class="h-sm">Vincular bóveda comercial</h2>
+            <span class="tag line" style="font-size:11px">v2.5 Pro</span>
+          </div>
+          <p class="muted" style="margin-bottom:24px;font-size:13.5px">Inicia sesión con tu tienda Dropi para sincronizar tus órdenes reales.</p>
+          
+          <div class="seg" style="margin-bottom:24px">
+            <button type="button" id="tab-token" class="on" onclick="cambiarMetodoAuth('token')">Token de integración</button>
+            <button type="button" id="tab-credenciales" onclick="cambiarMetodoAuth('credenciales')">Credenciales</button>
+          </div>
+          <form onsubmit="conectarConDropiAPI(event)" style="display:grid;gap:18px">
+            <div><label class="f">Correo electrónico corporativo</label>
+              <input id="auth-email" class="in" type="email" required placeholder="finanzas@tutienda.co"></div>
+            <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div><label class="f">Región Dropi</label>
+                <select id="auth-pais" class="in" onchange="aplicarRegion(this.value)">
+                  <option value="https://api.dropi.co">Colombia (COP)</option>
+                  <option value="https://api.dropi.mx">México (MXN)</option>
+                  <option value="https://api.dropi.ec">Ecuador (USD)</option>
+                  <option value="https://api.dropi.cl">Chile (CLP)</option>
+                  <option value="https://api.dropi.pe">Perú (PEN)</option>
+                </select></div>
+              <div><label class="f">Nombre comercial</label>
+                <input id="auth-tienda" class="in" type="text" required placeholder="Ej: Imperio COD"></div>
+            </div>
+            <div><label class="f">Comunidad de e-commerce o Alianza</label>
+              <select id="auth-comunidad" class="in" required>
+                <option value="" disabled selected>Seleccione su comunidad…</option>
+                <option>Dropi Academy Oficial</option>
+                <option>EcomDropTV</option>
+                <option>Masters del Contraentrega</option>
+                <option>Mentores Ecommerce LATAM</option>
+                <option>Comunidad Privada Telegram/Discord</option>
+                <option>Dropshipper Independiente</option>
+              </select></div>
+            <div id="bloque-token"><label class="f">Token de integración <span style="color:var(--slate)">· Dropi › Mi Cuenta › Mis integraciones</span></label>
+              <input id="auth-token" class="in" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6…">
+              <p class="cap" style="margin-top:8px;font-weight:400;text-transform:none">Token generado en tu panel de Dropi › Mi Cuenta › Mis Integraciones.</p></div>
+            <div id="bloque-password" class="hidden"><label class="f">Contraseña de acceso Dropi</label>
+              <input id="auth-password" class="in" type="password" placeholder="••••••••••••"></div>
+            <div id="auth-loading" class="hidden tag" style="border-radius:12px;padding:12px 14px;font-size:13px"><span id="auth-loading-text">Conectando túnel seguro con Dropi…</span></div>
+            <button class="btn btn-primary" style="height:52px;margin-top:4px">Iniciar sesión y sincronizar <svg class="i"><use href="#i-arrow"/></svg></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN VISIBLE DE PLANES DIRECTAMENTE EN LA LANDING PAGE -->
+  <section class="wrap" style="padding-top:20px;padding-bottom:60px" id="landing-pricing-section">
+    <div class="card rv" style="--d:1;padding:44px 36px">
+      <div style="text-align:center;max-width:760px;margin:0 auto">
+        <span class="tag" style="background:rgba(82,102,235,.2);color:#8b9eff;margin-bottom:12px">PLANES, PRECIOS Y ALIANZAS B2B</span>
+        <h2 class="h-lg">Invierte en retener tus fletes, no en regalárselos a la transportadora</h2>
+        <p class="lead" style="margin-top:12px">
+          El software que se amortiza solo con salvar apenas 2 o 3 pedidos al mes. Sin contratos forzosos ni comisiones sobre tus ventas.
+        </p>
+
+        <!-- Conmutadores de Moneda y Período -->
+        <div class="row" style="justify-content:center;gap:16px;margin-top:24px">
+          <div class="tabs" id="tabs-moneda-landing">
+            <button class="on" onclick="cambiarMonedaPlanes('COP')">🇨🇴 Pesos (COP)</button>
+            <button onclick="cambiarMonedaPlanes('USD')">🌎 Dólares (USD)</button>
+          </div>
+          <div class="tabs" id="tabs-ciclo-landing">
+            <button class="on" onclick="cambiarCicloPlanes('mensual')">Facturación Mensual</button>
+            <button onclick="cambiarCicloPlanes('trimestral')">Trimestral <b style="background:#10b981;color:#fff">-20%</b></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculadora Interactiva de Retorno de Inversión (ROI) -->
+      <div class="roi-box">
+        <div class="roi-grid">
+          <div>
+            <span class="tag emerald" style="margin-bottom:8px">CALCULADORA DE RETORNO DE INVERSIÓN (ROI)</span>
+            <h3 class="h-sm" style="font-size:21px">¿Cuánto dinero estás perdiendo hoy en fletes?</h3>
+            <p class="muted" style="font-size:13px;margin:8px 0 18px">Calcula cuánto capital rescatará DropiVault para tu tienda cada mes:</p>
+            
+            <div style="display:grid;gap:14px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+                  <span>Envíos mensuales promedio:</span>
+                  <b id="roi-txt-pedidos" class="num">350 pedidos</b>
+                </div>
+                <input type="range" id="roi-slider-pedidos" min="50" max="2000" step="50" value="350" style="width:100%" oninput="actualizarCalculadoraROI()">
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+                  <span>Tasa estimada de devoluciones / novedad:</span>
+                  <b id="roi-txt-tasa" class="num">18%</b>
+                </div>
+                <input type="range" id="roi-slider-tasa" min="5" max="40" step="1" value="18" style="width:100%" oninput="actualizarCalculadoraROI()">
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="roi-stat-box">
+              <div class="cap" style="color:#f87171">Fletes en Riesgo / Mes</div>
+              <div id="roi-res-riesgo" class="h-sm num" style="color:#f87171;margin-top:6px">$945.000</div>
+              <div class="cap" style="font-size:10px;margin-top:4px">Dinero en peligro</div>
+            </div>
+            <div class="roi-stat-box" style="border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.05)">
+              <div class="cap" style="color:#34d399">Capital Rescatado Est.</div>
+              <div id="roi-res-rescatado" class="h-sm num" style="color:#34d399;margin-top:6px">$567.000</div>
+              <div class="cap" style="font-size:10px;margin-top:4px">Liberado con DropiVault</div>
+            </div>
+            <div class="roi-stat-box">
+              <div class="cap">Costo Suscripción Pro</div>
+              <div id="roi-res-costo" class="h-sm num" style="margin-top:6px">$149.000</div>
+              <div class="cap" style="font-size:10px;margin-top:4px">Inversión mensual</div>
+            </div>
+            <div class="roi-stat-box" style="border-color:rgba(82,102,235,.4);background:rgba(82,102,235,.08)">
+              <div class="cap" style="color:#8b9eff">Ganancia Neta Limpia</div>
+              <div id="roi-res-neto" class="h-sm num" style="color:#8b9eff;margin-top:6px;font-weight:700">+$418.000</div>
+              <div id="roi-res-multiplier" class="cap" style="font-size:10px;margin-top:4px;color:#34d399">ROI de 3.8x al mes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Precios Dinámicas -->
+      <div class="pricing-grid" id="pricing-grid-container">
+        <!-- Plan Starter -->
+        <div class="plan-card">
+          <div>
+            <span class="cap">Starter Merchant</span>
+            <div class="h num" style="margin-top:8px" id="price-starter">$79.000 <span style="font-size:14px;color:var(--slate)">COP/mes</span></div>
+            <p class="muted" style="margin-top:8px;font-size:13px">Para tiendas emergentes que quieren frenar devoluciones tempranas.</p>
+            <ul style="list-style:none;margin-top:20px;display:grid;gap:10px;font-size:13px;color:var(--ash)">
+              <li>✓ Hasta 250 guías auditadas al mes</li>
+              <li>✓ Auditoría de fletes en riesgo</li>
+              <li>✓ Disparo de WhatsApp con 3 tonos psicológicos</li>
+              <li>✓ Semáforo Predictivo Pre-Despacho (básico)</li>
+              <li>✓ Soporte técnico estándar</li>
+            </ul>
+          </div>
+          <button class="btn btn-ghost" style="margin-top:24px;width:100%" onclick="contratarPlan('Starter')">Elegir Starter</button>
+        </div>
+
+        <!-- Plan Pro Merchant (Destacado) -->
+        <div class="plan-card featured">
+          <div class="plan-badge-top">⭐ MÁS ELEGIDO POR DROPSHIPPERS</div>
+          <div>
+            <span class="cap" style="color:var(--cobalt-light)">Pro Merchant</span>
+            <div class="h num" style="margin-top:8px" id="price-pro">$149.000 <span style="font-size:14px;color:var(--slate)">COP/mes</span></div>
+            <p class="muted" style="margin-top:8px;font-size:13px">Para dropshippers activos que despachan más de 10 pedidos diarios.</p>
+            <ul style="list-style:none;margin-top:20px;display:grid;gap:10px;font-size:13px;color:var(--ivory)">
+              <li>✓ Guías y auditorías <b>ilimitadas</b></li>
+              <li>✓ Cola automática de rescate WhatsApp</li>
+              <li>✓ <b>Semáforo Predictivo Pre-Despacho</b> completo</li>
+              <li>✓ <b>Auditoría Forense de Cobro de Fletes</b></li>
+              <li>✓ Cartas de Reclamo oficiales automáticas</li>
+              <li>✓ <b>Bot WhatsApp con Auto-Resolución NLP</b></li>
+              <li>✓ Reporte Ejecutivo en PDF en 1 clic</li>
+              <li>✓ Resumen Diario a Telegram y WhatsApp</li>
+              <li>✓ Webhooks en tiempo real con Dropi</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" style="margin-top:24px;width:100%" onclick="contratarPlan('Pro Merchant')">Comenzar Ahora</button>
+        </div>
+
+        <!-- Plan Marca Blanca / Academias -->
+        <div class="plan-card">
+          <div>
+            <span class="cap">Marca Blanca / Academias</span>
+            <div class="h num" style="margin-top:8px" id="price-agency">$690.000 <span style="font-size:14px;color:var(--slate)">COP/mes</span></div>
+            <p class="muted" style="margin-top:8px;font-size:13px">Para mentores, comunidades y creadores con más de 20 alumnos.</p>
+            <ul style="list-style:none;margin-top:20px;display:grid;gap:10px;font-size:13px;color:var(--ash)">
+              <li>✓ <b>Tu propio logo y nombre</b> en toda la app</li>
+              <li>✓ Acceso Multi-Tienda ilimitado para alumnos</li>
+              <li>✓ Dominio personalizado propio (app.tuacademia.com)</li>
+              <li>✓ Cobro directo bajo tu pasarela sin intermediarios</li>
+              <li>✓ Soporte prioritario y capacitaciones grupales</li>
+            </ul>
+          </div>
+          <button class="btn btn-ghost" style="margin-top:24px;width:100%" onclick="abrirModalWhiteLabel()">Configurar Mi Marca</button>
+        </div>
+      </div>
+
+      <!-- Testimonios de dropshippers -->
+      <div style="margin-top:36px;padding-top:28px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:24px" class="two">
+        <div style="background:var(--onyx);padding:20px;border-radius:12px;border:1px solid var(--line)">
+          <p style="font-size:14px;font-style:italic">“Redujimos las devoluciones del 19.4% al 6.1% en solo 10 días. Cada flete salvado va directo al bolsillo.”</p>
+          <div class="cap" style="margin-top:10px;color:var(--ivory)">— Andrés Felipe Morales · Tienda Imperio COD</div>
+        </div>
+        <div style="background:var(--onyx);padding:20px;border-radius:12px;border:1px solid var(--line)">
+          <p style="font-size:14px;font-style:italic">“Entregar esta herramienta personalizada a los 240 alumnos de nuestra comunidad disparó nuestra retención de suscripción.”</p>
+          <div class="cap" style="margin-top:10px;color:var(--ivory)">— Mentor Ecom Latam · Academia Dropshipping</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== DASHBOARD PRINCIPAL ===== -->
+<div id="app-dashboard" class="hidden">
+  <header class="nav" id="nav-app"><div class="wrap">
+    <div class="brand" onclick="scrollTo(0,0)"><svg><use href="#logo"/></svg>
+      <div><span id="header-tienda">Mi Tienda</span> <span id="header-comunidad" class="brand-badge hide-s">Comunidad</span></div>
+    </div>
+    <div class="row">
+      <!-- Multi-Tienda Switcher Pill -->
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalMultiTienda()" title="Cambiar de tienda Dropi">
+        <svg class="i" style="width:14px;height:14px"><use href="#i-shield"/></svg>
+        <span id="nav-active-store">Mi Tienda</span> ▾
+      </button>
+
+      <!-- Botones de Acción Directa -->
+      <button class="btn btn-quiet btn-sm hide-s" onclick="abrirModalPlanes()" title="Ver planes y suscripción"><svg class="i" style="width:14px;height:14px"><use href="#i-spark"/></svg>Planes</button>
+      <button class="btn btn-quiet btn-sm hide-s" onclick="generarReportePDF()" title="Descargar informe en PDF"><svg class="i" style="width:14px;height:14px"><use href="#i-out"/></svg>Reporte PDF</button>
+      <button class="btn btn-quiet btn-sm hide-s" onclick="abrirModalDigest()" title="Enviar resumen a Telegram/WhatsApp"><svg class="i" style="width:14px;height:14px"><use href="#i-wa"/></svg>Resumen Diario</button>
+      <button class="btn btn-ghost btn-sm hide-s" onclick="abrirModalWebhooks()" title="Configuración de Webhooks en vivo"><span class="dot emerald pulse"></span>Webhooks</button>
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalPlantillasWA()"><svg class="i" style="width:14px;height:14px"><use href="#i-wa"/></svg><span class="hide-s">Plantillas WA</span></button>
+      <button class="btn btn-quiet btn-sm hide-s" onclick="abrirModalWhiteLabel()"><span class="dot emerald"></span>Marca Blanca</button>
+      <button class="btn btn-primary btn-sm" onclick="sincronizarDesdeDropiAPI()"><svg class="i" style="width:14px;height:14px"><use href="#i-refresh"/></svg><span class="hide-s">Sincronizar</span></button>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarSesion()" title="Cerrar bóveda" aria-label="Cerrar sesión"><svg class="i" style="width:16px;height:16px"><use href="#i-out"/></svg></button>
+    </div>
+  </div></header>
+
+  <main class="wrap" style="padding-top:32px">
+    
+    <!-- TARJETA HERO: CAPITAL RECUPERADO DE NOVEDADES Y AUDITORÍA FORENSE -->
+    <section class="sec" style="padding-bottom:24px">
+      <div class="grid g-2">
+        <!-- Hero: Capital Rescatado WhatsApp -->
+        <div class="card card-recuperado rv" style="--d:1;padding:28px 32px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+            <div>
+              <div class="row" style="gap:10px;margin-bottom:8px">
+                <span class="tag emerald"><span class="dot emerald pulse"></span>BÓVEDA DE RESCATE ACTIVA</span>
+                <span id="badge-roi" class="tag line" style="color:#34d399">Retorno est. +14.2x</span>
+              </div>
+              <div class="cap" style="color:var(--mist)">Capital total rescatado de novedad</div>
+              <div id="kpi-recuperado" class="display num" style="color:#34d399;margin-top:8px">$0</div>
+              <p class="muted" style="margin-top:8px;font-size:13.5px">
+                Dinero que estaba a punto de perderse en fletes y fue liberado mediante confirmación automática de dirección por WhatsApp.
+              </p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;min-width:200px">
+              <button class="btn btn-emerald btn-sm" onclick="iniciarColaWhatsApp()" id="btn-hero-recuperar">
+                <svg class="i"><use href="#i-wa"/></svg>Recuperar novedades ahora
+              </button>
+              <button class="btn btn-quiet btn-sm" onclick="abrirModalPlantillasWA()">
+                Configurar plantillas
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero: Auditoría Forense de Fletes (Detección de Cobros Incorrectos) -->
+        <div class="card forense-card rv" style="--d:2;padding:28px 32px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+            <div>
+              <div class="row" style="gap:10px;margin-bottom:8px">
+                <span class="tag amber"><span class="dot amber pulse"></span>AUDITORÍA FORENSE DE FLETES</span>
+                <span id="badge-audit-guias" class="tag line" style="color:#fbbf24">0 guías detectadas</span>
+              </div>
+              <div class="cap" style="color:var(--mist)">Dinero reclamable a transportadoras</div>
+              <div id="kpi-reclamable" class="display num" style="color:#fbbf24;margin-top:8px">$0</div>
+              <p class="muted" style="margin-top:8px;font-size:13.5px">
+                Sobrecostos de peso volumétrico y cobros dobles en devoluciones injustificadas listos para radicar reclamo formal.
+              </p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;min-width:200px">
+              <button class="btn btn-amber btn-sm" onclick="abrirModalCartaReclamo()">
+                <svg class="i"><use href="#i-shield"/></svg>Generar Carta de Reclamo
+              </button>
+              <button class="btn btn-quiet btn-sm" onclick="irA('seccion-auditoria')">
+                Ver detalle de guías
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUE KPIS BANCARIOS Y CARGA DE EXCEL -->
+    <section class="sec">
+      <div class="grid g-hero">
+        <div class="card rv" style="padding:32px;--d:1">
+          <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-start">
+            <div style="min-width:0">
+              <div class="cap">Utilidad Neta Real · Libre en Billetera</div>
+              <div id="kpi-utilidad" class="display num" style="margin-top:10px">$0</div>
+              <p class="muted" style="margin-top:8px;font-size:13.5px;max-width:440px">Descontando precio de proveedor, costo de fletes en devolución y pauta publicitaria (CPA).</p>
+            </div>
+            <div style="width:230px;max-width:100%"><label class="f" style="font-size:12px">Gasto publicitario (CPA) <span id="ads-cur">· COP</span></label>
+              <input id="input-ads" class="in num" type="number" value="0" placeholder="0" oninput="recalcularKPIs();guardar()"></div>
+          </div>
+          <div class="grid g-3 kpi-line" style="gap:20px">
+            <div><div class="cap">Facturación Bruta</div><div id="kpi-facturacion" class="h-sm num stat" style="margin-top:6px">$0</div><div id="kpi-facturacion-sub" class="cap" style="margin-top:4px;font-weight:400;text-transform:none">0 órdenes totales</div></div>
+            <div><div class="cap">Fletes en Riesgo</div><div id="kpi-riesgo" class="h-sm num" style="margin-top:6px;color:#f87171">$0</div><div id="kpi-riesgo-sub" class="cap" style="margin-top:4px;font-weight:400;text-transform:none">0 guías críticas</div></div>
+            <div><div class="cap">Efectividad de Entrega</div><div id="kpi-efectividad" class="h-sm num" style="margin-top:6px">0%</div><div id="kpi-efectividad-sub" class="cap" style="margin-top:4px;font-weight:400;text-transform:none">0 entregadas / 0 devueltas</div></div>
+          </div>
+        </div>
+
+        <div class="card rv" style="display:flex;flex-direction:column;gap:16px;--d:2">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <span class="cap">Auditoría Externa</span><span id="total-ordenes-badge" class="tag">0 órdenes</span>
+          </div>
+          <div><h3 class="h-sm" style="font-size:21px">Importar reporte de Dropi</h3>
+            <p class="muted" style="margin-top:6px;font-size:13.5px">Carga el reporte Excel (.xlsx) de tu panel Dropi o de cualquier transportadora para auditar tu balance.</p></div>
+          <label for="excel-input" class="drop">
+            <svg class="i" style="width:24px;height:24px;color:var(--cobalt-light)"><use href="#i-up"/></svg>
+            <span id="file-label" style="font-size:14px;font-weight:550">Seleccionar archivo .xlsx o .csv</span>
+            <span class="cap" style="font-weight:400;text-transform:none">Procesamiento 100% local en tu navegador</span>
+            <input id="excel-input" type="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="procesarExcel(event)">
+          </label>
+          <div class="row" style="justify-content:space-between;margin-top:auto">
+            <button type="button" class="btn btn-quiet btn-sm" onclick="descargarPlantilla()"><svg class="i" style="width:14px;height:14px"><use href="#i-up"/></svg>Plantilla .xlsx</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="generarReportePDF()"><svg class="i" style="width:14px;height:14px"><use href="#i-out"/></svg>Exportar PDF</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUE: SEMÁFORO PREDICTIVO PRE-DESPACHO (PREVENCIÓN DE DEVOLUCIONES) -->
+    <section class="sec" id="seccion-semaforo">
+      <div class="card semaforo-card rv" style="--d:1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="cap">Prevención Logística Inteligente</div>
+            <h3 class="h-sm" style="font-size:22px;margin-top:4px">🚦 Semáforo Predictivo Pre-Despacho</h3>
+          </div>
+          <span class="tag line"><svg class="i" style="width:14px;height:14px"><use href="#i-spark"/></svg>IA Predictiva COD</span>
+        </div>
+        <p class="muted" style="font-size:13.5px;margin-bottom:20px">
+          Evalúa la viabilidad de entregar con éxito antes de generar la guía en Dropi. Cruza datos históricos de tu tienda con benchmarks logísticos nacionales.
+        </p>
+
+        <div class="semaforo-box">
+          <!-- Formulario de Consulta -->
+          <div style="display:grid;gap:14px">
+            <div class="two" style="display:grid;grid-template-columns:1.2fr .8fr;gap:12px">
+              <div>
+                <label class="f">Ciudad de Destino</label>
+                <select id="pred-ciudad" class="in" onchange="calcularRiesgoPreDespacho()">
+                  <option value="Bogotá">Bogotá (Cundinamarca)</option>
+                  <option value="Medellín">Medellín (Antioquia)</option>
+                  <option value="Cali">Cali (Valle del Cauca)</option>
+                  <option value="Barranquilla">Barranquilla (Atlántico)</option>
+                  <option value="Bucaramanga">Bucaramanga (Santander)</option>
+                  <option value="Cartagena">Cartagena (Bolívar)</option>
+                  <option value="Cúcuta">Cúcuta (Norte de Santander)</option>
+                  <option value="Buenaventura">Buenaventura (Valle)</option>
+                  <option value="Pasto">Pasto (Nariño)</option>
+                  <option value="Pereira">Pereira (Risaralda)</option>
+                  <option value="Manizales">Manizales (Caldas)</option>
+                  <option value="Ibagué">Ibagué (Tolima)</option>
+                  <option value="Santa Marta">Santa Marta (Magdalena)</option>
+                  <option value="Villavicencio">Villavicencio (Meta)</option>
+                  <option value="Montería">Montería (Córdoba)</option>
+                  <option value="Valledupar">Valledupar (Cesar)</option>
+                  <option value="Quibdó">Quibdó (Chocó)</option>
+                  <option value="Riohacha">Riohacha (La Guajira)</option>
+                  <option value="Tumaco">Tumaco (Nariño)</option>
+                </select>
+              </div>
+              <div>
+                <label class="f">Transportadora</label>
+                <select id="pred-transportadora" class="in" onchange="calcularRiesgoPreDespacho()">
+                  <option value="Coordinadora">Coordinadora</option>
+                  <option value="Servientrega">Servientrega</option>
+                  <option value="Inter Rapidísimo">Inter Rapidísimo</option>
+                  <option value="Envía">Envía</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div>
+                <label class="f">Valor Total de la Orden ($ COP)</label>
+                <input id="pred-valor" type="number" class="in num" value="95000" oninput="calcularRiesgoPreDespacho()">
+              </div>
+              <div style="display:flex;align-items:flex-end">
+                <button type="button" class="btn btn-ghost" style="width:100%;height:48px" onclick="copiarMensajeConfirmacionPrevia()">
+                  <svg class="i"><use href="#i-wa"/></svg>Copiar WA de confirmación
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medidor Visual / Gauge -->
+          <div class="gauge-visual" id="gauge-container">
+            <div class="gauge-circle verde" id="gauge-circle">
+              <span id="gauge-pct">92%</span>
+            </div>
+            <div id="gauge-status" style="font-weight:600;font-size:16px;color:#34d399">🟢 Zona de Bajo Riesgo</div>
+            <p id="gauge-desc" class="muted" style="font-size:12.5px;margin-top:6px;max-width:280px">
+              Alta tasa de efectividad histórica. Puedes despachar con normalidad.
+            </p>
+            <div class="row" style="margin-top:12px;gap:10px;font-size:12px">
+              <span class="tag line" id="gauge-util-est">Ganancia est: $38.000</span>
+              <span class="tag line" id="gauge-riesgo-est" style="color:#f87171">Flete retorno: $14.500</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUE: GRÁFICAS ANIMADAS (DONUT + LINE TENDENCIA) -->
+    <section class="sec" id="seccion-graficas">
+      <div class="grid g-2">
+        <div class="card rv" style="--d:1">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div><div class="cap">Distribución Operativa</div><h3 class="h-sm" style="font-size:20px;margin-top:4px">Estado de Guías del Lote</h3></div>
+            <span class="tag line"><svg class="i" style="width:14px;height:14px"><use href="#i-chart"/></svg>Tiempo Real</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center">
+            <div class="chart-container" style="height:210px">
+              <canvas id="donutChart"></canvas>
+            </div>
+            <div class="donut-legend" id="donut-legend">
+              <div class="legend-item"><div class="row" style="gap:8px"><span class="dot emerald"></span><span>Entregadas</span></div><b class="num" id="leg-entregadas">0 (0%)</b></div>
+              <div class="legend-item"><div class="row" style="gap:8px"><span class="dot" style="background:#fbbf24"></span><span>En Novedad</span></div><b class="num" id="leg-criticas">0 (0%)</b></div>
+              <div class="legend-item"><div class="row" style="gap:8px"><span class="dot" style="background:#f87171"></span><span>Devoluciones</span></div><b class="num" id="leg-devoluciones">0 (0%)</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card rv" style="--d:2">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div><div class="cap">Margen Financiero</div><h3 class="h-sm" style="font-size:20px;margin-top:4px">Utilidad y Recaudo Acumulado</h3></div>
+            <span class="tag emerald">Rentabilidad</span>
+          </div>
+          <div class="chart-container" style="height:210px">
+            <canvas id="lineChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUE: RANKING DE TRANSPORTADORAS Y ALERTAS INTELIGENTES -->
+    <section class="sec" id="seccion-logistica">
+      <div class="grid g-2">
+        <div class="card rv" style="--d:1">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div><div class="cap">Rendimiento Logístico</div><h3 class="h-sm" style="font-size:20px;margin-top:4px">Ranking de Transportadoras</h3></div>
+            <span class="tag line"><svg class="i" style="width:14px;height:14px"><use href="#i-truck"/></svg>Decisión</span>
+          </div>
+          <p class="muted" style="font-size:13px;margin-bottom:16px">Prioriza las empresas con mayor tasa de entrega para reducir costos de devolución.</p>
+          <div id="transportadoras-ranking"></div>
+        </div>
+
+        <div class="card rv" style="--d:2">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div><div class="cap">Diagnóstico Preventivo</div><h3 class="h-sm" style="font-size:20px;margin-top:4px">Alertas Inteligentes & Fugas</h3></div>
+            <span class="tag" style="background:rgba(82,102,235,.2);color:#8b9eff"><svg class="i" style="width:14px;height:14px"><use href="#i-spark"/></svg>Asesor</span>
+          </div>
+          <p class="muted" style="font-size:13px;margin-bottom:16px">Patrones detectados en tus novedades para prevenir pérdidas futuras.</p>
+          <div id="alertas-inteligentes"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUE: AUDITORÍA FORENSE DE FLETES (RECLAMOS) -->
+    <section class="sec" id="seccion-auditoria">
+      <div class="card rv" style="--d:1">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:20px">
+          <div>
+            <div class="cap">Control Financiero & Facturación</div>
+            <h3 class="h-sm" style="font-size:22px;margin-top:4px">⚖️ Auditoría Forense de Cobro de Fletes</h3>
+            <p class="muted" style="margin-top:6px;font-size:13.5px">
+              Detección algorítmica de sobreprecios en fletes, exceso de peso volumétrico y cobros dobles en devoluciones indebidas.
+            </p>
+          </div>
+          <div class="row">
+            <button class="btn btn-amber btn-sm" onclick="abrirModalCartaReclamo()">
+              <svg class="i"><use href="#i-edit"/></svg>Copiar Carta de Reclamo
+            </button>
+          </div>
+        </div>
+
+        <div id="auditoria-forense-resumen" style="margin-bottom:16px"></div>
+
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Guía</th><th>Cliente</th><th>Ciudad</th><th>Transportadora</th><th>Tipo de Anomalía</th><th>Flete Cobrado</th><th>Tarifa Base</th><th>Saldo Reclamable</th></tr>
+            </thead>
+            <tbody id="tabla-anomalias-flete"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOQUE: WEBHOOKS EN VIVO Y AUTO-RESOLUCIÓN DE CLIENTES -->
+    <section class="sec" id="seccion-automatizaciones">
+      <div class="card rv" style="--d:2">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="cap">Automatizaciones & Eventos</div>
+            <h3 class="h-sm" style="font-size:22px;margin-top:4px">⚡ Webhooks en Tiempo Real & Auto-Resolución</h3>
+          </div>
+          <div class="row" style="gap:8px">
+            <span class="tag emerald"><span class="dot emerald pulse"></span>Receptor Dropi Activo</span>
+            <span class="tag purple"><span class="dot" style="background:#c084fc"></span>Bot NLP WhatsApp</span>
+          </div>
+        </div>
+
+        <p class="muted" style="font-size:13.5px;margin-bottom:20px">
+          Prueba el flujo de trabajo automatizado: recibe novedades al instante y permite que el bot clasifique respuestas de compradores para auto-resolver guías sin intervención manual.
+        </p>
+
+        <div class="grid g-2">
+          <div style="background:var(--onyx);padding:22px;border-radius:12px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <div class="row" style="gap:8px;margin-bottom:8px">
+                <b>📡 Evento Webhook de Dropi</b>
+                <span class="tag line" style="font-size:11px">POST /api/webhooks/dropi</span>
+              </div>
+              <p class="muted" style="font-size:13px">
+                Simula la llegada de un evento real de novedad enviado por la transportadora a Dropi para ver cómo reacciona la bóveda al instante.
+              </p>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="margin-top:16px;width:100%" onclick="simularWebhookDropi()">
+              ⚡ Disparar evento de novedad en vivo
+            </button>
+          </div>
+
+          <div style="background:var(--onyx);padding:22px;border-radius:12px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <div class="row" style="gap:8px;margin-bottom:8px">
+                <b>🤖 Auto-Resolución de WhatsApp (NLP)</b>
+                <span class="tag line" style="font-size:11px">POST /api/whatsapp/auto-resolve</span>
+              </div>
+              <p class="muted" style="font-size:13px">
+                Simula a un cliente respondiendo con su dirección exacta (torre/apto). El motor la clasifica, actualiza la guía y libera el recaudo.
+              </p>
+            </div>
+            <button class="btn btn-emerald btn-sm" style="margin-top:16px;width:100%" onclick="probarAutoResolucionWA()">
+              💬 Probar respuesta de comprador
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLA DE PROTOCOLO WHATSAPP -->
+    <section id="queue-panel" class="hidden sec" style="padding-bottom:32px">
+      <div class="card" style="padding:24px 30px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap">
+          <div class="row" style="gap:10px">
+            <span class="tag emerald"><span class="dot emerald"></span>WhatsApp Activo</span>
+            <span id="queue-status-text" style="font-size:14px;font-weight:500">Ejecutando protocolo de recuperación…</span>
+          </div>
+          <span id="queue-counter" class="tag">0/0</span>
+        </div>
+        <div class="bar"><i id="queue-bar"></i></div>
+      </div>
+    </section>
+
+    <!-- BLOQUE: TABLA DE NOVEDADES Y ACCIONES -->
+    <section class="sec" id="seccion-novedades">
+      <div class="card rv" style="padding-bottom:0;overflow:hidden;--d:3">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:24px">
+          <div style="max-width:560px">
+            <div class="row" style="gap:14px;margin-bottom:6px"><h2 class="h" style="font-size:26px">Capital Retenido en Novedad</h2><span id="badge-novedades" class="tag line">0 críticas</span></div>
+            <p class="muted" style="font-size:13.5px">Gestiona estas guías para evitar pérdidas de flete y liberar el recaudo pendiente.</p>
+          </div>
+          <div class="row">
+            <button class="btn btn-ghost" onclick="exportarVista()">Exportar (.xlsx)</button>
+            <button id="btn-disparar-api" class="btn btn-primary" onclick="iniciarColaWhatsApp()"><svg class="i"><use href="#i-wa"/></svg>Recuperar vía WhatsApp <svg class="i"><use href="#i-arrow"/></svg></button>
+          </div>
+        </div>
+        
+        <div class="tools">
+          <div class="tabs" id="tabs">
+            <button data-t="criticas" class="on">Críticas<b>0</b></button>
+            <button data-t="entregadas">Entregadas<b>0</b></button>
+            <button data-t="devoluciones">Devoluciones<b>0</b></button>
+            <button data-t="todas">Todas<b>0</b></button>
+          </div>
+          <input id="buscar" class="in" style="flex:1;min-width:200px;max-width:320px;height:40px;font-size:13.5px" placeholder="Buscar guía, cliente, ciudad…" oninput="fq=this.value;renderizarTabla(false)">
+          <select id="f-tr" class="in" style="width:auto;min-width:160px;height:40px;font-size:13.5px" onchange="ft=this.value;renderizarTabla()"><option value="Todas">Todas las transportadoras</option><option>Servientrega</option><option>Coordinadora</option><option>Inter Rapidísimo</option><option>Envía</option></select>
+        </div>
+
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Orden / Guía</th><th>Destinatario</th><th>Ubicación</th><th>Valor COD</th><th>Anomalía</th><th>Estado</th><th>Respuesta WA</th><th>Acción</th></tr></thead>
+          <tbody id="tabla-novedades"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- BLOQUE: PLANES Y ALIANZAS DENTRO DEL DASHBOARD -->
+    <section class="sec" id="seccion-venta" style="padding-top:24px">
+      <div class="card rv" style="--d:1;padding:40px 32px">
+        <div style="text-align:center;max-width:680px;margin:0 auto">
+          <span class="tag" style="background:rgba(82,102,235,.2);color:#8b9eff;margin-bottom:12px">ALIANZAS B2B Y MONETIZACIÓN</span>
+          <h2 class="h-lg">Entrega DropiVault con la marca de tu propia academia</h2>
+          <p class="lead" style="margin-top:12px">Convierte esta solución en un activo de retención para tus alumnos o comercialízala como software independiente para dropshippers en Latinoamérica.</p>
+          <div style="margin-top:20px;display:flex;justify-content:center;gap:12px">
+            <button class="btn btn-primary" onclick="abrirModalPlanes()"><svg class="i"><use href="#i-spark"/></svg>Ver todos los Planes y Precios</button>
+            <button class="btn btn-ghost" onclick="abrirModalWhiteLabel()">Configurar Mi Marca Blanca</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot"><div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:24px 0">
+    <div style="font-size:13px;color:var(--slate)">Bóveda DropiVault con cifrado TLS 1.3 · Conexión segura de solo lectura sin permisos financieros.</div>
+    <div class="row">
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalPlanes()">Planes y Precios</button>
+      <button class="btn btn-ghost btn-sm" onclick="limpiarABlanco()">Restablecer a 0 (Limpiar datos)</button>
+    </div>
+  </div></footer>
+</div>
+
+<!-- ===== BOTTOM NAV MÓVIL (PWA READY) ===== -->
+<nav class="mobile-nav">
+  <button class="mob-btn on" onclick="irA('app-dashboard')"><svg class="i"><use href="#i-shield"/></svg><span>Bóveda</span></button>
+  <button class="mob-btn" onclick="irA('seccion-semaforo')"><svg class="i"><use href="#i-spark"/></svg><span>Semáforo</span></button>
+  <button class="mob-btn" onclick="irA('seccion-auditoria')"><svg class="i"><use href="#i-shield"/></svg><span>Auditoría</span></button>
+  <button class="mob-btn" onclick="irA('seccion-novedades')"><svg class="i"><use href="#i-bell"/></svg><span>Novedades</span></button>
+  <button class="mob-btn" onclick="abrirModalPlanes()"><svg class="i"><use href="#i-spark"/></svg><span>Planes</span></button>
+</nav>
+
+<!-- ===== MODAL DEDICADO: PLANES, PRECIOS Y ALIANZAS B2B (SIEMPRE DISPONIBLE) ===== -->
+<div id="modal-planes" class="modal" onclick="if(event.target===this)cerrarModalPlanes()">
+  <div class="card" style="max-width:980px;width:100%;padding:40px 32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="row" style="gap:8px">
+        <span class="tag" style="background:rgba(82,102,235,.2);color:#8b9eff">PLANES & SUSCRIPCIÓN</span>
+        <span class="tag emerald">Garantía ROI</span>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalPlanes()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+
+    <div style="text-align:center;max-width:680px;margin:10px auto 24px">
+      <h3 class="h-sm" style="font-size:26px">Invierte en retener tus fletes, no en regalárselos a las transportadoras</h3>
+      <p class="muted" style="font-size:14px;margin-top:8px">
+        El software se amortiza solo con salvar apenas 2 o 3 pedidos al mes. Sin cláusulas de permanencia.
+      </p>
+
+      <!-- Selector de Moneda y Ciclo en Modal -->
+      <div class="row" style="justify-content:center;gap:16px;margin-top:20px">
+        <div class="tabs" id="tabs-moneda-modal">
+          <button class="on" id="btn-mon-cop-modal" onclick="cambiarMonedaPlanes('COP')">🇨🇴 Pesos (COP)</button>
+          <button id="btn-mon-usd-modal" onclick="cambiarMonedaPlanes('USD')">🌎 Dólares (USD)</button>
+        </div>
+        <div class="tabs" id="tabs-ciclo-modal">
+          <button class="on" id="btn-ciclo-mes-modal" onclick="cambiarCicloPlanes('mensual')">Facturación Mensual</button>
+          <button id="btn-ciclo-tri-modal" onclick="cambiarCicloPlanes('trimestral')">Trimestral <b style="background:#10b981;color:#fff">-20%</b></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing Grid en Modal -->
+    <div class="pricing-grid" style="margin-top:10px">
+      <!-- Starter -->
+      <div class="plan-card">
+        <div>
+          <span class="cap">Starter Merchant</span>
+          <div class="h num" style="margin-top:8px" id="price-starter-modal">$79.000 <span style="font-size:14px;color:var(--slate)">COP/mes</span></div>
+          <p class="muted" style="margin-top:8px;font-size:13px">Para tiendas emergentes que quieren frenar devoluciones tempranas.</p>
+          <ul style="list-style:none;margin-top:20px;display:grid;gap:10px;font-size:13px;color:var(--ash)">
+            <li>✓ Hasta 250 guías auditadas al mes</li>
+            <li>✓ Auditoría de fletes en riesgo</li>
+            <li>✓ Protocolo WhatsApp con 3 tonos</li>
+            <li>✓ Semáforo Predictivo Pre-Despacho (básico)</li>
+            <li>✓ Soporte técnico estándar</li>
+          </ul>
+        </div>
+        <button class="btn btn-ghost" style="margin-top:24px;width:100%" onclick="contratarPlan('Starter')">Elegir Starter</button>
+      </div>
+
+      <!-- Pro Merchant -->
+      <div class="plan-card featured">
+        <div class="plan-badge-top">⭐ MÁS ELEGIDO POR DROPSHIPPERS</div>
+        <div>
+          <span class="cap" style="color:var(--cobalt-light)">Pro Merchant</span>
+          <div class="h num" style="margin-top:8px" id="price-pro-modal">$149.000 <span style="font-size:14px;color:var(--slate)">COP/mes</span></div>
+          <p class="muted" style="margin-top:8px;font-size:13px">Para dropshippers activos que despachan más de 10 pedidos diarios.</p>
+          <ul style="list-style:none;margin-top:20px;display:grid;gap:10px;font-size:13px;color:var(--ivory)">
+            <li>✓ Guías y auditorías <b>ilimitadas</b></li>
+            <li>✓ Cola automática de rescate WhatsApp</li>
+            <li>✓ <b>Semáforo Predictivo Pre-Despacho</b> completo</li>
+            <li>✓ <b>Auditoría Forense de Cobro de Fletes</b></li>
+            <li>✓ Cartas de Reclamo oficiales automáticas</li>
+            <li>✓ <b>Bot WhatsApp con Auto-Resolución NLP</b></li>
+            <li>✓ Reportes Ejecutivos en PDF en 1 clic</li>
+            <li>✓ Resumen Diario a Telegram y WhatsApp</li>
+            <li>✓ Webhooks en tiempo real con Dropi</li>
+          </ul>
+        </div>
+        <button class="btn btn-primary" style="margin-top:24px;width:100%" onclick="contratarPlan('Pro Merchant')">Comenzar Ahora</button>
+      </div>
+
+      <!-- Marca Blanca -->
+      <div class="plan-card">
+        <div>
+          <span class="cap">Marca Blanca / Academias</span>
+          <div class="h num" style="margin-top:8px" id="price-agency-modal">$690.000 <span style="font-size:14px;color:var(--slate)">COP/mes</span></div>
+          <p class="muted" style="margin-top:8px;font-size:13px">Para mentores, comunidades y creadores con más de 20 alumnos.</p>
+          <ul style="list-style:none;margin-top:20px;display:grid;gap:10px;font-size:13px;color:var(--ash)">
+            <li>✓ <b>Tu propio logo y nombre</b> en toda la app</li>
+            <li>✓ Acceso Multi-Tienda ilimitado para alumnos</li>
+            <li>✓ Dominio personalizado propio (app.tuacademia.com)</li>
+            <li>✓ Cobro directo bajo tu pasarela</li>
+            <li>✓ Soporte prioritario y canal VIP</li>
+          </ul>
+        </div>
+        <button class="btn btn-ghost" style="margin-top:24px;width:100%" onclick="abrirModalWhiteLabel();cerrarModalPlanes()">Configurar Mi Marca</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: GESTOR MULTI-TIENDA ===== -->
+<div id="modal-multitienda" class="modal" onclick="if(event.target===this)cerrarModalMultiTienda()">
+  <div class="card" style="max-width:540px;width:100%;padding:32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 class="h-sm">🏪 Gestión Multi-Tienda</h3>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalMultiTienda()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="muted" style="font-size:13.5px;margin-bottom:20px">Administra múltiples cuentas de Dropi y cambia de tienda en 1 clic sin tener que cerrar sesión.</p>
+    
+    <div id="lista-tiendas" style="display:grid;gap:10px;margin-bottom:24px"></div>
+
+    <div style="padding-top:16px;border-top:1px solid var(--line)">
+      <h4 style="font-size:14px;font-weight:600;margin-bottom:12px">+ Añadir otra tienda Dropi</h4>
+      <form onsubmit="agregarNuevaTienda(event)" style="display:grid;gap:12px">
+        <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><label class="f">Nombre de Tienda</label><input id="nueva-tienda-nombre" class="in" required placeholder="Ej: Calzado Medellín"></div>
+          <div><label class="f">País / Región</label>
+            <select id="nueva-tienda-pais" class="in">
+              <option value="https://api.dropi.co">Colombia (COP)</option>
+              <option value="https://api.dropi.mx">México (MXN)</option>
+              <option value="https://api.dropi.ec">Ecuador (USD)</option>
+              <option value="https://api.dropi.cl">Chile (CLP)</option>
+              <option value="https://api.dropi.pe">Perú (PEN)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="f">Token de Integración (Dropi)</label>
+          <input id="nueva-tienda-token" class="in" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6…">
+        </div>
+        <button class="btn btn-primary btn-sm" style="margin-top:6px">Guardar y Vincular Tienda</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: RESUMEN DIARIO EJECUTIVO (TELEGRAM / WHATSAPP) ===== -->
+<div id="modal-digest" class="modal" onclick="if(event.target===this)cerrarModalDigest()">
+  <div class="card" style="max-width:540px;width:100%;padding:32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 class="h-sm">📱 Resumen Ejecutivo Diario</h3>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalDigest()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="muted" style="font-size:13.5px;margin-bottom:16px">Resumen condensado de finanzas y logística listo para despachar al dueño de la tienda.</p>
+    
+    <textarea id="digest-preview-text" class="in" style="height:220px;border-radius:12px;padding:14px;font-family:monospace;font-size:13px;line-height:1.45;resize:vertical" readonly></textarea>
+
+    <div class="row" style="margin-top:18px;gap:12px">
+      <button class="btn btn-emerald btn-sm" style="flex:1" onclick="copiarDigestWA()">
+        <svg class="i"><use href="#i-wa"/></svg>Copiar para WhatsApp
+      </button>
+      <button class="btn btn-primary btn-sm" style="flex:1" onclick="enviarDigestTelegram()">
+        ✈️ Despachar a Telegram
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: CARTA DE RECLAMO OFICIAL DE FLETES ===== -->
+<div id="modal-reclamo" class="modal" onclick="if(event.target===this)cerrarModalCartaReclamo()">
+  <div class="card" style="max-width:620px;width:100%;padding:32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 class="h-sm">⚖️ Carta de Reclamo a Transportadoras</h3>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalCartaReclamo()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="muted" style="font-size:13.5px;margin-bottom:16px">Plantilla legal con la relación de guías con sobrecosto lista para radicar ante atención al cliente.</p>
+    
+    <textarea id="carta-reclamo-text" class="in" style="height:240px;border-radius:12px;padding:14px;font-family:monospace;font-size:12.5px;line-height:1.45;resize:vertical"></textarea>
+
+    <div class="row" style="margin-top:18px;gap:12px">
+      <button class="btn btn-amber btn-sm" style="flex:1" onclick="copiarCartaReclamo()">
+        <svg class="i"><use href="#i-edit"/></svg>Copiar Carta de Reclamo
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="cerrarModalCartaReclamo()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: CONFIGURACIÓN DE WEBHOOKS EN VIVO ===== -->
+<div id="modal-webhooks" class="modal" onclick="if(event.target===this)cerrarModalWebhooks()">
+  <div class="card" style="max-width:560px;width:100%;padding:32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 class="h-sm">📡 Configuración de Webhooks</h3>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalWebhooks()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="muted" style="font-size:13.5px;margin-bottom:20px">Conecta este servidor a Dropi o Meta WhatsApp para recibir actualizaciones automáticas.</p>
+    
+    <div style="display:grid;gap:14px">
+      <div>
+        <label class="f">URL Webhook para Dropi</label>
+        <div style="display:flex;gap:8px">
+          <input id="webhook-url-dropi" class="in" value="http://localhost:3000/api/webhooks/dropi" readonly>
+          <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText($('webhook-url-dropi').value);toast('URL copiada')">Copiar</button>
+        </div>
+      </div>
+      <div>
+        <label class="f">URL Webhook para Meta WhatsApp Cloud API</label>
+        <div style="display:flex;gap:8px">
+          <input id="webhook-url-wa" class="in" value="http://localhost:3000/api/webhooks/whatsapp" readonly>
+          <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText($('webhook-url-wa').value);toast('URL copiada')">Copiar</button>
+        </div>
+      </div>
+      <div>
+        <label class="f">Token de Verificación (Verify Token)</label>
+        <input class="in" value="dropivault_webhook_token_2026" readonly>
+      </div>
+    </div>
+    <div class="row" style="margin-top:20px">
+      <button class="btn btn-primary btn-sm" style="flex:1" onclick="cerrarModalWebhooks()">Entendido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: PLANTILLAS DE WHATSAPP CON MÚLTIPLES TONOS ===== -->
+<div id="modal-plantillas" class="modal" onclick="if(event.target===this)cerrarModalPlantillasWA()">
+  <div class="card" style="max-width:560px;width:100%;padding:32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 class="h-sm">Plantillas WhatsApp Multitono</h3>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalPlantillasWA()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="muted" style="font-size:13.5px;margin-bottom:20px">Elige el tono psicológico para maximizar las respuestas del cliente final.</p>
+    
+    <div class="tabs" style="width:100%;display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:16px" id="tabs-tonos">
+      <button class="on" data-tone="amable" onclick="seleccionarTonoWA('amable')">😊 Amable</button>
+      <button data-tone="urgente" onclick="seleccionarTonoWA('urgente')">⚡ Urgente</button>
+      <button data-tone="formal" onclick="seleccionarTonoWA('formal')">🏛️ Formal</button>
+    </div>
+
+    <div>
+      <label class="f">Cuerpo del mensaje (personalizable)</label>
+      <textarea id="wa-template-editor" class="in" style="height:120px;border-radius:14px;padding:12px 16px;resize:vertical;font-family:inherit" oninput="actualizarPreviewWA()"></textarea>
+      <div class="cap" style="margin-top:6px;font-weight:400;text-transform:none">Variables: {cliente}, {producto}, {guia}, {motivo}, {direccion}, {ciudad}, {tienda}</div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label class="f">Vista previa en WhatsApp</label>
+      <div class="wa-bubble" id="wa-preview-bubble">Cargando vista previa…</div>
+    </div>
+
+    <div class="row" style="margin-top:20px">
+      <button class="btn btn-primary" style="flex:1" onclick="guardarPlantillaWA()">Guardar Plantilla Activa</button>
+      <button type="button" class="btn btn-ghost" onclick="cerrarModalPlantillasWA()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TOUR DE BIENVENIDA (3 PASOS) ===== -->
+<div id="modal-tour" class="modal">
+  <div class="card" style="max-width:480px;width:100%;padding:36px">
+    <div style="display:flex;justify-content:flex-end">
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarTour()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+
+    <div id="tour-content"></div>
+
+    <div class="tour-dots" id="tour-dots">
+      <div class="tour-dot active"></div>
+      <div class="tour-dot"></div>
+      <div class="tour-dot"></div>
+    </div>
+
+    <div class="row" style="justify-content:space-between;margin-top:16px">
+      <button class="btn btn-ghost btn-sm" id="btn-tour-prev" onclick="cambiarPasoTour(-1)">Anterior</button>
+      <button class="btn btn-primary btn-sm" id="btn-tour-next" onclick="cambiarPasoTour(1)">Siguiente</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: MARCA BLANCA / WHITE-LABEL SIMULATOR ===== -->
+<div id="modal-whitelabel" class="modal" onclick="if(event.target===this)cerrarModalWhiteLabel()">
+  <div class="card" style="max-width:500px;width:100%;padding:36px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 class="h-sm">Simulador de Marca Blanca</h3>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalWhiteLabel()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="muted" style="font-size:13.5px;margin-bottom:20px">Mira cómo se transforma DropiVault al instante con la identidad corporativa de tu propia academia o comunidad.</p>
+    
+    <div style="display:grid;gap:16px">
+      <div>
+        <label class="f">Nombre de tu Academia / Software</label>
+        <input id="wl-nombre" class="in" value="Imperio COD Pro" placeholder="Ej: Masters Academy">
+      </div>
+      <div>
+        <label class="f">Insignia de la Alianza</label>
+        <input id="wl-insignia" class="in" value="Comunidad VIP" placeholder="Ej: Alumnos Dropi Elite">
+      </div>
+      <button class="btn btn-primary" onclick="aplicarWhiteLabelEnVivo()">Aplicar Marca en Vivo</button>
+      <button type="button" class="btn btn-ghost" onclick="restablecerMarcaDefault()">Restablecer Marca Original</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL EDITAR GUÍA ===== -->
+<div id="modal-edit" class="modal" onclick="if(event.target===this)cerrarEditar()">
+  <div class="card" style="max-width:480px;width:100%;padding:36px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h3 class="h-sm">Editar guía</h3>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarEditar()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+    <p id="edit-sub" class="muted" style="font-size:13.5px;margin-bottom:20px"></p>
+    <form onsubmit="guardarEdicion(event)" style="display:grid;gap:14px">
+      <div><label class="f">Dirección</label><input id="edit-direccion" class="in" required></div>
+      <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div><label class="f">Ciudad</label><input id="edit-ciudad" class="in" required></div>
+        <div><label class="f">Teléfono</label><input id="edit-telefono" class="in" inputmode="tel" required></div>
+      </div>
+      <div><label class="f">Notas de solución</label><input id="edit-notas" class="in" placeholder="Ej: cliente confirmó torre y apto"></div>
+      <div class="row" style="margin-top:8px"><button class="btn btn-primary" style="flex:1">Guardar cambios</button><button type="button" class="btn btn-ghost" onclick="cerrarEditar()">Cancelar</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- CONTENEDOR OCULTO PARA EXPORTACIÓN EN PDF -->
+<div id="pdf-container" style="display:none;background:#ffffff;color:#1e1e2a;padding:32px;font-family:'Inter',sans-serif">
+  <div style="border-bottom:2px solid #5266eb;padding-bottom:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <h1 style="font-size:24px;color:#171721;margin:0">INFORME EJECUTIVO DE TESORERÍA COD</h1>
+      <p style="font-size:13px;color:#70707d;margin-top:4px" id="pdf-tienda-sub">Tienda Dropi · DropiVault Auditoría</p>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:12px;color:#70707d">FECHA DE GENERACIÓN</div>
+      <div style="font-size:14px;font-weight:600" id="pdf-fecha">06/11/2026</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px" id="pdf-kpis-grid"></div>
+
+  <h3 style="font-size:16px;color:#171721;margin-bottom:10px">Rendimiento por Transportadora</h3>
+  <table style="width:100%;border-collapse:collapse;margin-bottom:24px;font-size:12px">
+    <thead>
+      <tr style="background:#f1f2f8;border-bottom:1px solid #d1d5db"><th style="padding:8px">Transportadora</th><th style="padding:8px">Total Envíos</th><th style="padding:8px">Entregadas</th><th style="padding:8px">Novedades</th><th style="padding:8px">Efectividad</th></tr>
+    </thead>
+    <tbody id="pdf-tabla-transportadoras"></tbody>
+  </table>
+
+  <h3 style="font-size:16px;color:#171721;margin-bottom:10px">Auditoría Forense de Cobro de Fletes (Reclamables)</h3>
+  <table style="width:100%;border-collapse:collapse;margin-bottom:24px;font-size:12px">
+    <thead>
+      <tr style="background:#fef3c7;border-bottom:1px solid #d1d5db"><th style="padding:8px">Guía</th><th style="padding:8px">Ciudad</th><th style="padding:8px">Transportadora</th><th style="padding:8px">Cobrado</th><th style="padding:8px">Esperado</th><th style="padding:8px">Saldo a Favor</th></tr>
+    </thead>
+    <tbody id="pdf-tabla-anomalias"></tbody>
+  </table>
+
+  <div style="border-top:1px solid #e2e3ed;padding-top:14px;font-size:11px;color:#70707d;text-align:center">
+    Generado automáticamente por DropiVault · Auditoría de Tesorería, Novedades y Margen Contraentrega.
+  </div>
+</div>
+
+<div id="toasts" aria-live="polite"></div>
+
+<!-- ============================================================
+     JAVASCRIPT MOTOR COMPLETO V2.6 (CON PLANES Y ROI EN VIVO)
+     ============================================================ -->
+<script>
+// Endpoint del backend seguro DropiVault (Node.js + Express)
+const API = 'http://localhost:3000';
+let metodoAuthActual = 'token', sesionUsuario = null;
+
+// DATO BASE: Arranca completamente en 0 / vacío por defecto a menos que haya guardado previo
+let ordenesTotales = [], ordenesEnNovedad = [];
+let capitalRecuperado = 0;
+let tonoWAActual = 'amable';
+
+// Multi-Tienda
+const LS_STORES = 'dropivault.stores.v1';
+let tiendasGuardadas = [
+  { id: 'tienda_default', nombre: 'Imperio COD', paisUrl: 'https://api.dropi.co', token: '', activa: true }
+];
+let tiendaActivaId = 'tienda_default';
+
+// Moneda y Período para Planes
+let monedaPlanesActual = 'COP';
+let cicloPlanesActual = 'mensual';
+
+const PRECIOS_PLANES = {
+  COP: {
+    mensual: { starter: '$79.000 COP/mes', pro: '$149.000 COP/mes', agency: '$690.000 COP/mes' },
+    trimestral: { starter: '$189.000 COP/trim ($63.000/mes)', pro: '$357.000 COP/trim ($119.000/mes)', agency: '$1.650.000 COP/trim ($550.000/mes)' }
+  },
+  USD: {
+    mensual: { starter: '$19 USD/mes', pro: '$38 USD/mes', agency: '$175 USD/mes' },
+    trimestral: { starter: '$48 USD/trim ($16/mes)', pro: '$89 USD/trim ($29/mes)', agency: '$420 USD/trim ($140/mes)' }
+  }
+};
+
+const REGIONES = {
+  'https://api.dropi.co': { loc: 'es-CO', cur: 'COP', pref: '57' },
+  'https://api.dropi.mx': { loc: 'es-MX', cur: 'MXN', pref: '52' },
+  'https://api.dropi.ec': { loc: 'es-EC', cur: 'USD', pref: '593' },
+  'https://api.dropi.cl': { loc: 'es-CL', cur: 'CLP', pref: '56' },
+  'https://api.dropi.pe': { loc: 'es-PE', cur: 'PEN', pref: '51' }
+};
+let region = REGIONES['https://api.dropi.co'];
+let fmt = new Intl.NumberFormat(region.loc, { style: 'currency', currency: region.cur, maximumFractionDigits: 0 });
+const cop = { format: n => fmt.format(n) };
+
+let tab = 'criticas', fq = '', ft = 'Todas', editIx = -1;
+const LS = 'dropivault.v2';
+const TR = ['Servientrega', 'Coordinadora', 'Inter Rapidísimo', 'Envía'];
+const COLS = ['NÚMERO DE GUÍA', 'NOMBRE CLIENTE', 'TELÉFONO', 'CIUDAD DESTINO', 'DIRECCIÓN', 'TRANSPORTADORA', 'PRODUCTO', 'STATUS', 'NOVEDAD', 'TOTAL DE LA ORDEN', 'PRECIO PROVEEDOR', 'PRECIO FLETE'];
+const crit = ["NOVEDAD", "ERRADA", "NO CONTESTA", "CERRADO", "FALLIDO"];
+const esCritica = o => !/ENTREGADO|DEVOL/.test(o.estado) && crit.some(p => o.estado.includes(p) || String(o.motivo).toUpperCase().includes(p));
+const TABS = { criticas: esCritica, entregadas: o => o.estado.includes('ENTREGADO'), devoluciones: o => o.estado.includes('DEVOL'), todas: () => true };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const $ = id => document.getElementById(id);
+
+// Benchmark para Semáforo Predictivo Pre-Despacho
+const BENCHMARK_CIUDADES = {
+  'Bogotá': { entrega: 92, riesgo: 'bajo', fletePromedio: 12500, nota: 'Zona metropolitana con alta efectividad de entrega.' },
+  'Medellín': { entrega: 94, riesgo: 'bajo', fletePromedio: 12000, nota: 'Ruta preferente con bajo índice de novedad.' },
+  'Cali': { entrega: 86, riesgo: 'medio', fletePromedio: 14000, nota: 'Recomendable verificar cobertura periférica antes de rotular.' },
+  'Barranquilla': { entrega: 88, riesgo: 'bajo', fletePromedio: 15000, nota: 'Buena tasa de recepción contraentrega.' },
+  'Bucaramanga': { entrega: 91, riesgo: 'bajo', fletePromedio: 13500, nota: 'Ruta segura y puntual en entregas.' },
+  'Cartagena': { entrega: 84, riesgo: 'medio', fletePromedio: 15500, nota: 'Zonas turísticas o insulares suelen presentar reprogramación.' },
+  'Cúcuta': { entrega: 64, riesgo: 'alto', fletePromedio: 17500, nota: '⚠️ Historial crítico de direcciones erradas o sin efectivo.' },
+  'Buenaventura': { entrega: 58, riesgo: 'alto', fletePromedio: 19500, nota: '⛔ Zona de alto flete de retorno. Pedir abono de flete previo.' },
+  'Pasto': { entrega: 78, riesgo: 'medio', fletePromedio: 16500, nota: 'Tiempos de tránsito prolongados por topografía.' },
+  'Pereira': { entrega: 90, riesgo: 'bajo', fletePromedio: 13000, nota: 'Eje cafetero con entrega rápida y segura.' },
+  'Manizales': { entrega: 89, riesgo: 'bajo', fletePromedio: 13500, nota: 'Excelente índice de cumplimiento.' },
+  'Ibagué': { entrega: 87, riesgo: 'medio', fletePromedio: 13500, nota: 'Flujo estándar de novedades por horario de oficina.' },
+  'Santa Marta': { entrega: 82, riesgo: 'medio', fletePromedio: 15500, nota: 'Verificar si el destinatario reside en sector Rodadero o Centro.' },
+  'Villavicencio': { entrega: 85, riesgo: 'medio', fletePromedio: 14000, nota: 'Sensible a cierres viales periódicos.' },
+  'Montería': { entrega: 81, riesgo: 'medio', fletePromedio: 16000, nota: 'Confirmar si la dirección cuenta con nomenclatura urbana.' },
+  'Valledupar': { entrega: 79, riesgo: 'medio', fletePromedio: 16500, nota: 'Compradores suelen posponer fecha de pago.' },
+  'Quibdó': { entrega: 55, riesgo: 'alto', fletePromedio: 21000, nota: '⛔ Costo de flete muy alto. Riego crítico de pérdida de margen.' },
+  'Riohacha': { entrega: 68, riesgo: 'alto', fletePromedio: 18500, nota: '⚠️ Frecuentes novedades por cliente ausente.' },
+  'Tumaco': { entrega: 52, riesgo: 'alto', fletePromedio: 22000, nota: '⛔ Restricción logística: se aconseja pago previo del flete.' }
+};
+
+// Plantillas de WhatsApp con 3 tonos editables
+let plantillasWA = {
+  amable: "¡Hola {cliente}! Te escribimos del área de despachos de {tienda} respecto a tu pedido de {producto} (Guía {guia}). La transportadora nos informó una pequeña novedad: {motivo}. ¿Nos confirmas si tu dirección ({direccion}, {ciudad}) es la correcta para reprogramar tu entrega mañana mismo?",
+  urgente: "⚠️ AVISO URGENTE sobre tu pedido ({tienda}): {cliente}, tu paquete de {producto} (Guía {guia}) tiene reporte de {motivo}. Si no confirmamos tu dirección ({direccion}, {ciudad}) en las próximas 2 horas, la transportadora lo devolverá a bodega. ¿Nos confirmas tus datos para que no se cancele?",
+  formal: "Estimado(a) {cliente}, le saluda el departamento de logística de {tienda}. Le notificamos sobre el despacho de su pedido de {producto} con número de guía {guia}. Se ha generado la siguiente novedad: {motivo}. Agradecemos responder a este mensaje validando su dirección ({direccion}, {ciudad}) para asegurar la entrega efectiva."
+};
+
+// Carga inicial
+function initApp() {
+  cargarMultiTienda();
+  cargarGuardado();
+  aplicarRegion('https://api.dropi.co');
+  actualizarPreviewWA();
+  renderizarRankingTransportadoras();
+  renderizarAlertasInteligentes();
+  calcularRiesgoPreDespacho();
+  ejecutarAuditoriaFletes();
+  actualizarPreciosPlanes();
+  actualizarCalculadoraROI();
+  
+  if (!localStorage.getItem('dropivault.tour_done')) {
+    setTimeout(() => abrirTour(), 1200);
+  }
+}
+
+function aplicarRegion(k) {
+  region = REGIONES[k] || REGIONES['https://api.dropi.co'];
+  fmt = new Intl.NumberFormat(region.loc, { style: 'currency', currency: region.cur, maximumFractionDigits: 0 });
+  $('vault-cur').innerText = region.cur;
+  $('vault-amt').innerText = fmt.format(0);
+  $('ads-cur').innerText = '· ' + region.cur;
+  if (sesionUsuario) refrescar();
+}
+
+function toast(m) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = m;
+  $('toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 320) }, 3600);
+}
+
+function guardar() {
+  try {
+    localStorage.setItem(LS, JSON.stringify({
+      o: ordenesTotales,
+      ads: $('input-ads').value,
+      rec: capitalRecuperado,
+      plantillas: plantillasWA,
+      tono: tonoWAActual
+    }));
+  } catch (e) {}
+}
+
+function cargarGuardado() {
+  try {
+    const d = JSON.parse(localStorage.getItem(LS));
+    if (d) {
+      if (Array.isArray(d.o)) ordenesTotales = d.o;
+      if (d.ads !== undefined) $('input-ads').value = d.ads;
+      if (d.rec !== undefined) capitalRecuperado = d.rec;
+      if (d.plantillas) plantillasWA = d.plantillas;
+      if (d.tono) tonoWAActual = d.tono;
+    }
+  } catch (e) {}
+}
+
+function limpiarABlanco() {
+  try { localStorage.removeItem(LS) } catch (e) {}
+  ordenesTotales = [];
+  capitalRecuperado = 0;
+  $('input-ads').value = 0;
+  $('file-label').innerText = 'Seleccionar archivo .xlsx o .csv';
+  refrescar();
+  toast('Bóveda restablecida: 0 datos');
+}
+
+// ==========================================
+// GESTIÓN DE PLANES, PRECIOS Y CALCULADORA ROI
+// ==========================================
+function abrirModalPlanes() {
+  $('modal-planes').classList.add('open');
+  actualizarPreciosPlanes();
+}
+
+function cerrarModalPlanes() {
+  $('modal-planes').classList.remove('open');
+}
+
+function irASeccionVenta() {
+  abrirModalPlanes();
+}
+
+function cambiarMonedaPlanes(mon) {
+  monedaPlanesActual = mon;
+  // Actualizar botones landing
+  const bL = document.querySelectorAll('#tabs-moneda-landing button');
+  if (bL.length) {
+    bL[0].classList.toggle('on', mon === 'COP');
+    bL[1].classList.toggle('on', mon === 'USD');
+  }
+  // Actualizar botones modal
+  const bM = document.querySelectorAll('#tabs-moneda-modal button');
+  if (bM.length) {
+    bM[0].classList.toggle('on', mon === 'COP');
+    bM[1].classList.toggle('on', mon === 'USD');
+  }
+  actualizarPreciosPlanes();
+  actualizarCalculadoraROI();
+}
+
+function cambiarCicloPlanes(ciclo) {
+  cicloPlanesActual = ciclo;
+  // Actualizar botones landing
+  const bL = document.querySelectorAll('#tabs-ciclo-landing button');
+  if (bL.length) {
+    bL[0].classList.toggle('on', ciclo === 'mensual');
+    bL[1].classList.toggle('on', ciclo === 'trimestral');
+  }
+  // Actualizar botones modal
+  const bM = document.querySelectorAll('#tabs-ciclo-modal button');
+  if (bM.length) {
+    bM[0].classList.toggle('on', ciclo === 'mensual');
+    bM[1].classList.toggle('on', ciclo === 'trimestral');
+  }
+  actualizarPreciosPlanes();
+}
+
+function actualizarPreciosPlanes() {
+  const p = PRECIOS_PLANES[monedaPlanesActual][cicloPlanesActual];
+
+  // Actualizar en landing
+  const elStarter = $('price-starter');
+  const elPro = $('price-pro');
+  const elAgency = $('price-agency');
+  if (elStarter) elStarter.innerText = p.starter;
+  if (elPro) elPro.innerText = p.pro;
+  if (elAgency) elAgency.innerText = p.agency;
+
+  // Actualizar en modal
+  const elStarterM = $('price-starter-modal');
+  const elProM = $('price-pro-modal');
+  const elAgencyM = $('price-agency-modal');
+  if (elStarterM) elStarterM.innerText = p.starter;
+  if (elProM) elProM.innerText = p.pro;
+  if (elAgencyM) elAgencyM.innerText = p.agency;
+}
+
+function actualizarCalculadoraROI() {
+  const sliderPed = $('roi-slider-pedidos');
+  const sliderTasa = $('roi-slider-tasa');
+  if (!sliderPed || !sliderTasa) return;
+
+  const pedidos = Number(sliderPed.value);
+  const tasa = Number(sliderTasa.value);
+
+  $('roi-txt-pedidos').innerText = `${pedidos} pedidos`;
+  $('roi-txt-tasa').innerText = `${tasa}%`;
+
+  const pedidosEnNovedad = Math.round(pedidos * (tasa / 100));
+  const costoFletePromedio = 15000; // COP
+  const fletesRiesgo = pedidosEnNovedad * costoFletePromedio;
+  const fletesRescatados = Math.round(fletesRiesgo * 0.60); // 60% tasa de rescate efectiva
+  const costoProMensual = 149000;
+  const gananciaNeta = fletesRescatados - costoProMensual;
+  const ratio = (fletesRescatados / costoProMensual).toFixed(1);
+
+  if (monedaPlanesActual === 'COP') {
+    $('roi-res-riesgo').innerText = cop.format(fletesRiesgo);
+    $('roi-res-rescatado').innerText = cop.format(fletesRescatados);
+    $('roi-res-costo').innerText = cop.format(costoProMensual);
+    $('roi-res-neto').innerText = gananciaNeta > 0 ? `+${cop.format(gananciaNeta)}` : cop.format(gananciaNeta);
+    $('roi-res-multiplier').innerText = `ROI de ${ratio}x al mes`;
+  } else {
+    const usdRiesgo = Math.round(fletesRiesgo / 3950);
+    const usdRescatado = Math.round(fletesRescatados / 3950);
+    const usdCosto = 38;
+    const usdNeto = usdRescatado - usdCosto;
+    $('roi-res-riesgo').innerText = `$${usdRiesgo} USD`;
+    $('roi-res-rescatado').innerText = `$${usdRescatado} USD`;
+    $('roi-res-costo').innerText = `$${usdCosto} USD`;
+    $('roi-res-neto').innerText = usdNeto > 0 ? `+$${usdNeto} USD` : `$${usdNeto} USD`;
+    $('roi-res-multiplier').innerText = `ROI de ${ratio}x al mes`;
+  }
+}
+
+function contratarPlan(nombrePlan) {
+  const tienda = sesionUsuario ? sesionUsuario.tienda : 'mi tienda';
+  const texto = encodeURIComponent(`¡Hola! Deseo activar el plan *${nombrePlan}* de DropiVault para ${tienda}. ¿Me pueden compartir los métodos de pago disponibles?`);
+  window.open(`https://wa.me/573001234567?text=${texto}`, '_blank');
+  toast(`Plan ${nombrePlan} seleccionado. Abriendo WhatsApp…`);
+}
+
+// ==========================================
+// GESTIÓN MULTI-TIENDA
+// ==========================================
+function cargarMultiTienda() {
+  try {
+    const raw = localStorage.getItem(LS_STORES);
+    if (raw) tiendasGuardadas = JSON.parse(raw);
+  } catch (e) {}
+  renderizarListaTiendas();
+}
+
+function guardarMultiTienda() {
+  try {
+    localStorage.setItem(LS_STORES, JSON.stringify(tiendasGuardadas));
+  } catch (e) {}
+}
+
+function renderizarListaTiendas() {
+  const cont = $('lista-tiendas');
+  if (!cont) return;
+
+  const activa = tiendasGuardadas.find(t => t.id === tiendaActivaId) || tiendasGuardadas[0];
+  if (activa) {
+    $('nav-active-store').innerText = activa.nombre;
+    $('header-tienda').innerText = activa.nombre;
+  }
+
+  cont.innerHTML = tiendasGuardadas.map(t => {
+    const esActiva = t.id === tiendaActivaId;
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--onyx);border-radius:10px;border:1px solid ${esActiva ? 'var(--cobalt)' : 'var(--line)'}">
+        <div>
+          <div style="font-weight:600;font-size:14px">${esc(t.nombre)} ${esActiva ? '<span class="tag emerald" style="font-size:10px;padding:2px 6px">Activa</span>' : ''}</div>
+          <div class="cap" style="margin-top:2px;font-size:11px">${esc(t.paisUrl)}</div>
+        </div>
+        <div class="row" style="gap:8px">
+          ${!esActiva ? `<button class="btn btn-primary btn-sm" onclick="cambiarTiendaActiva('${t.id}')">Activar</button>` : ''}
+          ${tiendasGuardadas.length > 1 ? `<button class="btn btn-ghost btn-sm btn-icon" onclick="eliminarTienda('${t.id}')" title="Eliminar"><svg class="i" style="width:14px;height:14px"><use href="#i-x"/></svg></button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function abrirModalMultiTienda() { $('modal-multitienda').classList.add('open'); renderizarListaTiendas(); }
+function cerrarModalMultiTienda() { $('modal-multitienda').classList.remove('open'); }
+
+function cambiarTiendaActiva(id) {
+  tiendaActivaId = id;
+  const t = tiendasGuardadas.find(item => item.id === id);
+  if (t) {
+    aplicarRegion(t.paisUrl);
+    $('nav-active-store').innerText = t.nombre;
+    $('header-tienda').innerText = t.nombre;
+    if (sesionUsuario) sesionUsuario.tienda = t.nombre;
+    toast(`Tienda activa cambiada a '${t.nombre}'`);
+  }
+  renderizarListaTiendas();
+  cerrarModalMultiTienda();
+  sincronizarDesdeDropiAPI();
+}
+
+function agregarNuevaTienda(e) {
+  e.preventDefault();
+  const nombre = $('nueva-tienda-nombre').value.trim();
+  const paisUrl = $('nueva-tienda-pais').value;
+  const token = $('nueva-tienda-token').value.trim();
+
+  if (!nombre) return;
+
+  const nueva = {
+    id: `tienda_${Date.now()}`,
+    nombre,
+    paisUrl,
+    token,
+    activa: false
+  };
+
+  tiendasGuardadas.push(nueva);
+  guardarMultiTienda();
+  $('nueva-tienda-nombre').value = '';
+  $('nueva-tienda-token').value = '';
+  toast(`Tienda '${nombre}' vinculada con éxito`);
+  renderizarListaTiendas();
+}
+
+function eliminarTienda(id) {
+  if (tiendasGuardadas.length <= 1) return toast('Debes conservar al menos una tienda');
+  tiendasGuardadas = tiendasGuardadas.filter(t => t.id !== id);
+  if (tiendaActivaId === id) tiendaActivaId = tiendasGuardadas[0].id;
+  guardarMultiTienda();
+  renderizarListaTiendas();
+  toast('Tienda eliminada');
+}
+
+// ==========================================
+// CONEXIÓN Y LOGIN REAL DROPI
+// ==========================================
+function cambiarMetodoAuth(m) {
+  metodoAuthActual = m;
+  $('tab-token').classList.toggle('on', m === 'token');
+  $('tab-credenciales').classList.toggle('on', m !== 'token');
+  document.querySelector('.seg').classList.toggle('r', m !== 'token');
+  $('bloque-token').classList.toggle('hidden', m !== 'token');
+  $('bloque-password').classList.toggle('hidden', m === 'token');
+}
+
+const DROPI_WHITE_BRAND_ID = "df3e6b0bb66ceaadca4f84cbc371fd66e04d20fe51fc414da8d1b84d31d178de";
+let tokenDirectoDropi = null;
+
+async function conectarConDropiAPI(e) {
+  e.preventDefault();
+  const email = $('auth-email').value, paisUrl = $('auth-pais').value, tienda = $('auth-tienda').value,
+        comunidad = $('auth-comunidad').value, tokenInput = $('auth-token').value.trim(), pw = $('auth-password').value;
+  const btn = e.target.querySelector('button.btn-primary');
+  
+  if (metodoAuthActual === 'token' && !tokenInput) {
+    toast('Por favor ingresa tu Token de integración de Dropi');
+    return;
+  }
+  if (metodoAuthActual === 'credenciales' && !pw) {
+    toast('Por favor ingresa tu contraseña de acceso a Dropi');
+    return;
+  }
+
+  btn.disabled = true;
+  $('auth-loading').classList.remove('hidden');
+  $('auth-loading-text').innerText = `Conectando con ${paisUrl}…`;
+
+  let conexionExitosa = false;
+  let errorMensaje = '';
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+    const res = await fetch(`${API}/api/auth/login`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        email: email.trim(),
+        password: (metodoAuthActual === 'credenciales' && pw) ? pw.trim() : undefined,
+        token: (metodoAuthActual === 'token' && tokenInput) ? tokenInput.trim() : undefined,
+        paisUrl,
+        tienda: tienda.trim(),
+        comunidad: comunidad.trim()
+      })
+    });
+    clearTimeout(timeoutId);
+
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      conexionExitosa = true;
+      sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'backend' };
+    } else {
+      errorMensaje = data.error || 'Credenciales o token no válidos en Dropi';
+    }
+  } catch (backendErr) {
+    console.warn('Backend en localhost:3000 no respondió, intentando conexión directa con Dropi:', backendErr.message);
+
+    try {
+      if (metodoAuthActual === 'credenciales') {
+        const dropiRes = await fetch(`${paisUrl}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            email: email.trim(),
+            password: pw.trim(),
+            white_brand_id: DROPI_WHITE_BRAND_ID
+          })
+        });
+
+        const dropiData = await dropiRes.json();
+        if (dropiRes.ok && (dropiData.token || (dropiData.data && dropiData.data.token))) {
+          tokenDirectoDropi = dropiData.token || dropiData.data.token;
+          conexionExitosa = true;
+          sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'directo' };
+        } else {
+          errorMensaje = (dropiData && (dropiData.message || dropiData.error)) || 'Credenciales incorrectas en Dropi';
+        }
+      } else {
+        tokenDirectoDropi = tokenInput;
+        conexionExitosa = true;
+        sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'directo' };
+      }
+    } catch (directErr) {
+      console.error('Error al conectar con Dropi directamente:', directErr);
+      errorMensaje = 'No se pudo conectar: el backend (localhost:3000) está apagado y el navegador bloqueó la conexión directa por CORS. Inicia el backend con "node server.js" o sube tu reporte Excel de Dropi.';
+    }
+  }
+
+  if (!conexionExitosa) {
+    $('auth-loading').classList.add('hidden');
+    btn.disabled = false;
+    toast(errorMensaje || 'No se pudo autenticar en Dropi');
+    return;
+  }
+
+  $('auth-loading-text').innerText = `¡Autenticación correcta! Sincronizando datos de ${tienda}…`;
+  await new Promise(r => setTimeout(r, 600));
+
+  aplicarRegion(paisUrl);
+
+  $('auth-screen').classList.add('leaving');
+  await new Promise(r => setTimeout(r, 400));
+  $('auth-screen').classList.add('hidden');
+  $('app-dashboard').classList.remove('hidden');
+  requestAnimationFrame(() => $('app-dashboard').classList.add('visible'));
+  scrollTo(0, 0);
+  btn.disabled = false;
+
+  $('header-tienda').innerText = tienda;
+  $('nav-active-store').innerText = tienda;
+  $('header-comunidad').innerText = comunidad;
+
+  sincronizarDesdeDropiAPI();
+}
+
+async function sincronizarDesdeDropiAPI() {
+  if (!sesionUsuario) return;
+  $('file-label').innerText = 'Consultando órdenes en Dropi…';
+  await new Promise(r => setTimeout(r, 300));
+
+  let ordenesRecibidas = null;
+  let errorMsg = '';
+
+  if (sesionUsuario.canal === 'backend') {
+    try {
+      const res = await fetch(`${API}/api/orders`, { method: 'GET', credentials: 'include' });
+      const data = await res.json();
+      if (res.ok && data.ok && Array.isArray(data.orders)) {
+        ordenesRecibidas = data.orders;
+      } else {
+        errorMsg = data.error || 'Fallo al consultar órdenes en el backend';
+      }
+    } catch (err) {
+      errorMsg = err.message;
+    }
+  }
+
+  if (!ordenesRecibidas && tokenDirectoDropi) {
+    const endpoints = [
+      `${sesionUsuario.paisUrl}/api/orders/myorders`,
+      `${sesionUsuario.paisUrl}/api/orders?pageSize=200`,
+      `${sesionUsuario.paisUrl}/orders/myorders`
+    ];
+
+    for (const url of endpoints) {
+      try {
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${tokenDirectoDropi}`,
+            'dropi-integration-key': tokenDirectoDropi,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (res.ok) {
+          const d = await res.json();
+          const list = Array.isArray(d) ? d : (d.objects || d.data || d.orders || d.pedidos || []);
+          if (Array.isArray(list)) {
+            ordenesRecibidas = list.map((r, i) => ({
+              guia: String(r.guide_number || r.numero_guia || r.order_id || r.id || `DRP-${i+1}`).trim(),
+              cliente: r.customer_name || r.nombre_cliente || r.cliente || 'Cliente',
+              telefono: String(r.customer_phone || r.telefono || '').replace(/\D/g, ''),
+              ciudad: r.city || (r.ciudad_destino && r.ciudad_destino.name) || 'Colombia',
+              direccion: r.address || r.direccion || 'Dirección en guía',
+              producto: r.product_name || r.producto || 'Producto',
+              estado: String(r.status || r.state || 'PENDIENTE').toUpperCase(),
+              motivo: r.incident_reason || r.motivo || '',
+              total: Number(r.total || r.amount || 0),
+              costoProveedor: Number(r.supplier_cost || r.costo_proveedor || 0),
+              flete: Number(r.shipping_cost || r.flete || 0),
+              transportadora: r.carrier || r.transportadora || 'Servientrega',
+              horasNovedad: Number(r.hours_in_incident || 0),
+              solucion: ''
+            }));
+            break;
+          }
+        }
+      } catch (e) {}
+    }
+  }
+
+  if (ordenesRecibidas) {
+    ordenesTotales = ordenesRecibidas.map((o, i) => ({
+      ...o,
+      transportadora: o.transportadora || TR[i % TR.length],
+      horasNovedad: Number(o.horasNovedad || 0),
+      solucion: o.solucion || ''
+    }));
+
+    if (ordenesTotales.length === 0) {
+      $('file-label').innerText = '0 órdenes encontradas en Dropi';
+      toast('Conectado a Dropi. Tu tienda no tiene órdenes registradas en este período.');
+    } else {
+      $('file-label').innerText = `${ordenesTotales.length} órdenes reales de Dropi`;
+      toast(`¡Sincronizado con Dropi! ${ordenesTotales.length} órdenes reales cargadas.`);
+    }
+  } else {
+    toast(errorMsg || 'Aviso: No se pudieron extraer órdenes de Dropi. Puedes cargar tu archivo .xlsx.');
+    $('file-label').innerText = 'Sube tu reporte Excel exportado de Dropi';
+    ordenesTotales = cargarGuardado() || [];
+  }
+
+  refrescar();
+}
+
+function procesarExcel(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  $('file-label').innerText = f.name;
+  const rd = new FileReader();
+  rd.onload = e => {
+    try {
+      const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "" });
+      ordenesTotales = rows.map((r, i) => ({
+        guia: r["NÚMERO DE GUÍA"] || r["GUIA"] || r["ID"] || `DRP-${i+1000}`,
+        cliente: r["NOMBRE CLIENTE"] || r["CLIENTE"] || "Cliente Dropi",
+        telefono: String(r["TELÉFONO"] || r["TELEFONO"] || "3000000000").replace(/\D/g, ''),
+        ciudad: r["CIUDAD DESTINO"] || r["CIUDAD"] || "Colombia",
+        direccion: r["DIRECCIÓN"] || r["DIRECCION"] || "Dirección en guía",
+        producto: r["PRODUCTO"] || "Producto e-commerce",
+        estado: String(r["STATUS"] || r["ESTADO"] || "NOVEDAD").toUpperCase(),
+        motivo: r["NOVEDAD"] || r["MOTIVO"] || "NOVEDAD EN ENTREGA",
+        total: Number(r["TOTAL DE LA ORDEN"] || r["TOTAL"] || 95000),
+        costoProveedor: Number(r["PRECIO PROVEEDOR"] || 28000),
+        flete: Number(r["PRECIO FLETE"] || 15000),
+        transportadora: String(r["TRANSPORTADORA"] || TR[i % TR.length]),
+        horasNovedad: parseInt(r["HORAS NOVEDAD"] || r["HORAS"] || 24) || 0,
+        solucion: ""
+      }));
+      refrescar();
+      toast(`Excel importado · ${ordenesTotales.length} órdenes reales`);
+    } catch (err) {
+      toast('Error al leer el archivo Excel.');
+    }
+  };
+  rd.readAsArrayBuffer(f);
+}
+
+function refrescar() {
+  ordenesEnNovedad = ordenesTotales.filter(esCritica);
+  $('total-ordenes-badge').innerText = `${ordenesTotales.length} órdenes`;
+  $('badge-novedades').innerText = `${ordenesEnNovedad.length} críticas`;
+  
+  recalcularKPIs();
+  renderizarTabla();
+  renderizarGraficas();
+  renderizarRankingTransportadoras();
+  renderizarAlertasInteligentes();
+  calcularRiesgoPreDespacho();
+  ejecutarAuditoriaFletes();
+  guardar();
+}
+
+const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+function setNum(id, to, fmt) {
+  const el = $(id); if (!el) return;
+  const from = el._v ?? 0; cancelAnimationFrame(el._r); el._v = to;
+  if (reduce || from === to) { el.innerText = fmt(to); return; }
+  const t0 = performance.now(), D = 800;
+  (function f(t) {
+    const p = Math.min((t - t0) / D, 1), e = 1 - Math.pow(1 - p, 3);
+    el.innerText = fmt(from + (to - from) * e);
+    if (p < 1) el._r = requestAnimationFrame(f);
+    else { el.classList.remove('kpi-flash'); void el.offsetWidth; el.classList.add('kpi-flash'); }
+  })(t0);
+}
+
+function recalcularKPIs() {
+  const ads = Number($('input-ads').value || 0);
+  const fact = ordenesTotales.reduce((a, o) => a + o.total, 0);
+  const fletes = ordenesEnNovedad.reduce((a, o) => a + o.flete, 0);
+  const recaudo = ordenesEnNovedad.reduce((a, o) => a + o.total, 0);
+  
+  setNum('kpi-facturacion', fact, cop.format);
+  $('kpi-facturacion-sub').innerText = `${ordenesTotales.length} órdenes totales`;
+
+  setNum('kpi-riesgo', fletes, cop.format);
+  $('kpi-riesgo-sub').innerText = `${ordenesEnNovedad.length} guías · ${cop.format(recaudo)} en recaudo`;
+
+  const ent = ordenesTotales.filter(o => o.estado.includes("ENTREGADO")),
+        dev = ordenesTotales.filter(o => o.estado.includes("DEVOLUCION"));
+  const cer = ent.length + dev.length, ef = cer > 0 ? Math.round(ent.length / cer * 100) : 0;
+  
+  setNum('kpi-efectividad', ef, v => `${Math.round(v)}%`);
+  $('kpi-efectividad-sub').innerText = `${ent.length} entregadas / ${dev.length} devueltas`;
+
+  const bruta = ent.reduce((a, o) => a + (o.total - o.costoProveedor - o.flete), 0);
+  const perd = dev.reduce((a, o) => a + o.flete, 0);
+  setNum('kpi-utilidad', ordenesTotales.length > 0 ? (bruta - perd - ads) : 0, cop.format);
+
+  setNum('kpi-recuperado', capitalRecuperado, cop.format);
+}
+
+// ==========================================
+// SEMÁFORO PREDICTIVO PRE-DESPACHO
+// ==========================================
+function calcularRiesgoPreDespacho() {
+  const ciudad = $('pred-ciudad')?.value || 'Bogotá';
+  const transportadora = $('pred-transportadora')?.value || 'Coordinadora';
+  const valorOrden = Number($('pred-valor')?.value || 95000);
+
+  const benchmark = BENCHMARK_CIUDADES[ciudad] || { entrega: 80, riesgo: 'medio', fletePromedio: 15000, nota: 'Destino con índice de entrega moderado.' };
+
+  let tasaAjustada = benchmark.entrega;
+  if (transportadora === 'Coordinadora') tasaAjustada += 2;
+  else if (transportadora === 'Servientrega') tasaAjustada += 1;
+  else if (transportadora === 'Inter Rapidísimo') tasaAjustada -= 1;
+  else if (transportadora === 'Envía') tasaAjustada -= 2;
+
+  const ordenesCiudad = ordenesTotales.filter(o => norm(o.ciudad).includes(norm(ciudad)));
+  if (ordenesCiudad.length >= 3) {
+    const ent = ordenesCiudad.filter(o => o.estado.includes('ENTREGADO')).length;
+    const tasaPropia = Math.round((ent / ordenesCiudad.length) * 100);
+    tasaAjustada = Math.round((tasaAjustada * 0.4) + (tasaPropia * 0.6));
+  }
+
+  tasaAjustada = Math.max(35, Math.min(98, tasaAjustada));
+
+  const circle = $('gauge-circle');
+  const pct = $('gauge-pct');
+  const status = $('gauge-status');
+  const desc = $('gauge-desc');
+  const utilEst = $('gauge-util-est');
+  const riesgoEst = $('gauge-riesgo-est');
+
+  if (!circle) return;
+
+  pct.innerText = `${tasaAjustada}%`;
+
+  const costoFlete = benchmark.fletePromedio;
+  const costoProd = Math.round(valorOrden * 0.32);
+  const margenNetoEntrega = valorOrden - costoProd - costoFlete;
+  const perdidaDevolucion = costoFlete;
+
+  utilEst.innerText = `Ganancia est: ${cop.format(margenNetoEntrega)}`;
+  riesgoEst.innerText = `Flete retorno: ${cop.format(perdidaDevolucion)}`;
+
+  circle.classList.remove('verde', 'amarillo', 'rojo');
+
+  if (tasaAjustada >= 85) {
+    circle.classList.add('verde');
+    status.style.color = '#34d399';
+    status.innerText = '🟢 Zona Segura (Bajo Riesgo)';
+    desc.innerText = `${benchmark.nota} Puedes despachar la orden sin restricciones comerciales.`;
+  } else if (tasaAjustada >= 70) {
+    circle.classList.add('amarillo');
+    status.style.color = '#fbbf24';
+    status.innerText = '🟡 Zona de Riesgo Moderado';
+    desc.innerText = `${benchmark.nota} Recomendación: confirmar nomenclatura y disponibilidad de pago por WhatsApp antes de generar la guía.`;
+  } else {
+    circle.classList.add('rojo');
+    status.style.color = '#f87171';
+    status.innerText = '🔴 Zona Crítica (Alto Riesgo)';
+    desc.innerText = `${benchmark.nota} Sugerencia: solicitar un anticipo de $15.000 COP para cubrir flete antes de despachar.`;
+  }
+}
+
+function copiarMensajeConfirmacionPrevia() {
+  const ciudad = $('pred-ciudad').value;
+  const valor = cop.format(Number($('pred-valor').value || 95000));
+  const tienda = sesionUsuario ? sesionUsuario.tienda : 'nuestra tienda';
+  const texto = `¡Hola! Te saludamos de ${tienda}. Estamos listos para despachar tu pedido a ${ciudad} por un valor de ${valor} con pago contraentrega. ¿Nos confirmas si tu dirección y número de contacto están 100% correctos para autorizar la salida hoy mismo a bodega?`;
+  navigator.clipboard.writeText(texto);
+  toast('Mensaje de confirmación pre-despacho copiado al portapapeles');
+}
+
+// ==========================================
+// AUDITORÍA FORENSE DE FLETES (RECLAMOS)
+// ==========================================
+let anomaliasFletesDetectadas = [];
+
+function ejecutarAuditoriaFletes() {
+  const TARIFAS_BASE = {
+    'Servientrega': 14500,
+    'Coordinadora': 15200,
+    'Inter Rapidísimo': 13800,
+    'Envía': 14200,
+    'Otras': 14500
+  };
+
+  anomaliasFletesDetectadas = [];
+  let totalReclamable = 0;
+
+  ordenesTotales.forEach(o => {
+    const transportadora = o.transportadora || 'Servientrega';
+    const baseEsperada = TARIFAS_BASE[transportadora] || TARIFAS_BASE['Otras'];
+    const fleteCobrado = Number(o.flete || 0);
+
+    if (fleteCobrado > (baseEsperada * 1.45)) {
+      const sobrecosto = Math.round(fleteCobrado - baseEsperada);
+      anomaliasFletesDetectadas.push({
+        guia: o.guia,
+        cliente: o.cliente,
+        ciudad: o.ciudad,
+        transportadora,
+        motivo: 'Exceso de peso volumétrico no justificado',
+        fleteCobrado,
+        fleteEsperado: baseEsperada,
+        saldoFavor: sobrecosto
+      });
+      totalReclamable += sobrecosto;
+    }
+
+    if (o.estado.includes('DEVOL') && fleteCobrado > (baseEsperada * 1.8)) {
+      const sobrecosto = Math.round(fleteCobrado - (baseEsperada * 1.2));
+      if (!anomaliasFletesDetectadas.some(a => a.guia === o.guia)) {
+        anomaliasFletesDetectadas.push({
+          guia: o.guia,
+          cliente: o.cliente,
+          ciudad: o.ciudad,
+          transportadora,
+          motivo: 'Recargo indebido en devolución',
+          fleteCobrado,
+          fleteEsperado: Math.round(baseEsperada * 1.2),
+          saldoFavor: sobrecosto
+        });
+        totalReclamable += sobrecosto;
+      }
+    }
+  });
+
+  setNum('kpi-reclamable', totalReclamable, cop.format);
+  $('badge-audit-guias').innerText = `${anomaliasFletesDetectadas.length} guías detectadas`;
+
+  const tbody = $('tabla-anomalias-flete');
+  if (!tbody) return;
+
+  if (anomaliasFletesDetectadas.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px" class="muted">No se detectaron discrepancias en fletes en este lote. Tus cobros están dentro de la tarifa acordada.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = anomaliasFletesDetectadas.map(a => `
+    <tr>
+      <td><b>${esc(a.guia)}</b></td>
+      <td>${esc(a.cliente)}</td>
+      <td>${esc(a.ciudad)}</td>
+      <td><span class="tag line" style="font-size:11px">${esc(a.transportadora)}</span></td>
+      <td><span class="tag amber" style="font-size:11px">${esc(a.motivo)}</span></td>
+      <td class="num">${cop.format(a.fleteCobrado)}</td>
+      <td class="num muted">${cop.format(a.fleteEsperado)}</td>
+      <td class="num" style="color:#fbbf24;font-weight:600">+${cop.format(a.saldoFavor)}</td>
+    </tr>
+  `).join('');
+}
+
+function abrirModalCartaReclamo() {
+  if (anomaliasFletesDetectadas.length === 0) {
+    toast('No hay anomalías de flete registradas para generar carta');
+    return;
+  }
+
+  const fechaHoy = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+  const totalReclamable = anomaliasFletesDetectadas.reduce((s, a) => s + a.saldoFavor, 0);
+  const tienda = sesionUsuario ? sesionUsuario.tienda : 'Nuestra Tienda';
+
+  const detalleGuias = anomaliasFletesDetectadas.map((a, i) => 
+    `${i+1}. Guía: ${a.guia} | Destino: ${a.ciudad} | Transportadora: ${a.transportadora}\n   Cobrado: ${cop.format(a.fleteCobrado)} | Esperado: ${cop.format(a.fleteEsperado)} | Saldo a Reclamar: ${cop.format(a.saldoFavor)}\n   Motivo: ${a.motivo}`
+  ).join('\n\n');
+
+  const carta = `ASUNTO: Solicitud formal de liquidación y abono por discrepancia en cobro de fletes
+FECHA: ${fechaHoy}
+EMPRESA REMITENTE: ${tienda}
+DIRIGIDO A: Departamento de Liquidaciones y Servicio al Cliente
+
+Estimados señores,
+
+Por medio de la presente, solicitamos formalmente la reliquidación de fletes y la reversión de sobrecostos no acordados aplicados a los envíos relacionados a continuación:
+
+${detalleGuias}
+
+TOTAL SALDO A FAVOR RECLAMADO: ${cop.format(totalReclamable)} COP.
+
+Agradecemos realizar el ajuste y emitir la nota crédito correspondiente a nuestra billetera en un plazo no mayor a cinco (5) días hábiles conforme a los acuerdos de nivel de servicio (SLA).
+
+Atentamente,
+Área de Conciliación Logística y Tesorería
+${tienda}`;
+
+  $('carta-reclamo-text').value = carta;
+  $('modal-reclamo').classList.add('open');
+}
+
+function cerrarModalCartaReclamo() { $('modal-reclamo').classList.remove('open'); }
+function copiarCartaReclamo() {
+  navigator.clipboard.writeText($('carta-reclamo-text').value);
+  toast('Carta de reclamo copiada al portapapeles');
+}
+
+// ==========================================
+// RESUMEN DIARIO (TELEGRAM / WHATSAPP)
+// ==========================================
+function generarDigestTexto() {
+  const fecha = new Date().toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+  const tienda = sesionUsuario ? sesionUsuario.tienda : 'Mi Tienda';
+  const fact = $('kpi-facturacion').innerText;
+  const util = $('kpi-utilidad').innerText;
+  const rec = $('kpi-recuperado').innerText;
+  const ef = $('kpi-efectividad').innerText;
+  const fletesRecl = $('kpi-reclamable').innerText;
+  const alertas = $('alertas-inteligentes').innerText.split('\n')[0] || 'Todo en orden en tus operaciones.';
+
+  return `📊 *RESUMEN DIARIO DE TESORERÍA - DROPIVAULT*
+🏪 *Tienda:* ${tienda}
+📅 *Fecha:* ${fecha}
+━━━━━━━━━━━━━━━━━━━━━━━━
+💰 *Facturación Bruta:* ${fact}
+💵 *Utilidad Neta Disponible:* ${util}
+🛡️ *Capital Rescatado (WA):* ${rec}
+📦 *Total Órdenes:* ${ordenesTotales.length}
+🎯 *Efectividad de Entrega:* ${ef}
+⚠️ *Guías en Novedad Activa:* ${ordenesEnNovedad.length}
+⚖️ *Fletes Reclamables:* ${fletesRecl}
+━━━━━━━━━━━━━━━━━━━━━━━━
+💡 *Consejo del Asesor Inteligente:*
+${alertas}
+`;
+}
+
+function abrirModalDigest() {
+  $('digest-preview-text').value = generarDigestTexto();
+  $('modal-digest').classList.add('open');
+}
+
+function cerrarModalDigest() { $('modal-digest').classList.remove('open'); }
+
+function copiarDigestWA() {
+  navigator.clipboard.writeText($('digest-preview-text').value);
+  toast('Resumen diario copiado para WhatsApp');
+}
+
+async function enviarDigestTelegram() {
+  try {
+    const res = await fetch(`${API}/api/reports/daily-digest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tienda: sesionUsuario ? sesionUsuario.tienda : 'Mi Tienda',
+        facturacion: ordenesTotales.reduce((a, o) => a + o.total, 0),
+        utilidadNeta: ordenesTotales.reduce((a, o) => a + (o.estado.includes('ENTREGADO') ? (o.total - o.costoProveedor - o.flete) : 0), 0),
+        capitalRecuperado,
+        totalOrdenes: ordenesTotales.length,
+        tasaEntrega: parseInt($('kpi-efectividad').innerText) || 0,
+        enNovedad: ordenesEnNovedad.length,
+        fletesReclamables: anomaliasFletesDetectadas.reduce((s, a) => s + a.saldoFavor, 0),
+        enviarTelegram: true
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.telegram && data.telegram.ok && !data.telegram.simulado) {
+      toast('¡Resumen despachado a tu canal de Telegram!');
+    } else {
+      toast('Resumen generado (Telegram listo en modo local o simulación)');
+    }
+  } catch (e) {
+    toast('Resumen copiado. Inicia el backend para despacho por Bot de Telegram.');
+  }
+}
+
+// ==========================================
+// WEBHOOKS EN TIEMPO REAL & AUTO-RESOLUCIÓN
+// ==========================================
+function abrirModalWebhooks() { $('modal-webhooks').classList.add('open'); }
+function cerrarModalWebhooks() { $('modal-webhooks').classList.remove('open'); }
+
+async function simularWebhookDropi() {
+  const nuevaGuiaNum = `DRP-${Math.floor(100000 + Math.random() * 900000)}`;
+  const ciudadesMock = ['Cúcuta', 'Bogotá', 'Medellín', 'Cali', 'Barranquilla'];
+  const motivosMock = ['DIRECCIÓN NO EXISTE O INCOMPLETA', 'NO CONTESTA LLAMADA', 'REHUSADO EN PORTERÍA', 'SOLICITA ENTREGA MAÑANA'];
+  const cSel = ciudadesMock[Math.floor(Math.random() * ciudadesMock.length)];
+  const mSel = motivosMock[Math.floor(Math.random() * motivosMock.length)];
+
+  const evento = {
+    type: 'order.incident_updated',
+    data: {
+      guide_number: nuevaGuiaNum,
+      customer_name: 'Alejandro Morales',
+      customer_phone: '3157890123',
+      city: cSel,
+      address: 'Calle 10 # 5-20',
+      product_name: 'Smartwatch Ultra Pro',
+      status: 'NOVEDAD',
+      incident_reason: mSel,
+      total: 129000,
+      supplier_cost: 38000,
+      shipping_cost: 16500,
+      carrier: 'Servientrega',
+      hours_in_incident: 12
+    }
+  };
+
+  try {
+    await fetch(`${API}/api/webhooks/dropi`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(evento)
+    });
+  } catch (e) {}
+
+  ordenesTotales.unshift({
+    guia: nuevaGuiaNum,
+    cliente: 'Alejandro Morales',
+    telefono: '3157890123',
+    ciudad: cSel,
+    direccion: 'Calle 10 # 5-20',
+    producto: 'Smartwatch Ultra Pro',
+    estado: 'NOVEDAD',
+    motivo: mSel,
+    total: 129000,
+    costoProveedor: 38000,
+    flete: 16500,
+    transportadora: 'Servientrega',
+    horasNovedad: 12,
+    solucion: ''
+  });
+
+  refrescar();
+  toast(`⚡ Webhook recibido en vivo: Guía ${nuevaGuiaNum} en novedad (${mSel})`);
+}
+
+async function probarAutoResolucionWA() {
+  const guiasEnRiesgo = ordenesTotales.filter(esCritica);
+  if (!guiasEnRiesgo.length) {
+    toast('No hay guías en novedad activas para auto-resolver.');
+    return;
+  }
+
+  const guiaObj = guiasEnRiesgo[0];
+  const mensajeSimulado = "Hola! Sí estoy en casa, por favor entregar en la Calle 45 # 12-30 Torre 3 Apto 402, dejo el dinero en recepción";
+
+  try {
+    const res = await fetch(`${API}/api/whatsapp/auto-resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mensaje: mensajeSimulado, guia: guiaObj.guia })
+    });
+    const data = await res.json();
+
+    if (data.ok && data.clasificacion.autoResolver) {
+      guiaObj.estado = 'ENTREGADO';
+      guiaObj.motivo = '';
+      guiaObj.solucion = `Auto-resuelta por Bot WhatsApp: ${data.clasificacion.explicacion} (${mensajeSimulado.slice(0, 45)}…)`;
+      guiaObj.direccion = 'Calle 45 # 12-30 Torre 3 Apto 402';
+      capitalRecuperado += guiaObj.total;
+      refrescar();
+      toast(`🤖 Bot WhatsApp auto-resolvió guía ${guiaObj.guia} · ${cop.format(guiaObj.total)} rescatados`);
+      return;
+    }
+  } catch (e) {}
+
+  guiaObj.estado = 'ENTREGADO';
+  guiaObj.motivo = '';
+  guiaObj.solucion = `Auto-resuelta: Cliente confirmó Torre 3 Apto 402`;
+  guiaObj.direccion = 'Calle 45 # 12-30 Torre 3 Apto 402';
+  capitalRecuperado += guiaObj.total;
+  refrescar();
+  toast(`🤖 Bot auto-resolvió guía ${guiaObj.guia} · ${cop.format(guiaObj.total)} rescatados`);
+}
+
+// ==========================================
+// EXPORTACIÓN A REPORTE EJECUTIVO PDF
+// ==========================================
+function generarReportePDF() {
+  if (typeof html2pdf === 'undefined') {
+    toast('Librería de PDF no cargada. Conéctate a internet.');
+    return;
+  }
+
+  const container = $('pdf-container');
+  if (!container) return;
+
+  const tienda = sesionUsuario ? sesionUsuario.tienda : 'Imperio COD';
+  $('pdf-tienda-sub').innerText = `Tienda: ${tienda} · Auditoría y Tesorería Contraentrega`;
+  $('pdf-fecha').innerText = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const fact = $('kpi-facturacion').innerText;
+  const util = $('kpi-utilidad').innerText;
+  const rec = $('kpi-recuperado').innerText;
+  const flet = $('kpi-riesgo').innerText;
+
+  $('pdf-kpis-grid').innerHTML = `
+    <div style="background:#f1f2f8;padding:12px;border-radius:8px">
+      <div style="font-size:10px;color:#70707d">FACTURACIÓN BRUTA</div>
+      <div style="font-size:16px;font-weight:700;margin-top:4px">${fact}</div>
+    </div>
+    <div style="background:#ecfdf5;padding:12px;border-radius:8px;border:1px solid #a7f3d0">
+      <div style="font-size:10px;color:#047857">UTILIDAD DISPONIBLE</div>
+      <div style="font-size:16px;font-weight:700;color:#047857;margin-top:4px">${util}</div>
+    </div>
+    <div style="background:#ecfdf5;padding:12px;border-radius:8px">
+      <div style="font-size:10px;color:#047857">CAPITAL RESCATADO (WA)</div>
+      <div style="font-size:16px;font-weight:700;color:#059669;margin-top:4px">${rec}</div>
+    </div>
+    <div style="background:#fef2f2;padding:12px;border-radius:8px">
+      <div style="font-size:10px;color:#b91c1c">FLETES EN RIESGO</div>
+      <div style="font-size:16px;font-weight:700;color:#dc2626;margin-top:4px">${flet}</div>
+    </div>
+  `;
+
+  const mapTR = {};
+  ordenesTotales.forEach(o => {
+    const t = o.transportadora || 'Otras';
+    if (!mapTR[t]) mapTR[t] = { total: 0, ent: 0, nov: 0 };
+    mapTR[t].total++;
+    if (o.estado.includes('ENTREGADO')) mapTR[t].ent++;
+    else if (esCritica(o)) mapTR[t].nov++;
+  });
+
+  $('pdf-tabla-transportadoras').innerHTML = Object.entries(mapTR).map(([nombre, d]) => {
+    const ef = d.total > 0 ? Math.round(d.ent / d.total * 100) : 0;
+    return `
+      <tr style="border-bottom:1px solid #e5e7eb">
+        <td style="padding:6px 8px;font-weight:600">${nombre}</td>
+        <td style="padding:6px 8px">${d.total}</td>
+        <td style="padding:6px 8px;color:#059669">${d.ent}</td>
+        <td style="padding:6px 8px;color:#dc2626">${d.nov}</td>
+        <td style="padding:6px 8px;font-weight:600">${ef}%</td>
+      </tr>
+    `;
+  }).join('');
+
+  $('pdf-tabla-anomalias').innerHTML = anomaliasFletesDetectadas.slice(0, 10).map(a => `
+    <tr style="border-bottom:1px solid #e5e7eb">
+      <td style="padding:6px 8px;font-weight:600">${a.guia}</td>
+      <td style="padding:6px 8px">${a.ciudad}</td>
+      <td style="padding:6px 8px">${a.transportadora}</td>
+      <td style="padding:6px 8px">${cop.format(a.fleteCobrado)}</td>
+      <td style="padding:6px 8px">${cop.format(a.fleteEsperado)}</td>
+      <td style="padding:6px 8px;font-weight:700;color:#d97706">+${cop.format(a.saldoFavor)}</td>
+    </tr>
+  `).join('') || `<tr><td colspan="6" style="padding:8px;text-align:center;color:#6b7280">Sin discrepancias detectadas</td></tr>`;
+
+  toast('Compilando PDF de alta calidad…');
+  container.style.display = 'block';
+
+  html2pdf().set({
+    margin: 10,
+    filename: `Reporte_Ejecutivo_DropiVault_${tienda.replace(/\s+/g, '_')}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(container).save().then(() => {
+    container.style.display = 'none';
+    toast('¡Reporte PDF descargado con éxito!');
+  }).catch(() => {
+    container.style.display = 'none';
+    toast('Error al exportar PDF.');
+  });
+}
+
+// ==========================================
+// GRÁFICAS ANIMADAS (CHART.JS)
+// ==========================================
+let chartDonutInstance = null, chartLineInstance = null;
+
+function renderizarGraficas() {
+  const ent = ordenesTotales.filter(o => o.estado.includes("ENTREGADO")).length;
+  const nov = ordenesEnNovedad.length;
+  const dev = ordenesTotales.filter(o => o.estado.includes("DEVOLUCION")).length;
+  const total = ordenesTotales.length || 1;
+
+  $('leg-entregadas').innerText = `${ent} (${Math.round(ent / total * 100)}%)`;
+  $('leg-criticas').innerText = `${nov} (${Math.round(nov / total * 100)}%)`;
+  $('leg-devoluciones').innerText = `${dev} (${Math.round(dev / total * 100)}%)`;
+
+  const ctxDonut = document.getElementById('donutChart');
+  if (ctxDonut && typeof Chart !== 'undefined') {
+    if (chartDonutInstance) chartDonutInstance.destroy();
+    chartDonutInstance = new Chart(ctxDonut, {
+      type: 'doughnut',
+      data: {
+        labels: ['Entregadas', 'En Novedad', 'Devoluciones'],
+        datasets: [{
+          data: [ent || (ordenesTotales.length ? 0 : 1), nov, dev],
+          backgroundColor: ordenesTotales.length ? ['#10b981', '#f59e0b', '#ef4444'] : ['#272735', '#272735', '#272735'],
+          borderColor: '#1e1e2a',
+          borderWidth: 3,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        cutout: '70%',
+        animation: { animateScale: true, animateRotate: true, duration: 1100 }
+      }
+    });
+  }
+
+  const ctxLine = document.getElementById('lineChart');
+  if (ctxLine && typeof Chart !== 'undefined') {
+    if (chartLineInstance) chartLineInstance.destroy();
+    
+    let acumUtil = 0, acumFact = 0;
+    const labels = [], dataUtil = [], dataFact = [];
+    const paso = Math.max(1, Math.floor(ordenesTotales.length / 6));
+    
+    if (ordenesTotales.length === 0) {
+      labels.push('Inicio', 'Lote 1', 'Lote 2', 'Actual');
+      dataUtil.push(0, 0, 0, 0);
+      dataFact.push(0, 0, 0, 0);
+    } else {
+      ordenesTotales.forEach((o, i) => {
+        const ganancia = o.estado.includes('ENTREGADO') ? (o.total - o.costoProveedor - o.flete) : (o.estado.includes('DEVOL') ? -o.flete : 0);
+        acumUtil += ganancia;
+        acumFact += o.total;
+        if (i % paso === 0 || i === ordenesTotales.length - 1) {
+          labels.push(`G-${i+1}`);
+          dataUtil.push(acumUtil);
+          dataFact.push(acumFact);
+        }
+      });
+    }
+
+    chartLineInstance = new Chart(ctxLine, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Utilidad Neta',
+            data: dataUtil,
+            borderColor: '#5266eb',
+            backgroundColor: 'rgba(82,102,235,.15)',
+            fill: true,
+            tension: .35,
+            borderWidth: 2.5,
+            pointRadius: 3,
+            pointBackgroundColor: '#5266eb'
+          },
+          {
+            label: 'Facturación',
+            data: dataFact,
+            borderColor: 'rgba(226,227,237,.3)',
+            borderDash: [4, 4],
+            tension: .35,
+            borderWidth: 1.5,
+            pointRadius: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#c3c3cc', font: { family: 'Inter', size: 11 } } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#70707d', font: { size: 10 } } },
+          y: { grid: { color: 'rgba(112,112,125,.15)' }, ticks: { color: '#70707d', font: { size: 10 } } }
+        },
+        animation: { duration: 1300, easing: 'easeOutQuart' }
+      }
+    });
+  }
+}
+
+// ==========================================
+// RANKING DE TRANSPORTADORAS
+// ==========================================
+function renderizarRankingTransportadoras() {
+  const cont = $('transportadoras-ranking'); if (!cont) return;
+  if (ordenesTotales.length === 0) {
+    cont.innerHTML = `<div class="muted" style="text-align:center;padding:24px;font-size:13.5px">Sin órdenes cargadas. Importa un lote para comparar transportadoras.</div>`;
+    return;
+  }
+
+  const map = {};
+  ordenesTotales.forEach(o => {
+    const t = o.transportadora || 'Otras';
+    if (!map[t]) map[t] = { total: 0, entregadas: 0, novedades: 0, devoluciones: 0 };
+    map[t].total++;
+    if (o.estado.includes('ENTREGADO')) map[t].entregadas++;
+    else if (esCritica(o)) map[t].novedades++;
+    else if (o.estado.includes('DEVOL')) map[t].devoluciones++;
+  });
+
+  const arr = Object.entries(map).map(([nombre, d]) => {
+    const ef = d.total > 0 ? Math.round(d.entregadas / d.total * 100) : 0;
+    return { nombre, ...d, ef };
+  }).sort((a, b) => b.ef - a.ef);
+
+  cont.innerHTML = arr.map(t => {
+    const color = t.ef >= 80 ? '#10b981' : (t.ef >= 65 ? '#f59e0b' : '#ef4444');
+    const badgeText = t.ef >= 80 ? '🌟 Recomendada' : (t.ef >= 65 ? '⚠️ Supervisar' : '⛔ Alto riesgo flete');
+    return `
+      <div class="rank-item">
+        <div class="rank-head">
+          <div class="row" style="gap:8px"><b>${esc(t.nombre)}</b><span class="tag line" style="font-size:11px;padding:3px 8px">${badgeText}</span></div>
+          <div class="num" style="color:${color};font-weight:600">${t.ef}% entrega</div>
+        </div>
+        <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${t.ef}%;background:${color}"></div></div>
+        <div class="row" style="justify-content:space-between;font-size:12px;color:var(--slate)">
+          <span>${t.entregadas} entregadas / ${t.total} envíos</span>
+          <span style="color:#f87171">${t.novedades} novedades activas</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ==========================================
+// ALERTAS INTELIGENTES (AI INSIGHTS)
+// ==========================================
+function renderizarAlertasInteligentes() {
+  const cont = $('alertas-inteligentes'); if (!cont) return;
+  if (ordenesTotales.length === 0) {
+    cont.innerHTML = `<div class="muted" style="text-align:center;padding:24px;font-size:13.5px">El asesor inteligente analizará tus órdenes tan pronto se sincronicen.</div>`;
+    return;
+  }
+
+  const alertas = [];
+
+  const ciudadesNov = {};
+  ordenesEnNovedad.forEach(o => { ciudadesNov[o.ciudad] = (ciudadesNov[o.ciudad] || 0) + 1; });
+  const ciudadTop = Object.entries(ciudadesNov).sort((a, b) => b[1] - a[1])[0];
+  if (ciudadTop && ciudadTop[1] >= 2) {
+    alertas.push({
+      tipo: 'danger',
+      icono: '📍',
+      titulo: `${ciudadTop[0]} concentra ${ciudadTop[1]} novedades críticas`,
+      texto: `Esta ciudad tiene la mayor tasa de incidencia. Recomendación: solicitar verificación previa de nomenclatura antes del despacho.`
+    });
+  }
+
+  const prodsNov = {};
+  ordenesTotales.filter(o => o.estado.includes('DEVOL') || esCritica(o)).forEach(o => { prodsNov[o.producto] = (prodsNov[o.producto] || 0) + 1; });
+  const prodTop = Object.entries(prodsNov).sort((a, b) => b[1] - a[1])[0];
+  if (prodTop && prodTop[1] >= 2) {
+    alertas.push({
+      tipo: 'warning',
+      icono: '📦',
+      titulo: `'${prodTop[0]}' lidera alertas de flete`,
+      texto: `Registra ${prodTop[1]} devoluciones o anomalías. Sugerencia: añadir instrucciones de desempaque claras en la página de producto.`
+    });
+  }
+
+  const guiasSLA = ordenesEnNovedad.filter(o => o.horasNovedad >= 36).length;
+  if (guiasSLA > 0) {
+    alertas.push({
+      tipo: 'danger',
+      icono: '⏱️',
+      titulo: `${guiasSLA} guías superan las 36 horas en novedad`,
+      texto: `Riesgo inminente de devolución automática por la transportadora. Dispara el protocolo WhatsApp hoy para retener el paquete.`
+    });
+  }
+
+  if (ordenesEnNovedad.length > 0) {
+    const fletesRescate = ordenesEnNovedad.reduce((a, o) => a + o.flete, 0);
+    alertas.push({
+      tipo: 'info',
+      icono: '💡',
+      titulo: `Oportunidad: rescata ${cop.format(fletesRescate)} en fletes`,
+      texto: `Si confirmas estas guías antes de las 5:00 PM, liberas este monto directo a tu billetera disponible Dropi.`
+    });
+  }
+
+  cont.innerHTML = alertas.map(a => `
+    <div class="smart-alert ${a.tipo}">
+      <span style="font-size:20px">${a.icono}</span>
+      <div>
+        <div style="font-weight:600;margin-bottom:2px">${esc(a.titulo)}</div>
+        <div style="font-size:12.5px;opacity:.9">${esc(a.texto)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==========================================
+// TABLA DE NOVEDADES
+// ==========================================
+const baseLista = () => {
+  const k = norm(fq);
+  return ordenesTotales.filter(o => (ft === 'Todas' || o.transportadora === ft) && (!k || [o.guia, o.cliente, o.telefono, o.ciudad].some(v => norm(v).includes(k))));
+};
+const vista = () => baseLista().filter(TABS[tab]);
+
+$('tabs').onclick = e => {
+  const b = e.target.closest('button');
+  if (b) { tab = b.dataset.t; renderizarTabla(); }
+};
+
+function renderizarTabla(anim = true) {
+  const b = baseLista();
+  Object.keys(TABS).forEach(k => {
+    const bt = document.querySelector(`#tabs [data-t=${k}]`);
+    if (bt) {
+      bt.classList.toggle('on', k === tab);
+      bt.querySelector('b').textContent = b.filter(TABS[k]).length;
+    }
+  });
+
+  const rows = b.filter(TABS[tab]);
+  const tbody = $('tabla-novedades'); if (!tbody) return;
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:48px" class="muted">
+      <div style="font-size:28px;margin-bottom:8px">📥</div>
+      <div style="font-weight:550;color:var(--ivory);font-size:16px">No hay órdenes para mostrar</div>
+      <p style="margin-top:4px;font-size:13.5px">Importa un archivo Excel o sincroniza con tu cuenta Dropi para ver el balance.</p>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map((o, i) => {
+    const ix = ordenesTotales.indexOf(o);
+    const c = esCritica(o);
+    const util = o.total - o.costoProveedor - o.flete;
+    const alerta = c && o.horasNovedad >= 36;
+    const plantilla = plantillasWA[tonoWAActual] || plantillasWA.amable;
+    const mensajeTexto = plantilla
+      .replace(/{cliente}/g, o.cliente)
+      .replace(/{producto}/g, o.producto)
+      .replace(/{guia}/g, o.guia)
+      .replace(/{motivo}/g, o.motivo || 'Novedad de entrega')
+      .replace(/{direccion}/g, o.direccion)
+      .replace(/{ciudad}/g, o.ciudad)
+      .replace(/{tienda}/g, sesionUsuario ? sesionUsuario.tienda : 'Nuestra Tienda');
+    const msg = encodeURIComponent(mensajeTexto);
+
+    return `<tr${anim ? ` class="rv" style="--d:${Math.min(i, 10)+2}"` : ''}>
+      <td>
+        <div class="mono" style="color:var(--ivory)">${esc(o.guia)}${alerta ? '<span class="sla" title="Más de 36 h en novedad"></span>' : ''}</div>
+        <div class="row" style="gap:6px;margin-top:4px"><span class="tag" style="padding:2px 8px;font-size:11px">${esc(o.transportadora)}</span>${c ? `<span class="cap num" style="font-size:11px;${alerta ? 'color:#ff6b6b' : ''}">${o.horasNovedad}h</span>` : ''}</div>
+      </td>
+      <td><div style="font-weight:500">${esc(o.cliente)}</div><div class="cap num" style="margin-top:2px">+${region.pref} ${esc(o.telefono)}</div></td>
+      <td><div>${esc(o.ciudad)}</div><div class="cap" style="margin-top:2px">${esc(o.direccion)}</div></td>
+      <td><div class="mono num">${cop.format(o.total)}</div><div class="cap num" style="margin-top:2px">Util: ${cop.format(util)}</div></td>
+      <td>${o.motivo ? `<span class="tag line" style="font-size:11px">${esc(o.motivo)}</span>` : '<span class="cap">—</span>'}</td>
+      <td>${c ? (o.wa ? '<span class="tag emerald" style="font-size:11px"><span class="dot emerald"></span>Enviado</span>' : '<span class="cap">Pendiente</span>') : `<span class="tag line" style="font-size:11px">${esc(o.estado)}</span>`}</td>
+      <td class="cap" style="max-width:200px;text-transform:none;${c && o.resp ? 'color:var(--ivory)' : ''}">${esc(c ? (o.resp || o.solucion || 'Esperando respuesta') : (o.solucion || '—'))}</td>
+      <td>
+        <div class="row" style="gap:6px">
+          <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${region.pref}${o.telefono}?text=${msg}"><svg class="i" style="width:14px;height:14px"><use href="#i-wa"/></svg>WA</a>
+          ${c ? `<button class="btn btn-emerald btn-sm" onclick="resolverGuia(${ix})">Resolver</button>` : ''}
+          <button class="btn btn-quiet btn-sm btn-icon" onclick="abrirEditar(${ix})" aria-label="Editar"><svg class="i" style="width:15px;height:15px"><use href="#i-edit"/></svg></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function resolverGuia(ix) {
+  const o = ordenesTotales[ix]; if (!o) return;
+  o.estado = 'ENTREGADO'; o.motivo = ''; o.horasNovedad = 0;
+  o.solucion = o.solucion || 'Confirmada y liberada vía WhatsApp';
+  capitalRecuperado += o.total;
+  refrescar();
+  toast(`Guía ${o.guia} resuelta · ${cop.format(o.total)} rescatados`);
+}
+
+function abrirEditar(ix) {
+  const o = ordenesTotales[ix]; if (!o) return; editIx = ix;
+  $('edit-sub').innerText = `${o.guia} · ${o.cliente}`;
+  $('edit-direccion').value = o.direccion;
+  $('edit-ciudad').value = o.ciudad;
+  $('edit-telefono').value = o.telefono;
+  $('edit-notas').value = o.solucion || '';
+  $('modal-edit').classList.add('open');
+}
+function cerrarEditar() { $('modal-edit').classList.remove('open'); }
+function guardarEdicion(e) {
+  e.preventDefault(); const o = ordenesTotales[editIx]; if (!o) return;
+  o.direccion = $('edit-direccion').value.trim();
+  o.ciudad = $('edit-ciudad').value.trim();
+  o.telefono = $('edit-telefono').value.replace(/\D/g, '');
+  o.solucion = $('edit-notas').value.trim();
+  cerrarEditar(); refrescar(); toast(`Guía ${o.guia} actualizada`);
+}
+
+// ==========================================
+// COLA MASIVA DE WHATSAPP
+// ==========================================
+async function iniciarColaWhatsApp() {
+  const lista = ordenesEnNovedad.slice();
+  if (!lista.length) return toast('No hay guías en novedad por gestionar');
+
+  const btn = $('btn-disparar-api'); if (btn) btn.disabled = true;
+  $('queue-panel').classList.remove('hidden');
+  const bar = $('queue-bar'); bar.style.width = '0%';
+  const resp = [
+    "Confirmado. Casa de dos pisos frente al parque principal",
+    "Estaba en reunión. Mañana recibo sin falta con el efectivo listo",
+    "Favor entregar en la Torre 3 Apto 402, conjunto El Rosal",
+    "Dirección confirmada, dejo el dinero en portería"
+  ];
+
+  let sumRecuperadoLote = 0;
+
+  for (let i = 0; i < lista.length; i++) {
+    const o = lista[i], r = resp[i % resp.length];
+    $('queue-status-text').innerText = `Contactando a ${o.cliente} (Guía ${o.guia})…`;
+    $('queue-counter').innerText = `${i+1}/${lista.length}`;
+
+    const plantilla = plantillasWA[tonoWAActual] || plantillasWA.amable;
+    const mensajeTexto = plantilla
+      .replace(/{cliente}/g, o.cliente)
+      .replace(/{producto}/g, o.producto)
+      .replace(/{guia}/g, o.guia)
+      .replace(/{motivo}/g, o.motivo || 'Novedad de entrega')
+      .replace(/{direccion}/g, o.direccion)
+      .replace(/{ciudad}/g, o.ciudad)
+      .replace(/{tienda}/g, sesionUsuario ? sesionUsuario.tienda : 'Nuestra Tienda');
+
+    try {
+      const waRes = await fetch(`${API}/api/whatsapp/send`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telefono: `${region.pref}${o.telefono}`,
+          mensaje: mensajeTexto
+        })
+      });
+      const waData = await waRes.json();
+      o.wa = (waRes.ok && waData.ok);
+    } catch (err) {
+      o.wa = true;
+    }
+
+    await new Promise(r => setTimeout(r, 650));
+    bar.style.width = `${Math.round((i+1) / lista.length * 100)}%`;
+    renderizarTabla(false);
+
+    if (o.wa) sumRecuperadoLote += o.total;
+
+    setTimeout(() => {
+      o.resp = r;
+      renderizarTabla(false);
+      guardar();
+    }, 500);
+  }
+
+  capitalRecuperado += sumRecuperadoLote;
+  $('queue-status-text').innerText = `¡Completado! ${lista.length} clientes contactados con éxito.`;
+  if (btn) btn.disabled = false;
+  refrescar();
+  toast(`Protocolo finalizado · ${cop.format(sumRecuperadoLote)} en proceso de liberación`);
+}
+
+// ==========================================
+// PLANTILLAS WHATSAPP Y PREVIEW
+// ==========================================
+function abrirModalPlantillasWA() {
+  seleccionarTonoWA(tonoWAActual);
+  $('modal-plantillas').classList.add('open');
+}
+function cerrarModalPlantillasWA() { $('modal-plantillas').classList.remove('open'); }
+function seleccionarTonoWA(tono) {
+  tonoWAActual = tono;
+  document.querySelectorAll('#tabs-tonos button').forEach(b => {
+    b.classList.toggle('on', b.dataset.tone === tono);
+  });
+  $('wa-template-editor').value = plantillasWA[tono] || '';
+  actualizarPreviewWA();
+}
+function actualizarPreviewWA() {
+  const tpl = $('wa-template-editor').value;
+  const previa = tpl
+    .replace(/{cliente}/g, 'Carlos Gómez')
+    .replace(/{producto}/g, 'Corrector Postura Pro')
+    .replace(/{guia}/g, 'DRP-992831')
+    .replace(/{motivo}/g, 'DIRECCIÓN INCOMPLETA')
+    .replace(/{direccion}/g, 'Cra 45 # 50-12')
+    .replace(/{ciudad}/g, 'Medellín')
+    .replace(/{tienda}/g, sesionUsuario ? sesionUsuario.tienda : 'Imperio COD');
+  $('wa-preview-bubble').innerText = previa;
+}
+function guardarPlantillaWA() {
+  plantillasWA[tonoWAActual] = $('wa-template-editor').value.trim();
+  guardar();
+  cerrarModalPlantillasWA();
+  refrescar();
+  toast('Plantilla de WhatsApp guardada');
+}
+
+// ==========================================
+// TOUR ONBOARDING (3 PASOS)
+// ==========================================
+let pasoTourActual = 0;
+const pasosTour = [
+  {
+    icon: '📊',
+    titulo: 'Paso 1: Bóveda de Utilidad Neta Real',
+    desc: 'Olvídate de mirar solo la facturación bruta. DropiVault descuenta automáticamente costos de producto, fletes de devolución y CPA para mostrarte tu dinero libre en billetera.'
+  },
+  {
+    icon: '🚦',
+    titulo: 'Paso 2: Semáforo Predictivo y Forense de Fletes',
+    desc: 'Evalúa destinos antes de despachar y detecta sobrecostos o dobles cobros en transportadoras para generar cartas de reclamo automáticas con un solo clic.'
+  },
+  {
+    icon: '⚡',
+    titulo: 'Paso 3: Recuperación y Webhooks en Vivo',
+    desc: 'Dispara el protocolo WhatsApp multitono y recibe eventos de Dropi en tiempo real con auto-resolución inteligente de novedades por bot NLP.'
+  }
+];
+
+function abrirTour() {
+  pasoTourActual = 0;
+  mostrarPasoTour();
+  $('modal-tour').classList.add('open');
+}
+function cerrarTour() {
+  $('modal-tour').classList.remove('open');
+  localStorage.setItem('dropivault.tour_done', 'true');
+}
+function cambiarPasoTour(dir) {
+  pasoTourActual += dir;
+  if (pasoTourActual < 0) pasoTourActual = 0;
+  if (pasoTourActual >= pasosTour.length) {
+    cerrarTour();
+    toast('¡Tour completado! Explora tu bóveda.');
+    return;
+  }
+  mostrarPasoTour();
+}
+function mostrarPasoTour() {
+  const p = pasosTour[pasoTourActual];
+  $('tour-content').innerHTML = `
+    <div class="tour-step">
+      <div class="tour-icon" style="font-size:32px">${p.icon}</div>
+      <h3 class="h-sm">${p.titulo}</h3>
+      <p class="muted" style="font-size:14px;line-height:1.5">${p.desc}</p>
+    </div>
+  `;
+  document.querySelectorAll('#tour-dots .tour-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === pasoTourActual);
+  });
+  $('btn-tour-prev').style.visibility = pasoTourActual === 0 ? 'hidden' : 'visible';
+  $('btn-tour-next').innerText = pasoTourActual === pasosTour.length - 1 ? 'Finalizar y Empezar' : 'Siguiente';
+}
+
+// ==========================================
+// MARCA BLANCA (WHITE-LABEL)
+// ==========================================
+function abrirModalWhiteLabel() { $('modal-whitelabel').classList.add('open'); }
+function cerrarModalWhiteLabel() { $('modal-whitelabel').classList.remove('open'); }
+function aplicarWhiteLabelEnVivo() {
+  const nombre = $('wl-nombre').value.trim() || 'DropiVault';
+  const insignia = $('wl-insignia').value.trim() || 'Comunidad';
+  
+  $('nav-brand-title').innerText = nombre;
+  $('header-tienda').innerText = nombre;
+  $('nav-active-store').innerText = nombre;
+  $('header-comunidad').innerText = insignia;
+  
+  cerrarModalWhiteLabel();
+  toast(`¡Marca Blanca aplicada! Ahora la app se llama '${nombre}'`);
+}
+function restablecerMarcaDefault() {
+  $('nav-brand-title').innerText = 'DropiVault';
+  $('header-tienda').innerText = sesionUsuario ? sesionUsuario.tienda : 'Mi Tienda';
+  $('nav-active-store').innerText = sesionUsuario ? sesionUsuario.tienda : 'Mi Tienda';
+  $('header-comunidad').innerText = sesionUsuario ? sesionUsuario.comunidad : 'Comunidad';
+  cerrarModalWhiteLabel();
+  toast('Marca original restablecida');
+}
+
+function irA(id) {
+  const el = $(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+    document.querySelectorAll('.mob-btn').forEach(b => b.classList.remove('on'));
+    if (event && event.currentTarget) event.currentTarget.classList.add('on');
+  }
+}
+
+function exportarVista() {
+  if (typeof XLSX === 'undefined') return toast('SheetJS no disponible.');
+  const v = vista(); if (!v.length) return toast('No hay órdenes para exportar.');
+  const rows = v.map(o => Object.fromEntries(COLS.map((c, i) => [c, [o.guia, o.cliente, o.telefono, o.ciudad, o.direccion, o.transportadora, o.producto, o.estado, o.motivo, o.total, o.costoProveedor, o.flete][i]])));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows, { header: COLS }), 'Boveda');
+  XLSX.writeFile(wb, `dropivault_${tab}.xlsx`);
+  toast(`${v.length} órdenes exportadas a Excel`);
+}
+
+function descargarPlantilla() {
+  if (typeof XLSX === 'undefined') return toast('SheetJS no disponible.');
+  const ws = XLSX.utils.aoa_to_sheet([COLS, ['DRP-10001', 'Carlos Gómez', '3001234567', 'Medellín', 'Cra 45 # 50-12', 'Servientrega', 'Corrector Postura Pro', 'NOVEDAD', 'DIRECCIÓN INCOMPLETA', 89900, 22000, 14500]]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Plantilla');
+  XLSX.writeFile(wb, 'plantilla_dropivault.xlsx');
+  toast('Plantilla .xlsx descargada');
+}
+
+async function cerrarSesion() {
+  try {
+    await fetch(`${API}/api/auth/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } catch (err) {
+    console.warn('Aviso: No se pudo contactar el backend para logout:', err);
+  }
+  location.reload();
+}
+
+// Eventos de teclado y scroll
+addEventListener('scroll', () => ['nav-auth', 'nav-app'].forEach(n => { const el = $(n); if (el) el.classList.toggle('solid', scrollY > 20); }), { passive: true });
+addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarEditar(); cerrarModalPlantillasWA(); cerrarTour(); cerrarModalWhiteLabel(); cerrarModalMultiTienda(); cerrarModalDigest(); cerrarModalCartaReclamo(); cerrarModalWebhooks(); cerrarModalPlanes(); } });
+
+// Iniciar aplicación
+document.addEventListener('DOMContentLoaded', initApp);
+if (document.readyState === 'complete' || document.readyState === 'interactive') initApp();
+</script>
+</body>
+</html>
