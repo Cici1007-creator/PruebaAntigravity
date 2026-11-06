@@ -390,7 +390,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
           <p class="muted" style="margin-bottom:24px;font-size:13.5px">Inicia sesión con tu tienda Dropi para sincronizar tus órdenes reales.</p>
           
           <div class="seg" style="margin-bottom:24px">
-            <button type="button" id="tab-token" class="on" onclick="cambiarMetodoAuth('token')">Token de integración</button>
+            <button type="button" id="tab-token" class="on" onclick="cambiarMetodoAuth('token')">Token de integración ⭐</button>
             <button type="button" id="tab-credenciales" onclick="cambiarMetodoAuth('credenciales')">Credenciales</button>
           </div>
           <form onsubmit="conectarConDropiAPI(event)" style="display:grid;gap:18px">
@@ -420,9 +420,14 @@ tr:hover td{background:rgba(255,255,255,.03)}
               </select></div>
             <div id="bloque-token"><label class="f">Token de integración <span style="color:var(--slate)">· Dropi › Mi Cuenta › Mis integraciones</span></label>
               <input id="auth-token" class="in" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6…">
-              <p class="cap" style="margin-top:8px;font-weight:400;text-transform:none">Token generado en tu panel de Dropi › Mi Cuenta › Mis Integraciones.</p></div>
+              <p class="cap" style="margin-top:8px;font-weight:400;text-transform:none;color:var(--emerald)">
+                ✅ <b>Oficial y Seguro:</b> En Dropi ve a <b>Mi Cuenta › Mis Integraciones</b> y copia tu Token. Conecta al instante sin exponer tu contraseña.
+              </p></div>
             <div id="bloque-password" class="hidden"><label class="f">Contraseña de acceso Dropi</label>
-              <input id="auth-password" class="in" type="password" placeholder="••••••••••••"></div>
+              <input id="auth-password" class="in" type="password" placeholder="••••••••••••">
+              <p class="cap" style="margin-top:8px;font-weight:400;text-transform:none;color:#f59e0b">
+                ⚠️ <b>Importante:</b> Por políticas de seguridad, Dropi bloquea inicios de sesión con contraseña a apps externas (Access Denied). Te recomendamos usar la pestaña <b>Token de integración</b>.
+              </p></div>
             <div id="auth-loading" class="hidden tag" style="border-radius:12px;padding:12px 14px;font-size:13px"><span id="auth-loading-text">Conectando túnel seguro con Dropi…</span></div>
             <button class="btn btn-primary" style="height:52px;margin-top:4px">Iniciar sesión y sincronizar <svg class="i"><use href="#i-arrow"/></svg></button>
           </form>
@@ -1892,7 +1897,11 @@ async function conectarConDropiAPI(e) {
         }
 
         if (!loginOk) {
-          errorMensaje = lastDropiError || 'Credenciales incorrectas en Dropi. Por favor revisa tu correo y contraseña.';
+          if (lastDropiError && (/access denied|403|bloque/i.test(lastDropiError))) {
+            errorMensaje = 'Dropi bloquea el acceso con contraseña por seguridad (Access Denied). Por favor usa la pestaña "Token de integración" (lo encuentras en tu Dropi › Mi Cuenta › Mis Integraciones).';
+          } else {
+            errorMensaje = lastDropiError || 'Credenciales no válidas en Dropi. Te sugerimos usar tu Token de integración (Dropi › Mi Cuenta › Mis Integraciones).';
+          }
         }
       } else {
         tokenDirectoDropi = tokenInput;
