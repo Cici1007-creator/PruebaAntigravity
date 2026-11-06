@@ -123,7 +123,7 @@ try {
         maxAge: 24 * 60 * 60 * 1000
       });
 
-      res.json({ ok: true, tienda: tienda.trim(), comunidad: comunidad || 'Dropi' });
+      res.json({ ok: true, tienda: tienda.trim(), comunidad: comunidad || 'Dropi', sessionToken: sessionId });
     } catch (e) {
       res.status(500).json({ ok: false, error: e.message || 'Error en el servidor' });
     }
@@ -132,7 +132,10 @@ try {
   // 2. Orders Dropi
   app.get('/api/orders', async (req, res) => {
     try {
-      const sessionId = req.cookies?.dropivault_session;
+      const authHeader = req.headers['authorization'] || req.headers['Authorization'] || '';
+      let bearerToken = null;
+      if (authHeader.startsWith('Bearer ')) bearerToken = authHeader.slice(7).trim();
+      const sessionId = req.cookies?.dropivault_session || bearerToken;
       const session = getSession(sessionId);
 
       if (!session) {

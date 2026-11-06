@@ -30,9 +30,9 @@
     "semantic_hash": ""
   },
   "dropivault-backend/middleware/auth.js": {
-    "mtime": 1793866221.07038,
-    "seen": 1793867313.096954,
-    "ast_hash": "bcba2baebf9167f9fe8c9ddca1c384ae",
+    "mtime": 1793998374.1018953,
+    "seen": 1793998449.7053523,
+    "ast_hash": "e400e742b1d4b89ced72c5e3cf718268",
     "semantic_hash": ""
   },
   "dropivault-backend/package.json": {
@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "dropivault-backend/server.js": {
-    "mtime": 1793991228.8725204,
-    "seen": 1793991581.2300677,
-    "ast_hash": "367cb39e3bd685231b8d082875ee59b5",
+    "mtime": 1793998387.3015752,
+    "seen": 1793998449.7053523,
+    "ast_hash": "f07b56cb72ead0f0ee1d16baa9ba1efa",
     "semantic_hash": ""
   },
   "dropivault-backend/services/dropi.js": {
@@ -54,9 +54,9 @@
     "semantic_hash": ""
   },
   "dropivault-backend/services/sessions.js": {
-    "mtime": 1793866221.6923795,
-    "seen": 1793867313.096954,
-    "ast_hash": "a5dfee3af1b0de0f04f21e79e2eea972",
+    "mtime": 1793998370.0252213,
+    "seen": 1793998449.7053523,
+    "ast_hash": "9401d93382190fe730262ad5f636eff0",
     "semantic_hash": ""
   },
   "dropivault-backend/services/whatsapp.js": {
@@ -72,9 +72,9 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1793991564.379447,
-    "seen": 1793991581.2300677,
-    "ast_hash": "21960c521719774ef976a96c72da4055",
+    "mtime": 1793998424.2423694,
+    "seen": 1793998449.7053523,
+    "ast_hash": "17f6b4e97d01f959789a2275438f2597",
     "semantic_hash": ""
   },
   "brain/ea260dce-a5ff-4ab8-8556-209a6ad8e313/scratch/update_resilient_dropi.py": {
@@ -96,9 +96,15 @@
     "semantic_hash": ""
   },
   "index.html.html": {
-    "mtime": 1793991564.3737595,
-    "seen": 1793991581.2300677,
-    "ast_hash": "21960c521719774ef976a96c72da4055",
+    "mtime": 1793998424.2357821,
+    "seen": 1793998449.7053523,
+    "ast_hash": "17f6b4e97d01f959789a2275438f2597",
+    "semantic_hash": ""
+  },
+  "netlify/functions/api.js": {
+    "mtime": 1793998318.8906121,
+    "seen": 1793998449.7053523,
+    "ast_hash": "86b71b7273feed4105bfca6f903b7ce5",
     "semantic_hash": ""
   }
 }

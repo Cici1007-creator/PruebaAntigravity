@@ -1,0 +1,13 @@
+# ========================================================
+# PROXY PARA LA API DE DROPI POR PAÍS (BYPASS CORS)
+# ========================================================
+/dropi-co/*  https://api.dropi.co/:splat  200!
+/dropi-mx/*  https://api.dropi.mx/:splat  200!
+/dropi-ec/*  https://api.dropi.ec/:splat  200!
+/dropi-cl/*  https://api.dropi.cl/:splat  200!
+/dropi-pe/*  https://api.dropi.pe/:splat  200!
+
+# ========================================================
+# ENDPOINTS BACKEND SERVERLESS EN NETLIFY FUNCTIONS
+# ========================================================
+/api/*  /.netlify/functions/api/:splat  200

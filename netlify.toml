@@ -1,0 +1,40 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Proxies reversos para Dropi (Elimina CORS en móviles y navegadores)
+[[redirects]]
+  from = "/dropi-co/*"
+  to = "https://api.dropi.co/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dropi-mx/*"
+  to = "https://api.dropi.mx/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dropi-ec/*"
+  to = "https://api.dropi.ec/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dropi-cl/*"
+  to = "https://api.dropi.cl/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dropi-pe/*"
+  to = "https://api.dropi.pe/:splat"
+  status = 200
+  force = true
+
+# Redirección de llamadas /api/* hacia Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200

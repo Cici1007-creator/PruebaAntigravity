@@ -19,23 +19,26 @@
 
 <style>
 :root{
-  --onyx:#171721;--graphite:#1e1e2a;--obsidian:#272735;--slate:#70707d;--mist:#e2e3ed;
-  --ash:#c3c3cc;--ivory:#ededf3;--cobalt:#5266eb;--cobalt-light:#7b8eff;
+  --onyx:#13131b;--graphite:#1a1a24;--obsidian:#232330;--slate:#757582;--mist:#e6e7f2;
+  --ash:#c3c3cc;--ivory:#f1f1f7;--cobalt:#5266eb;--cobalt-light:#7b8eff;
   --emerald:#10b981;--emerald-bg:rgba(16,185,129,.12);
   --amber:#f59e0b;--amber-bg:rgba(245,158,11,.12);
   --crimson:#ef4444;--crimson-bg:rgba(239,68,68,.12);
   --purple:#8b5cf6;--purple-bg:rgba(139,92,246,.12);
   --font:'Inter',ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --line:rgba(112,112,125,.28);
+  --line:rgba(112,112,125,.24);
+  --apple-ease:cubic-bezier(0.16, 1, 0.3, 1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--onyx);color:var(--ivory);font:400 15px/1.5 var(--font);letter-spacing:.005em;-webkit-font-smoothing:antialiased;padding-bottom:70px}
+body{background:var(--onyx);color:var(--ivory);font:400 15px/1.5 var(--font);letter-spacing:.005em;-webkit-font-smoothing:antialiased;padding-bottom:70px;overflow-x:hidden}
 .hidden{display:none!important}
-.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
-.display{font-weight:600;font-size:clamp(36px,5.4vw,60px);line-height:1.1;letter-spacing:-.015em}
-.h-lg{font-weight:600;font-size:clamp(26px,3.2vw,38px);line-height:1.2;letter-spacing:-.01em}
-.h{font-weight:550;font-size:28px;line-height:1.2;letter-spacing:-.01em}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+
+/* Apple Typography & Gradients */
+.display{font-weight:650;font-size:clamp(36px,5.4vw,62px);line-height:1.08;letter-spacing:-.022em;background:linear-gradient(180deg,#ffffff 20%,#b5b6c4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.h-lg{font-weight:600;font-size:clamp(26px,3.2vw,40px);line-height:1.18;letter-spacing:-.015em;background:linear-gradient(180deg,#ffffff 25%,#c0c1cf 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.h{font-weight:550;font-size:28px;line-height:1.2;letter-spacing:-.01em;background:linear-gradient(180deg,#ffffff 30%,#c9cad6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .h-sm{font-weight:550;font-size:22px;line-height:1.25;letter-spacing:-.005em}
 .sub{font-size:18px;line-height:1.4;font-weight:420}
 .lead{font-size:17px;line-height:1.45;font-weight:420;color:var(--ash)}
@@ -44,52 +47,134 @@ body{background:var(--onyx);color:var(--ivory);font:400 15px/1.5 var(--font);let
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
+/* Barra de progreso de scroll superior estilo Apple */
+#scroll-progress{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,#5266eb,#7b8eff,#10b981,#fbbf24);
+  box-shadow:0 0 14px rgba(82,102,235,.85);
+  z-index:9999;
+  pointer-events:none;
+  transition:width .08s linear;
+}
+
+/* Luces atmosféricas dinámicas en el fondo (Apple Space Auroras) */
+.apple-aurora-bg{
+  position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;
+}
+.aurora-orb{
+  position:absolute;border-radius:50%;filter:blur(120px);opacity:.22;
+  animation:auroraDrift 24s ease-in-out infinite alternate;
+  will-change:transform,opacity;
+}
+.aurora-1{
+  width:620px;height:620px;top:-120px;left:-100px;
+  background:radial-gradient(circle,#5266eb,transparent 70%);
+}
+.aurora-2{
+  width:680px;height:680px;top:40%;right:-180px;
+  background:radial-gradient(circle,#10b981,transparent 70%);
+  animation-duration:30s;animation-delay:-8s;
+}
+.aurora-3{
+  width:720px;height:720px;bottom:-140px;left:20%;
+  background:radial-gradient(circle,#8b5cf6,transparent 70%);
+  animation-duration:26s;animation-delay:-14s;
+}
+@keyframes auroraDrift{
+  0%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(80px,50px) scale(1.15)}
+  100%{transform:translate(-60px,90px) scale(.92)}
+}
+
+/* Transiciones de revelado cinematográfico al hacer scroll (Apple Style) */
+.apple-reveal{
+  opacity:0;
+  transform:translateY(46px) scale(.97);
+  filter:blur(6px);
+  transition:opacity .9s var(--apple-ease), transform .9s var(--apple-ease), filter .9s var(--apple-ease);
+  will-change:opacity,transform,filter;
+}
+.apple-reveal.in-view{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  filter:blur(0);
+}
+
+.delay-1{transition-delay:80ms}
+.delay-2{transition-delay:160ms}
+.delay-3{transition-delay:240ms}
+.delay-4{transition-delay:320ms}
+
+/* Cards con efecto Glassmorphism y reflejo especular en 3D (Apple Card) */
+.card{
+  background:rgba(26,26,36,.75);
+  backdrop-filter:blur(28px) saturate(190%);
+  -webkit-backdrop-filter:blur(28px) saturate(190%);
+  border-radius:18px;
+  padding:30px;
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:0 14px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+  position:relative;
+  overflow:hidden;
+  transition:transform .4s var(--apple-ease), box-shadow .4s var(--apple-ease), border-color .3s;
+  transform-style:preserve-3d;
+}
+.card:hover{
+  border-color:rgba(123,142,255,.35);
+  box-shadow:0 26px 70px rgba(0,0,0,.5), 0 0 24px rgba(82,102,235,.18), inset 0 1px 0 rgba(255,255,255,.16);
+}
+.card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle 380px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,.12), transparent 70%);
+  opacity:0;transition:opacity .35s ease;pointer-events:none;border-radius:inherit;
+}
+.card:hover::before{opacity:1}
+
 /* Controles pill */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:46px;padding:0 22px;border-radius:32px;border:1px solid transparent;font:500 15px var(--font);cursor:pointer;text-decoration:none;white-space:nowrap;position:relative;overflow:hidden;transition:background .2s,filter .2s,border-color .2s,transform .18s cubic-bezier(.2,.7,.2,1),box-shadow .22s}
-.btn::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.2) 0%,transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none;border-radius:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:46px;padding:0 22px;border-radius:32px;border:1px solid transparent;font:500 15px var(--font);cursor:pointer;text-decoration:none;white-space:nowrap;position:relative;overflow:hidden;transition:background .2s,filter .2s,border-color .2s,transform .2s var(--apple-ease),box-shadow .22s}
+.btn::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.24) 0%,transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none;border-radius:inherit}
 .btn:hover::after{opacity:1}
-.btn:active{transform:scale(.96)!important}
-.btn-primary{background:linear-gradient(135deg,#5266eb,#7b8eff,#5266eb);background-size:200% 200%;color:#fff;animation:gradientShift 4s ease infinite,glow 3.5s ease infinite}
-.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px)!important;box-shadow:0 10px 28px rgba(82,102,235,.45)}
+.btn:active{transform:scale(.95)!important}
+.btn-primary{background:linear-gradient(135deg,#5266eb,#7b8eff,#5266eb);background-size:200% 200%;color:#fff;animation:gradientShift 5s ease infinite,glow 4s ease infinite}
+.btn-primary:hover{filter:brightness(1.15);transform:translateY(-2px)!important;box-shadow:0 12px 32px rgba(82,102,235,.5)}
 .btn-primary:disabled{opacity:.6;cursor:wait;animation:none;background:var(--cobalt)}
 .btn-emerald{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
-.btn-emerald:hover{filter:brightness(1.12);transform:translateY(-2px)!important;box-shadow:0 10px 24px rgba(16,185,129,.35)}
+.btn-emerald:hover{filter:brightness(1.15);transform:translateY(-2px)!important;box-shadow:0 12px 28px rgba(16,185,129,.4)}
 .btn-amber{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
-.btn-amber:hover{filter:brightness(1.12);transform:translateY(-2px)!important;box-shadow:0 10px 24px rgba(245,158,11,.35)}
+.btn-amber:hover{filter:brightness(1.15);transform:translateY(-2px)!important;box-shadow:0 12px 28px rgba(245,158,11,.4)}
 .btn-ghost{background:transparent;color:var(--ivory);border-color:var(--line)}
 .btn-ghost:hover{background:var(--obsidian);border-color:var(--ivory);transform:translateY(-2px)!important}
 .btn-quiet{background:var(--obsidian);color:var(--ivory)}
 .btn-quiet:hover{background:#30303f;transform:translateY(-2px)!important}
 .btn-sm{height:36px;padding:0 14px;font-size:13px;gap:6px}
 .btn-icon{width:40px;padding:0}
-.tag{display:inline-flex;align-items:center;gap:6px;border-radius:40px;background:var(--obsidian);color:var(--ash);font-size:12px;font-weight:500;padding:6px 12px;line-height:1.2}
+.tag{display:inline-flex;align-items:center;gap:6px;border-radius:40px;background:var(--obsidian);color:var(--ash);font-size:12px;font-weight:500;padding:6px 12px;line-height:1.2;transition:transform .3s var(--apple-ease)}
+.tag:hover{transform:translateY(-1px)}
 .tag.line{background:transparent;border:1px solid var(--line)}
-.tag.emerald{background:var(--emerald-bg);color:#34d399;border:1px solid rgba(16,185,129,.3)}
-.tag.amber{background:var(--amber-bg);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
-.tag.crimson{background:var(--crimson-bg);color:#f87171;border:1px solid rgba(239,68,68,.3)}
-.tag.purple{background:var(--purple-bg);color:#c084fc;border:1px solid rgba(139,92,246,.3)}
+.tag.emerald{background:var(--emerald-bg);color:#34d399;border:1px solid rgba(16,185,129,.35)}
+.tag.amber{background:var(--amber-bg);color:#fbbf24;border:1px solid rgba(245,158,11,.35)}
+.tag.crimson{background:var(--crimson-bg);color:#f87171;border:1px solid rgba(239,68,68,.35)}
+.tag.purple{background:var(--purple-bg);color:#c084fc;border:1px solid rgba(139,92,246,.35)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--ivory)}
 .dot.emerald{background:#34d399}
 .dot.amber{background:#fbbf24}
 .dot.pulse{animation:pulse 1.5s infinite}
-.card{background:var(--graphite);border-radius:14px;padding:30px;border:1px solid rgba(255,255,255,.04);transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s cubic-bezier(.2,.7,.2,1)}
-.card:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(0,0,0,.4),0 0 0 1px rgba(82,102,235,.15)}
 
 label.f{display:block;font-size:13px;color:var(--ash);margin-bottom:6px;letter-spacing:.01em;font-weight:500}
-.in{width:100%;height:48px;background:var(--onyx);border:1px solid var(--line);border-radius:28px;padding:0 18px;color:var(--ivory);font:400 15px var(--font);outline:none;transition:border-color .25s,box-shadow .25s}
+.in{width:100%;height:48px;background:rgba(19,19,27,.8);border:1px solid var(--line);border-radius:28px;padding:0 18px;color:var(--ivory);font:400 15px var(--font);outline:none;transition:border-color .25s,box-shadow .25s}
 .in::placeholder{color:var(--slate);opacity:.8}
-.in:focus{border-color:var(--cobalt);box-shadow:0 0 0 3px rgba(82,102,235,.18)}
+.in:focus{border-color:var(--cobalt);box-shadow:0 0 0 3px rgba(82,102,235,.22)}
 select.in{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23c3c3cc' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 5 4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center;padding-right:44px}
 select.in option{background:var(--graphite);color:var(--ivory)}
 .seg{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--onyx);border-radius:40px}
-.seg::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 6px);border-radius:40px;background:var(--obsidian);transition:transform .38s cubic-bezier(.2,.7,.2,1)}
+.seg::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 6px);border-radius:40px;background:var(--obsidian);transition:transform .38s var(--apple-ease)}
 .seg.r::before{transform:translateX(calc(100% + 4px))}
 .seg button{position:relative;height:42px;border:0;border-radius:40px;background:transparent;color:var(--ash);font:500 14px var(--font);cursor:pointer;transition:color .25s}
 .seg button.on{color:var(--ivory)}
 
-/* Nav */
-.nav{position:sticky;top:0;z-index:40;transition:background .25s,backdrop-filter .25s;animation:navReveal .6s cubic-bezier(.2,.7,.2,1) both}
-.nav.solid{background:rgba(23,23,33,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}
+/* Nav con Apple Frosted Glass */
+.nav{position:sticky;top:0;z-index:40;transition:background .35s var(--apple-ease),backdrop-filter .35s;animation:navReveal .6s var(--apple-ease) both}
+.nav.solid{background:rgba(19,19,27,.82);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.07)}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:76px}
 .brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:19px;letter-spacing:-.01em;cursor:pointer}
 .brand svg{width:28px;height:28px}
@@ -110,86 +195,89 @@ select.in option{background:var(--graphite);color:var(--ivory)}
 .g-hero{grid-template-columns:1.4fr .8fr}
 .g-2{grid-template-columns:1fr 1fr}
 .g-3{grid-template-columns:repeat(3,1fr)}
-.sec{padding:20px 0}
+.sec{padding:26px 0}
 .bar{height:6px;border-radius:6px;background:var(--obsidian);overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cobalt),var(--emerald));transition:width .4s ease}
 .stat{display:flex;align-items:baseline;gap:8px}
 .kpi-line{border-top:1px solid var(--line);margin-top:24px;padding-top:20px}
 
 /* Tarjeta Destacada de Capital Recuperado */
-.card-recuperado{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(30,30,42,.95) 45%);border:1px solid rgba(16,185,129,.35);box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 30px rgba(16,185,129,.1)}
+.card-recuperado{background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(26,26,36,.9) 45%);border:1px solid rgba(16,185,129,.4);box-shadow:0 24px 60px rgba(0,0,0,.45),0 0 35px rgba(16,185,129,.12)}
 
 /* Gráficas y ranking */
 .chart-container{position:relative;width:100%;height:220px}
 .donut-legend{display:flex;flex-direction:column;gap:10px;font-size:13px}
 .legend-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.rank-item{display:grid;gap:6px;padding:12px 14px;background:var(--onyx);border-radius:10px;border:1px solid rgba(255,255,255,.03);margin-bottom:8px}
+.rank-item{display:grid;gap:6px;padding:12px 14px;background:rgba(19,19,27,.6);border-radius:12px;border:1px solid rgba(255,255,255,.04);margin-bottom:8px;transition:transform .2s var(--apple-ease)}
+.rank-item:hover{transform:translateX(4px)}
 .rank-head{display:flex;justify-content:space-between;align-items:center;font-size:13.5px}
 .rank-bar-bg{height:6px;border-radius:4px;background:var(--obsidian);overflow:hidden}
-.rank-bar-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.2,.7,.2,1)}
+.rank-bar-fill{height:100%;border-radius:4px;transition:width .8s var(--apple-ease)}
 
 /* Alertas inteligentes */
-.smart-alert{display:flex;gap:14px;align-items:flex-start;padding:14px 18px;border-radius:12px;background:var(--onyx);border-left:4px solid var(--cobalt);margin-bottom:10px}
-.smart-alert.danger{border-left-color:var(--crimson);background:rgba(239,68,68,.05)}
-.smart-alert.warning{border-left-color:var(--amber);background:rgba(245,158,11,.05)}
-.smart-alert.info{border-left-color:var(--cobalt);background:rgba(82,102,235,.05)}
+.smart-alert{display:flex;gap:14px;align-items:flex-start;padding:16px 20px;border-radius:14px;background:rgba(19,19,27,.6);border-left:4px solid var(--cobalt);margin-bottom:12px;transition:transform .25s var(--apple-ease)}
+.smart-alert:hover{transform:translateX(5px)}
+.smart-alert.danger{border-left-color:var(--crimson);background:rgba(239,68,68,.06)}
+.smart-alert.warning{border-left-color:var(--amber);background:rgba(245,158,11,.06)}
+.smart-alert.info{border-left-color:var(--cobalt);background:rgba(82,102,235,.06)}
 
 /* Semáforo Predictivo Pre-Despacho */
-.semaforo-card{background:var(--graphite);border-radius:14px;padding:28px;border:1px solid rgba(255,255,255,.05)}
-.semaforo-box{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
-.gauge-visual{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:var(--onyx);border-radius:16px;border:1px solid var(--line);text-align:center}
-.gauge-circle{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;margin-bottom:10px;border:4px solid transparent;transition:all .4s}
-.gauge-circle.verde{background:rgba(16,185,129,.15);border-color:#10b981;color:#34d399}
-.gauge-circle.amarillo{background:rgba(245,158,11,.15);border-color:#f59e0b;color:#fbbf24}
-.gauge-circle.rojo{background:rgba(239,68,68,.15);border-color:#ef4444;color:#f87171}
+.semaforo-card{background:rgba(26,26,36,.8);border-radius:18px;padding:32px;border:1px solid rgba(255,255,255,.07)}
+.semaforo-box{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+.gauge-visual{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;background:rgba(19,19,27,.7);border-radius:18px;border:1px solid var(--line);text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.gauge-circle{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin-bottom:12px;border:4px solid transparent;transition:all .5s var(--apple-ease)}
+.gauge-circle.verde{background:rgba(16,185,129,.16);border-color:#10b981;color:#34d399;box-shadow:0 0 28px rgba(16,185,129,.35)}
+.gauge-circle.amarillo{background:rgba(245,158,11,.16);border-color:#f59e0b;color:#fbbf24;box-shadow:0 0 28px rgba(245,158,11,.35)}
+.gauge-circle.rojo{background:rgba(239,68,68,.16);border-color:#ef4444;color:#f87171;box-shadow:0 0 28px rgba(239,68,68,.35)}
 
 /* Forense de Fletes */
-.forense-card{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(30,30,42,.95) 45%);border:1px solid rgba(245,158,11,.25)}
+.forense-card{background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(26,26,36,.9) 45%);border:1px solid rgba(245,158,11,.3);box-shadow:0 20px 50px rgba(0,0,0,.4),0 0 30px rgba(245,158,11,.1)}
 
 /* Tabla */
 .tbl-wrap{overflow-x:auto;margin:0 -30px -30px;padding-bottom:10px}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th,td{padding:14px 20px;text-align:left;border-bottom:1px solid rgba(112,112,125,.18)}
-th{color:var(--ash);font-weight:500;font-size:12px;letter-spacing:.02em;text-transform:uppercase;background:rgba(23,23,33,.5)}
-tr:hover td{background:rgba(255,255,255,.02)}
+th{color:var(--ash);font-weight:500;font-size:12px;letter-spacing:.02em;text-transform:uppercase;background:rgba(19,19,27,.6)}
+tr{transition:background .2s}
+tr:hover td{background:rgba(255,255,255,.03)}
 .tools{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid var(--line)}
-.tabs{display:flex;background:var(--onyx);border-radius:30px;padding:3px;gap:2px}
+.tabs{display:flex;background:rgba(19,19,27,.8);border-radius:30px;padding:3px;gap:2px}
 .tabs button{height:34px;padding:0 14px;border:0;background:transparent;color:var(--ash);border-radius:30px;font:500 13px var(--font);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
-.tabs button.on{background:var(--obsidian);color:var(--ivory)}
+.tabs button.on{background:var(--obsidian);color:var(--ivory);box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .tabs button b{font-weight:600;font-size:11px;padding:2px 7px;border-radius:20px;background:rgba(255,255,255,.08)}
 
-/* ============================================================
-   ESTILOS DE PLANES, MONETIZACIÓN Y CALCULADORA DE ROI
-   ============================================================ */
+/* Planes y Pricing estilo Apple Keynote */
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:28px}
-.plan-card{background:var(--onyx);border:1px solid var(--line);border-radius:16px;padding:32px 28px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .3s,border-color .3s,box-shadow .3s;position:relative}
-.plan-card.featured{border-color:var(--cobalt);background:linear-gradient(180deg,rgba(82,102,235,.12),var(--onyx) 55%);box-shadow:0 16px 40px rgba(82,102,235,.15)}
-.plan-card:hover{transform:translateY(-6px);border-color:var(--cobalt-light);box-shadow:0 24px 50px rgba(0,0,0,.45)}
-.plan-badge-top{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#5266eb,#7b8eff);color:#fff;font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 4px 12px rgba(82,102,235,.4)}
+.plan-card{background:rgba(26,26,36,.75);backdrop-filter:blur(24px);border:1px solid var(--line);border-radius:18px;padding:34px 28px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .4s var(--apple-ease),border-color .3s,box-shadow .4s var(--apple-ease);position:relative}
+.plan-card.featured{border-color:var(--cobalt);background:linear-gradient(180deg,rgba(82,102,235,.15),rgba(26,26,36,.85) 60%);box-shadow:0 20px 50px rgba(82,102,235,.2)}
+.plan-card:hover{transform:translateY(-8px);border-color:var(--cobalt-light);box-shadow:0 30px 60px rgba(0,0,0,.55)}
+.plan-badge-top{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#5266eb,#7b8eff);color:#fff;font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 4px 14px rgba(82,102,235,.5)}
 
 /* Calculadora interactiva de ROI */
-.roi-box{background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(39,39,53,.85) 60%);border:1px solid rgba(16,185,129,.3);border-radius:16px;padding:28px 32px;margin:28px 0}
+.roi-box{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(35,35,48,.8) 60%);border:1px solid rgba(16,185,129,.35);border-radius:18px;padding:32px;margin:28px 0;box-shadow:0 20px 50px rgba(0,0,0,.3)}
 .roi-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
-.roi-stat-box{background:var(--onyx);border:1px solid var(--line);border-radius:12px;padding:16px 20px;text-align:center}
+.roi-stat-box{background:rgba(19,19,27,.75);border:1px solid var(--line);border-radius:14px;padding:18px 20px;text-align:center;transition:transform .25s var(--apple-ease)}
+.roi-stat-box:hover{transform:translateY(-3px)}
 
 /* Drag & Drop */
-.drop{border:1.5px dashed var(--line);border-radius:12px;padding:26px;text-align:center;cursor:pointer;background:var(--onyx);display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color .2s,background .2s}
-.drop:hover{border-color:var(--cobalt);background:rgba(82,102,235,.04)}
+.drop{border:1.5px dashed var(--line);border-radius:14px;padding:28px;text-align:center;cursor:pointer;background:rgba(19,19,27,.6);display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color .2s,background .2s}
+.drop:hover{border-color:var(--cobalt);background:rgba(82,102,235,.06)}
 
 /* Modal */
-.modal{position:fixed;inset:0;background:rgba(10,10,15,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:90;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.modal{position:fixed;inset:0;background:rgba(10,10,15,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:90;opacity:0;pointer-events:none;transition:opacity .3s var(--apple-ease)}
 .modal.open{opacity:1;pointer-events:auto}
-.modal .card{transform:scale(.95);transition:transform .25s cubic-bezier(.2,.7,.2,1);max-height:92vh;overflow-y:auto}
-.modal.open .card{transform:scale(1)}
+.modal .card{transform:scale(.94) translateY(20px);transition:transform .35s var(--apple-ease);max-height:92vh;overflow-y:auto}
+.modal.open .card{transform:scale(1) translateY(0)}
 
 /* Toast */
 #toasts{position:fixed;bottom:24px;right:24px;z-index:100;display:grid;gap:8px;pointer-events:none}
-.toast{background:var(--obsidian);color:var(--ivory);padding:12px 18px;border-radius:24px;border:1px solid var(--line);box-shadow:0 12px 30px rgba(0,0,0,.5);font-size:13.5px;font-weight:450;animation:toastIn .3s cubic-bezier(.2,.7,.2,1) both}
+.toast{background:var(--obsidian);color:var(--ivory);padding:14px 20px;border-radius:26px;border:1px solid var(--line);box-shadow:0 16px 40px rgba(0,0,0,.55);font-size:13.5px;font-weight:450;animation:toastIn .35s var(--apple-ease) both}
 .toast.out{animation:toastOut .25s forwards}
 
 /* Bottom Nav Móvil */
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:62px;background:rgba(23,23,33,.94);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.06);z-index:35;padding:0 8px;justify-content:space-around;align-items:center}
-.mob-btn{background:none;border:none;color:var(--ash);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:color .2s}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:62px;background:rgba(19,19,27,.94);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.07);z-index:35;padding:0 8px;justify-content:space-around;align-items:center}
+.mob-btn{background:none;border:none;color:var(--ash);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:color .2s,transform .2s}
+.mob-btn:active{transform:scale(.92)}
 .mob-btn.on{color:var(--cobalt-light)}
 .mob-btn svg{width:19px;height:19px}
 
@@ -202,22 +290,18 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .tour-dot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background .25s,transform .25s}
 .tour-dot.active{background:var(--cobalt-light);transform:scale(1.25)}
 
-/* Animaciones */
+/* Animaciones de sistema */
 @keyframes navReveal{from{transform:translateY(-100%)}to{transform:translateY(0)}}
 @keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(82,102,235,0)}50%{box-shadow:0 0 24px rgba(82,102,235,.35)}}
-@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.15)}}
-@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes toastOut{to{opacity:0;transform:translateY(8px);filter:blur(2px)}}
-@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-@keyframes kpiFlash{0%{color:#8b9eff}100%{color:inherit}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(82,102,235,0)}50%{box-shadow:0 0 24px rgba(82,102,235,.4)}}
+@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.2)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px);filter:blur(3px)}}
+@keyframes kpiFlash{0%{color:#8b9eff;transform:scale(1.04)}100%{color:inherit;transform:scale(1)}}
 
-.rv{opacity:0;animation:rise .75s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0)*80ms)}
-.pop{animation:pop .4s cubic-bezier(.2,.7,.2,1) both}
-.kpi-flash{animation:kpiFlash .7s ease both}
-#badge-novedades{animation:floatBadge 3.4s ease-in-out infinite}
+.kpi-flash{animation:kpiFlash .7s var(--apple-ease) both}
+#badge-novedades{animation:floatBadge 3.6s ease-in-out infinite}
 .sla{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff6b6b;margin-left:8px;animation:pulse 1.6s infinite}
 
 /* Responsive */
@@ -236,6 +320,16 @@ tr:hover td{background:rgba(255,255,255,.02)}
 </style>
 </head>
 <body>
+
+<!-- BARRA DE PROGRESO DE SCROLL ESTILO APPLE (TOP GLOW LINE) -->
+<div id="scroll-progress"></div>
+
+<!-- FONDOS ATMOSFÉRICOS FLOTANTES (AURORAS ESPACIALES) -->
+<div class="apple-aurora-bg">
+  <div class="aurora-orb aurora-1"></div>
+  <div class="aurora-orb aurora-2"></div>
+  <div class="aurora-orb aurora-3"></div>
+</div>
 
 <svg width="0" height="0" style="position:absolute">
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
@@ -274,11 +368,11 @@ tr:hover td{background:rgba(255,255,255,.02)}
     </svg>
     <div class="wrap">
       <div class="auth-grid">
-        <div>
-          <span class="tag rv" style="margin-bottom:24px"><span class="dot emerald"></span>Bóveda comercial en tiempo real</span>
-          <h1 class="display rv" style="--d:1">Cada guía en novedad es capital esperando liberación.</h1>
-          <p class="lead rv" style="margin-top:20px;max-width:520px;--d:2">Audita fletes en riesgo, obtén diagnósticos inteligentes de tus transportadoras y activa rescate por WhatsApp para blindar tu margen real.</p>
-          <div class="vault rv" style="--d:3">
+        <div class="apple-reveal">
+          <span class="tag" style="margin-bottom:24px"><span class="dot emerald pulse"></span>Bóveda comercial en tiempo real</span>
+          <h1 class="display">Cada guía en novedad es capital esperando liberación.</h1>
+          <p class="lead" style="margin-top:20px;max-width:520px">Audita fletes en riesgo, obtén diagnósticos inteligentes de tus transportadoras y activa rescate por WhatsApp para blindar tu margen real.</p>
+          <div class="vault">
             <div class="card">
               <div class="cap">Capital protegido en tránsito</div>
               <div class="h-sm num" style="margin-top:6px"><span id="vault-amt">$0</span> <span id="vault-cur" class="cap">COP</span></div>
@@ -288,10 +382,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
           </div>
         </div>
 
-        <div class="card rv" style="padding:36px;--d:2">
+        <div class="card apple-reveal delay-1" style="padding:36px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
             <h2 class="h-sm">Vincular bóveda comercial</h2>
-            <span class="tag line" style="font-size:11px">v2.5 Pro</span>
+            <span class="tag line" style="font-size:11px">v2.6 Pro</span>
           </div>
           <p class="muted" style="margin-bottom:24px;font-size:13.5px">Inicia sesión con tu tienda Dropi para sincronizar tus órdenes reales.</p>
           
@@ -337,9 +431,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
     </div>
   </section>
 
-  <!-- SECCIÓN VISIBLE DE PLANES DIRECTAMENTE EN LA LANDING PAGE -->
-  <section class="wrap" style="padding-top:20px;padding-bottom:60px" id="landing-pricing-section">
-    <div class="card rv" style="--d:1;padding:44px 36px">
+  <!-- SECCIÓN VISIBLE DE PLANES DIRECTAMENTE EN LA PORTADA -->
+  <section class="wrap apple-reveal" style="padding-top:30px;padding-bottom:70px" id="landing-pricing-section">
+    <div class="card" style="padding:48px 36px">
       <div style="text-align:center;max-width:760px;margin:0 auto">
         <span class="tag" style="background:rgba(82,102,235,.2);color:#8b9eff;margin-bottom:12px">PLANES, PRECIOS Y ALIANZAS B2B</span>
         <h2 class="h-lg">Invierte en retener tus fletes, no en regalárselos a la transportadora</h2>
@@ -361,7 +455,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
 
       <!-- Calculadora Interactiva de Retorno de Inversión (ROI) -->
-      <div class="roi-box">
+      <div class="roi-box apple-reveal delay-1">
         <div class="roi-grid">
           <div>
             <span class="tag emerald" style="margin-bottom:8px">CALCULADORA DE RETORNO DE INVERSIÓN (ROI)</span>
@@ -414,7 +508,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <!-- Tarjetas de Precios Dinámicas -->
       <div class="pricing-grid" id="pricing-grid-container">
         <!-- Plan Starter -->
-        <div class="plan-card">
+        <div class="plan-card apple-reveal delay-1">
           <div>
             <span class="cap">Starter Merchant</span>
             <div class="h num" style="margin-top:8px" id="price-starter">$79.000 <span style="font-size:14px;color:var(--slate)">COP/mes</span></div>
@@ -431,7 +525,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
         </div>
 
         <!-- Plan Pro Merchant (Destacado) -->
-        <div class="plan-card featured">
+        <div class="plan-card featured apple-reveal delay-2">
           <div class="plan-badge-top">⭐ MÁS ELEGIDO POR DROPSHIPPERS</div>
           <div>
             <span class="cap" style="color:var(--cobalt-light)">Pro Merchant</span>
@@ -453,7 +547,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
         </div>
 
         <!-- Plan Marca Blanca / Academias -->
-        <div class="plan-card">
+        <div class="plan-card apple-reveal delay-3">
           <div>
             <span class="cap">Marca Blanca / Academias</span>
             <div class="h num" style="margin-top:8px" id="price-agency">$690.000 <span style="font-size:14px;color:var(--slate)">COP/mes</span></div>
@@ -471,12 +565,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
 
       <!-- Testimonios de dropshippers -->
-      <div style="margin-top:36px;padding-top:28px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:24px" class="two">
-        <div style="background:var(--onyx);padding:20px;border-radius:12px;border:1px solid var(--line)">
+      <div style="margin-top:36px;padding-top:28px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:24px" class="two apple-reveal delay-2">
+        <div style="background:rgba(19,19,27,.6);padding:22px;border-radius:14px;border:1px solid var(--line)">
           <p style="font-size:14px;font-style:italic">“Redujimos las devoluciones del 19.4% al 6.1% en solo 10 días. Cada flete salvado va directo al bolsillo.”</p>
           <div class="cap" style="margin-top:10px;color:var(--ivory)">— Andrés Felipe Morales · Tienda Imperio COD</div>
         </div>
-        <div style="background:var(--onyx);padding:20px;border-radius:12px;border:1px solid var(--line)">
+        <div style="background:rgba(19,19,27,.6);padding:22px;border-radius:14px;border:1px solid var(--line)">
           <p style="font-size:14px;font-style:italic">“Entregar esta herramienta personalizada a los 240 alumnos de nuestra comunidad disparó nuestra retención de suscripción.”</p>
           <div class="cap" style="margin-top:10px;color:var(--ivory)">— Mentor Ecom Latam · Academia Dropshipping</div>
         </div>
@@ -516,7 +610,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <section class="sec" style="padding-bottom:24px">
       <div class="grid g-2">
         <!-- Hero: Capital Rescatado WhatsApp -->
-        <div class="card card-recuperado rv" style="--d:1;padding:28px 32px">
+        <div class="card card-recuperado apple-reveal" style="padding:28px 32px">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
             <div>
               <div class="row" style="gap:10px;margin-bottom:8px">
@@ -541,7 +635,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
         </div>
 
         <!-- Hero: Auditoría Forense de Fletes (Detección de Cobros Incorrectos) -->
-        <div class="card forense-card rv" style="--d:2;padding:28px 32px">
+        <div class="card forense-card apple-reveal delay-1" style="padding:28px 32px">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
             <div>
               <div class="row" style="gap:10px;margin-bottom:8px">
@@ -570,7 +664,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <!-- BLOQUE KPIS BANCARIOS Y CARGA DE EXCEL -->
     <section class="sec">
       <div class="grid g-hero">
-        <div class="card rv" style="padding:32px;--d:1">
+        <div class="card apple-reveal" style="padding:32px">
           <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-start">
             <div style="min-width:0">
               <div class="cap">Utilidad Neta Real · Libre en Billetera</div>
@@ -587,7 +681,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           </div>
         </div>
 
-        <div class="card rv" style="display:flex;flex-direction:column;gap:16px;--d:2">
+        <div class="card apple-reveal delay-1" style="display:flex;flex-direction:column;gap:16px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
             <span class="cap">Auditoría Externa</span><span id="total-ordenes-badge" class="tag">0 órdenes</span>
           </div>
@@ -609,7 +703,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
     <!-- BLOQUE: SEMÁFORO PREDICTIVO PRE-DESPACHO (PREVENCIÓN DE DEVOLUCIONES) -->
     <section class="sec" id="seccion-semaforo">
-      <div class="card semaforo-card rv" style="--d:1">
+      <div class="card semaforo-card apple-reveal">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px">
           <div>
             <div class="cap">Prevención Logística Inteligente</div>
@@ -694,7 +788,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <!-- BLOQUE: GRÁFICAS ANIMADAS (DONUT + LINE TENDENCIA) -->
     <section class="sec" id="seccion-graficas">
       <div class="grid g-2">
-        <div class="card rv" style="--d:1">
+        <div class="card apple-reveal">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <div><div class="cap">Distribución Operativa</div><h3 class="h-sm" style="font-size:20px;margin-top:4px">Estado de Guías del Lote</h3></div>
             <span class="tag line"><svg class="i" style="width:14px;height:14px"><use href="#i-chart"/></svg>Tiempo Real</span>
@@ -711,7 +805,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           </div>
         </div>
 
-        <div class="card rv" style="--d:2">
+        <div class="card apple-reveal delay-1">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <div><div class="cap">Margen Financiero</div><h3 class="h-sm" style="font-size:20px;margin-top:4px">Utilidad y Recaudo Acumulado</h3></div>
             <span class="tag emerald">Rentabilidad</span>
@@ -726,7 +820,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <!-- BLOQUE: RANKING DE TRANSPORTADORAS Y ALERTAS INTELIGENTES -->
     <section class="sec" id="seccion-logistica">
       <div class="grid g-2">
-        <div class="card rv" style="--d:1">
+        <div class="card apple-reveal">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
             <div><div class="cap">Rendimiento Logístico</div><h3 class="h-sm" style="font-size:20px;margin-top:4px">Ranking de Transportadoras</h3></div>
             <span class="tag line"><svg class="i" style="width:14px;height:14px"><use href="#i-truck"/></svg>Decisión</span>
@@ -735,7 +829,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <div id="transportadoras-ranking"></div>
         </div>
 
-        <div class="card rv" style="--d:2">
+        <div class="card apple-reveal delay-1">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
             <div><div class="cap">Diagnóstico Preventivo</div><h3 class="h-sm" style="font-size:20px;margin-top:4px">Alertas Inteligentes & Fugas</h3></div>
             <span class="tag" style="background:rgba(82,102,235,.2);color:#8b9eff"><svg class="i" style="width:14px;height:14px"><use href="#i-spark"/></svg>Asesor</span>
@@ -748,7 +842,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
     <!-- BLOQUE: AUDITORÍA FORENSE DE FLETES (RECLAMOS) -->
     <section class="sec" id="seccion-auditoria">
-      <div class="card rv" style="--d:1">
+      <div class="card apple-reveal">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:20px">
           <div>
             <div class="cap">Control Financiero & Facturación</div>
@@ -779,7 +873,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
     <!-- BLOQUE: WEBHOOKS EN VIVO Y AUTO-RESOLUCIÓN DE CLIENTES -->
     <section class="sec" id="seccion-automatizaciones">
-      <div class="card rv" style="--d:2">
+      <div class="card apple-reveal">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px">
           <div>
             <div class="cap">Automatizaciones & Eventos</div>
@@ -796,7 +890,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
         </p>
 
         <div class="grid g-2">
-          <div style="background:var(--onyx);padding:22px;border-radius:12px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between">
+          <div style="background:rgba(19,19,27,.6);padding:22px;border-radius:14px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div class="row" style="gap:8px;margin-bottom:8px">
                 <b>📡 Evento Webhook de Dropi</b>
@@ -811,7 +905,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
             </button>
           </div>
 
-          <div style="background:var(--onyx);padding:22px;border-radius:12px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between">
+          <div style="background:rgba(19,19,27,.6);padding:22px;border-radius:14px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div class="row" style="gap:8px;margin-bottom:8px">
                 <b>🤖 Auto-Resolución de WhatsApp (NLP)</b>
@@ -845,7 +939,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
     <!-- BLOQUE: TABLA DE NOVEDADES Y ACCIONES -->
     <section class="sec" id="seccion-novedades">
-      <div class="card rv" style="padding-bottom:0;overflow:hidden;--d:3">
+      <div class="card apple-reveal" style="padding-bottom:0;overflow:hidden">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:24px">
           <div style="max-width:560px">
             <div class="row" style="gap:14px;margin-bottom:6px"><h2 class="h" style="font-size:26px">Capital Retenido en Novedad</h2><span id="badge-novedades" class="tag line">0 críticas</span></div>
@@ -877,7 +971,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
     <!-- BLOQUE: PLANES Y ALIANZAS DENTRO DEL DASHBOARD -->
     <section class="sec" id="seccion-venta" style="padding-top:24px">
-      <div class="card rv" style="--d:1;padding:40px 32px">
+      <div class="card apple-reveal" style="padding:40px 32px">
         <div style="text-align:center;max-width:680px;margin:0 auto">
           <span class="tag" style="background:rgba(82,102,235,.2);color:#8b9eff;margin-bottom:12px">ALIANZAS B2B Y MONETIZACIÓN</span>
           <h2 class="h-lg">Entrega DropiVault con la marca de tu propia academia</h2>
@@ -910,7 +1004,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <button class="mob-btn" onclick="abrirModalPlanes()"><svg class="i"><use href="#i-spark"/></svg><span>Planes</span></button>
 </nav>
 
-<!-- ===== MODAL DEDICADO: PLANES, PRECIOS Y ALIANZAS B2B (SIEMPRE DISPONIBLE) ===== -->
+<!-- ===== MODAL DEDICADO: PLANES, PRECIOS Y ALIANZAS B2B ===== -->
 <div id="modal-planes" class="modal" onclick="if(event.target===this)cerrarModalPlanes()">
   <div class="card" style="max-width:980px;width:100%;padding:40px 32px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -927,7 +1021,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
         El software se amortiza solo con salvar apenas 2 o 3 pedidos al mes. Sin cláusulas de permanencia.
       </p>
 
-      <!-- Selector de Moneda y Ciclo en Modal -->
       <div class="row" style="justify-content:center;gap:16px;margin-top:20px">
         <div class="tabs" id="tabs-moneda-modal">
           <button class="on" id="btn-mon-cop-modal" onclick="cambiarMonedaPlanes('COP')">🇨🇴 Pesos (COP)</button>
@@ -940,7 +1033,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </div>
 
-    <!-- Pricing Grid en Modal -->
     <div class="pricing-grid" style="margin-top:10px">
       <!-- Starter -->
       <div class="plan-card">
@@ -1252,12 +1344,29 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div id="toasts" aria-live="polite"></div>
 
 <!-- ============================================================
-     JAVASCRIPT MOTOR COMPLETO V2.6 (CON PLANES Y ROI EN VIVO)
+     JAVASCRIPT MOTOR COMPLETO V2.7 (CON APPLE MOTION Y SCROLL GLOW)
      ============================================================ -->
 <script>
 // Endpoint del backend seguro DropiVault (Node.js + Express)
-const API = 'http://localhost:3000';
+// Detección de entorno: En producción (Netlify / web) usamos '' (relativo)
+// para conectar con Netlify Functions y proxies sin bloqueos CORS o Mixed-Content.
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? (window.location.port === '3000' ? '' : 'http://localhost:3000')
+  : '';
 let metodoAuthActual = 'token', sesionUsuario = null;
+
+// Proxy inverso para Dropi (Bypass CORS en móviles y navegadores cuando se ejecuta en Netlify)
+function resolverProxyDropi(paisUrl) {
+  const clean = (paisUrl || 'https://api.dropi.co').replace(/\/$/, '');
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    if (clean.includes('dropi.co')) return '/dropi-co';
+    if (clean.includes('dropi.mx')) return '/dropi-mx';
+    if (clean.includes('dropi.ec')) return '/dropi-ec';
+    if (clean.includes('dropi.cl')) return '/dropi-cl';
+    if (clean.includes('dropi.pe')) return '/dropi-pe';
+  }
+  return clean;
+}
 
 // DATO BASE: Arranca completamente en 0 / vacío por defecto a menos que haya guardado previo
 let ordenesTotales = [], ordenesEnNovedad = [];
@@ -1338,6 +1447,59 @@ let plantillasWA = {
   formal: "Estimado(a) {cliente}, le saluda el departamento de logística de {tienda}. Le notificamos sobre el despacho de su pedido de {producto} con número de guía {guia}. Se ha generado la siguiente novedad: {motivo}. Agradecemos responder a este mensaje validando su dirección ({direccion}, {ciudad}) para asegurar la entrega efectiva."
 };
 
+// ============================================================
+// APPLE MOTION ENGINE: OBSERVERS, 3D TILT & PROGRESS
+// ============================================================
+function initAppleMotionEngine() {
+  // 1. IntersectionObserver para reveals fluidos estilo Apple
+  const revealElements = document.querySelectorAll('.apple-reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+      }
+    });
+  }, {
+    threshold: 0.08,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  revealElements.forEach(el => observer.observe(el));
+
+  // 2. 3D Tilt y Glare especular magnético en cards estilo Apple Card
+  const cards = document.querySelectorAll('.card, .plan-card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+
+      // Inclinación 3D suave con perspectiva
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -3.2;
+      const rotateY = ((x - centerX) / centerX) * 3.2;
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+
+  // 3. Barra de progreso de lectura superior estilo Apple
+  window.addEventListener('scroll', () => {
+    const bar = document.getElementById('scroll-progress');
+    if (bar) {
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
+      bar.style.width = `${progress}%`;
+    }
+  }, { passive: true });
+}
+
 // Carga inicial
 function initApp() {
   cargarMultiTienda();
@@ -1350,6 +1512,7 @@ function initApp() {
   ejecutarAuditoriaFletes();
   actualizarPreciosPlanes();
   actualizarCalculadoraROI();
+  initAppleMotionEngine();
   
   if (!localStorage.getItem('dropivault.tour_done')) {
     setTimeout(() => abrirTour(), 1200);
@@ -1426,13 +1589,11 @@ function irASeccionVenta() {
 
 function cambiarMonedaPlanes(mon) {
   monedaPlanesActual = mon;
-  // Actualizar botones landing
   const bL = document.querySelectorAll('#tabs-moneda-landing button');
   if (bL.length) {
     bL[0].classList.toggle('on', mon === 'COP');
     bL[1].classList.toggle('on', mon === 'USD');
   }
-  // Actualizar botones modal
   const bM = document.querySelectorAll('#tabs-moneda-modal button');
   if (bM.length) {
     bM[0].classList.toggle('on', mon === 'COP');
@@ -1444,13 +1605,11 @@ function cambiarMonedaPlanes(mon) {
 
 function cambiarCicloPlanes(ciclo) {
   cicloPlanesActual = ciclo;
-  // Actualizar botones landing
   const bL = document.querySelectorAll('#tabs-ciclo-landing button');
   if (bL.length) {
     bL[0].classList.toggle('on', ciclo === 'mensual');
     bL[1].classList.toggle('on', ciclo === 'trimestral');
   }
-  // Actualizar botones modal
   const bM = document.querySelectorAll('#tabs-ciclo-modal button');
   if (bM.length) {
     bM[0].classList.toggle('on', ciclo === 'mensual');
@@ -1462,7 +1621,6 @@ function cambiarCicloPlanes(ciclo) {
 function actualizarPreciosPlanes() {
   const p = PRECIOS_PLANES[monedaPlanesActual][cicloPlanesActual];
 
-  // Actualizar en landing
   const elStarter = $('price-starter');
   const elPro = $('price-pro');
   const elAgency = $('price-agency');
@@ -1470,7 +1628,6 @@ function actualizarPreciosPlanes() {
   if (elPro) elPro.innerText = p.pro;
   if (elAgency) elAgency.innerText = p.agency;
 
-  // Actualizar en modal
   const elStarterM = $('price-starter-modal');
   const elProM = $('price-pro-modal');
   const elAgencyM = $('price-agency-modal');
@@ -1491,9 +1648,9 @@ function actualizarCalculadoraROI() {
   $('roi-txt-tasa').innerText = `${tasa}%`;
 
   const pedidosEnNovedad = Math.round(pedidos * (tasa / 100));
-  const costoFletePromedio = 15000; // COP
+  const costoFletePromedio = 15000;
   const fletesRiesgo = pedidosEnNovedad * costoFletePromedio;
-  const fletesRescatados = Math.round(fletesRiesgo * 0.60); // 60% tasa de rescate efectiva
+  const fletesRescatados = Math.round(fletesRiesgo * 0.60);
   const costoProMensual = 149000;
   const gananciaNeta = fletesRescatados - costoProMensual;
   const ratio = (fletesRescatados / costoProMensual).toFixed(1);
@@ -1554,7 +1711,7 @@ function renderizarListaTiendas() {
   cont.innerHTML = tiendasGuardadas.map(t => {
     const esActiva = t.id === tiendaActivaId;
     return `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--onyx);border-radius:10px;border:1px solid ${esActiva ? 'var(--cobalt)' : 'var(--line)'}">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(19,19,27,.75);border-radius:12px;border:1px solid ${esActiva ? 'var(--cobalt)' : 'var(--line)'}">
         <div>
           <div style="font-weight:600;font-size:14px">${esc(t.nombre)} ${esActiva ? '<span class="tag emerald" style="font-size:10px;padding:2px 6px">Activa</span>' : ''}</div>
           <div class="cap" style="margin-top:2px;font-size:11px">${esc(t.paisUrl)}</div>
@@ -1658,7 +1815,7 @@ async function conectarConDropiAPI(e) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
     const res = await fetch(`${API}/api/auth/login`, {
       method: 'POST',
@@ -1679,41 +1836,72 @@ async function conectarConDropiAPI(e) {
     const data = await res.json();
     if (res.ok && data.ok) {
       conexionExitosa = true;
-      sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'backend' };
+      sesionUsuario = {
+        email,
+        paisUrl,
+        tienda,
+        comunidad,
+        canal: 'backend',
+        sessionToken: data.sessionToken || null
+      };
+      if (data.sessionToken) {
+        try { sessionStorage.setItem('dropivault_session_token', data.sessionToken); } catch(e){}
+      }
     } else {
       errorMensaje = data.error || 'Credenciales o token no válidos en Dropi';
     }
   } catch (backendErr) {
-    console.warn('Backend en localhost:3000 no respondió, intentando conexión directa con Dropi:', backendErr.message);
+    console.warn('Backend directo no respondió, intentando conexión vía proxy Dropi:', backendErr.message);
 
     try {
+      const dropiBase = resolverProxyDropi(paisUrl);
       if (metodoAuthActual === 'credenciales') {
-        const dropiRes = await fetch(`${paisUrl}/api/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({
-            email: email.trim(),
-            password: pw.trim(),
-            white_brand_id: DROPI_WHITE_BRAND_ID
-          })
-        });
+        const loginEndpoints = [`${dropiBase}/api/login`, `${dropiBase}/login`];
+        let loginOk = false;
+        let lastDropiError = null;
 
-        const dropiData = await dropiRes.json();
-        if (dropiRes.ok && (dropiData.token || (dropiData.data && dropiData.data.token))) {
-          tokenDirectoDropi = dropiData.token || dropiData.data.token;
-          conexionExitosa = true;
-          sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'directo' };
-        } else {
-          errorMensaje = (dropiData && (dropiData.message || dropiData.error)) || 'Credenciales incorrectas en Dropi';
+        for (const u of loginEndpoints) {
+          try {
+            const dropiRes = await fetch(u, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({
+                email: email.trim(),
+                password: pw.trim(),
+                white_brand_id: DROPI_WHITE_BRAND_ID
+              })
+            });
+
+            const dropiData = await dropiRes.json();
+            if (dropiRes.ok && dropiData) {
+              const tok = dropiData.token || (dropiData.data && dropiData.data.token) || dropiData.jwt;
+              if (tok) {
+                tokenDirectoDropi = tok;
+                conexionExitosa = true;
+                sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'proxy', token: tok };
+                loginOk = true;
+                break;
+              }
+            }
+            if (dropiData && (dropiData.message || dropiData.error)) {
+              lastDropiError = dropiData.message || dropiData.error;
+            }
+          } catch(e) {
+            lastDropiError = e.message;
+          }
+        }
+
+        if (!loginOk) {
+          errorMensaje = lastDropiError || 'Credenciales incorrectas en Dropi. Por favor revisa tu correo y contraseña.';
         }
       } else {
         tokenDirectoDropi = tokenInput;
         conexionExitosa = true;
-        sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'directo' };
+        sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'proxy', token: tokenInput };
       }
     } catch (directErr) {
-      console.error('Error al conectar con Dropi directamente:', directErr);
-      errorMensaje = 'No se pudo conectar: el backend (localhost:3000) está apagado y el navegador bloqueó la conexión directa por CORS. Inicia el backend con "node server.js" o sube tu reporte Excel de Dropi.';
+      console.error('Error al conectar con Dropi:', directErr);
+      errorMensaje = 'No se pudo conectar con el servidor de Dropi. Verifica tu conexión a internet o intenta nuevamente.';
     }
   }
 
@@ -1733,7 +1921,10 @@ async function conectarConDropiAPI(e) {
   await new Promise(r => setTimeout(r, 400));
   $('auth-screen').classList.add('hidden');
   $('app-dashboard').classList.remove('hidden');
-  requestAnimationFrame(() => $('app-dashboard').classList.add('visible'));
+  requestAnimationFrame(() => {
+    $('app-dashboard').classList.add('visible');
+    initAppleMotionEngine();
+  });
   scrollTo(0, 0);
   btn.disabled = false;
 
@@ -1752,9 +1943,18 @@ async function sincronizarDesdeDropiAPI() {
   let ordenesRecibidas = null;
   let errorMsg = '';
 
+  // 1. Intentar consultar a través del backend o Netlify Functions
   if (sesionUsuario.canal === 'backend') {
     try {
-      const res = await fetch(`${API}/api/orders`, { method: 'GET', credentials: 'include' });
+      const headers = { 'Content-Type': 'application/json' };
+      const sessTok = sesionUsuario.sessionToken || (function() {
+        try { return sessionStorage.getItem('dropivault_session_token'); } catch(e){ return null; }
+      })();
+      if (sessTok) {
+        headers['Authorization'] = `Bearer ${sessTok}`;
+      }
+
+      const res = await fetch(`${API}/api/orders`, { method: 'GET', credentials: 'include', headers });
       const data = await res.json();
       if (res.ok && data.ok && Array.isArray(data.orders)) {
         ordenesRecibidas = data.orders;
@@ -1766,47 +1966,57 @@ async function sincronizarDesdeDropiAPI() {
     }
   }
 
-  if (!ordenesRecibidas && tokenDirectoDropi) {
+  // 2. Si no hay backend o estamos en canal proxy, consultar Dropi directamente vía proxy sin CORS
+  if (!ordenesRecibidas && (tokenDirectoDropi || sesionUsuario.token)) {
+    const activeToken = tokenDirectoDropi || sesionUsuario.token;
+    const dropiBase = resolverProxyDropi(sesionUsuario.paisUrl);
     const endpoints = [
-      `${sesionUsuario.paisUrl}/api/orders/myorders`,
-      `${sesionUsuario.paisUrl}/api/orders?pageSize=200`,
-      `${sesionUsuario.paisUrl}/orders/myorders`
+      { url: `${dropiBase}/api/orders/myorders`, method: 'POST', body: JSON.stringify({ pageSize: 200, limit: 200 }) },
+      { url: `${dropiBase}/api/orders/myorders?pageSize=200`, method: 'GET' },
+      { url: `${dropiBase}/api/orders?pageSize=200`, method: 'GET' },
+      { url: `${dropiBase}/orders/myorders`, method: 'POST', body: JSON.stringify({ pageSize: 200, limit: 200 }) },
+      { url: `${dropiBase}/api/v1/orders`, method: 'GET' }
     ];
 
-    for (const url of endpoints) {
+    const reqHeaders = {
+      'Authorization': `Bearer ${activeToken}`,
+      'dropi-integration-key': activeToken,
+      'token': activeToken,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+
+    for (const ep of endpoints) {
       try {
-        const res = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${tokenDirectoDropi}`,
-            'dropi-integration-key': tokenDirectoDropi,
-            'Content-Type': 'application/json'
-          }
-        });
+        const opts = { method: ep.method, headers: reqHeaders };
+        if (ep.body) opts.body = ep.body;
+        const res = await fetch(ep.url, opts);
         if (res.ok) {
           const d = await res.json();
-          const list = Array.isArray(d) ? d : (d.objects || d.data || d.orders || d.pedidos || []);
+          const list = Array.isArray(d) ? d : (d.objects || d.data || d.orders || d.pedidos || d.items || d.results || []);
           if (Array.isArray(list)) {
             ordenesRecibidas = list.map((r, i) => ({
-              guia: String(r.guide_number || r.numero_guia || r.order_id || r.id || `DRP-${i+1}`).trim(),
-              cliente: r.customer_name || r.nombre_cliente || r.cliente || 'Cliente',
-              telefono: String(r.customer_phone || r.telefono || '').replace(/\D/g, ''),
-              ciudad: r.city || (r.ciudad_destino && r.ciudad_destino.name) || 'Colombia',
-              direccion: r.address || r.direccion || 'Dirección en guía',
-              producto: r.product_name || r.producto || 'Producto',
+              guia: String(r.guide_number || r.numero_guia || r.tracking_number || r.order_id || r.id || `DRP-${i+1}`).trim(),
+              cliente: r.customer_name || r.nombre_cliente || r.cliente || (r.customer && r.customer.name) || 'Cliente',
+              telefono: String(r.customer_phone || r.telefono || r.phone || (r.customer && r.customer.phone) || '').replace(/\D/g, ''),
+              ciudad: r.city || (r.ciudad_destino && (r.ciudad_destino.name || r.ciudad_destino)) || 'Colombia',
+              direccion: r.address || r.direccion || (r.customer && r.customer.address) || 'Dirección registrada',
+              producto: r.product_name || r.producto || (r.products && r.products[0] && r.products[0].name) || 'Producto',
               estado: String(r.status || r.state || 'PENDIENTE').toUpperCase(),
-              motivo: r.incident_reason || r.motivo || '',
-              total: Number(r.total || r.amount || 0),
+              motivo: r.incident_reason || r.motivo_novedad || r.motivo || '',
+              total: Number(r.total || r.amount || r.total_order || 0),
               costoProveedor: Number(r.supplier_cost || r.costo_proveedor || 0),
               flete: Number(r.shipping_cost || r.flete || 0),
               transportadora: r.carrier || r.transportadora || 'Servientrega',
-              horasNovedad: Number(r.hours_in_incident || 0),
+              horasNovedad: Number(r.hours_in_incident || r.horas_novedad || 0),
               solucion: ''
             }));
             break;
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Fallo al consultar endpoint Dropi:', ep.url, e);
+      }
     }
   }
 
@@ -1880,6 +2090,7 @@ function refrescar() {
   calcularRiesgoPreDespacho();
   ejecutarAuditoriaFletes();
   guardar();
+  initAppleMotionEngine();
 }
 
 const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -1887,9 +2098,11 @@ function setNum(id, to, fmt) {
   const el = $(id); if (!el) return;
   const from = el._v ?? 0; cancelAnimationFrame(el._r); el._v = to;
   if (reduce || from === to) { el.innerText = fmt(to); return; }
-  const t0 = performance.now(), D = 800;
+  const t0 = performance.now(), D = 900;
   (function f(t) {
-    const p = Math.min((t - t0) / D, 1), e = 1 - Math.pow(1 - p, 3);
+    const p = Math.min((t - t0) / D, 1);
+    // Apple easeOutExpo
+    const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
     el.innerText = fmt(from + (to - from) * e);
     if (p < 1) el._r = requestAnimationFrame(f);
     else { el.classList.remove('kpi-flash'); void el.offsetWidth; el.classList.add('kpi-flash'); }
@@ -2404,17 +2617,17 @@ function renderizarGraficas() {
         datasets: [{
           data: [ent || (ordenesTotales.length ? 0 : 1), nov, dev],
           backgroundColor: ordenesTotales.length ? ['#10b981', '#f59e0b', '#ef4444'] : ['#272735', '#272735', '#272735'],
-          borderColor: '#1e1e2a',
+          borderColor: '#1a1a24',
           borderWidth: 3,
-          hoverOffset: 6
+          hoverOffset: 8
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        cutout: '70%',
-        animation: { animateScale: true, animateRotate: true, duration: 1100 }
+        cutout: '72%',
+        animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' }
       }
     });
   }
@@ -2455,18 +2668,18 @@ function renderizarGraficas() {
             borderColor: '#5266eb',
             backgroundColor: 'rgba(82,102,235,.15)',
             fill: true,
-            tension: .35,
-            borderWidth: 2.5,
+            tension: .38,
+            borderWidth: 2.8,
             pointRadius: 3,
             pointBackgroundColor: '#5266eb'
           },
           {
             label: 'Facturación',
             data: dataFact,
-            borderColor: 'rgba(226,227,237,.3)',
+            borderColor: 'rgba(226,227,237,.35)',
             borderDash: [4, 4],
-            tension: .35,
-            borderWidth: 1.5,
+            tension: .38,
+            borderWidth: 1.6,
             pointRadius: 0
           }
         ]
@@ -2478,10 +2691,10 @@ function renderizarGraficas() {
           legend: { labels: { color: '#c3c3cc', font: { family: 'Inter', size: 11 } } }
         },
         scales: {
-          x: { grid: { display: false }, ticks: { color: '#70707d', font: { size: 10 } } },
-          y: { grid: { color: 'rgba(112,112,125,.15)' }, ticks: { color: '#70707d', font: { size: 10 } } }
+          x: { grid: { display: false }, ticks: { color: '#757582', font: { size: 10 } } },
+          y: { grid: { color: 'rgba(112,112,125,.14)' }, ticks: { color: '#757582', font: { size: 10 } } }
         },
-        animation: { duration: 1300, easing: 'easeOutQuart' }
+        animation: { duration: 1400, easing: 'easeOutQuart' }
       }
     });
   }
@@ -2650,7 +2863,7 @@ function renderizarTabla(anim = true) {
       .replace(/{tienda}/g, sesionUsuario ? sesionUsuario.tienda : 'Nuestra Tienda');
     const msg = encodeURIComponent(mensajeTexto);
 
-    return `<tr${anim ? ` class="rv" style="--d:${Math.min(i, 10)+2}"` : ''}>
+    return `<tr${anim ? ` class="apple-reveal in-view"` : ''}>
       <td>
         <div class="mono" style="color:var(--ivory)">${esc(o.guia)}${alerta ? '<span class="sla" title="Más de 36 h en novedad"></span>' : ''}</div>
         <div class="row" style="gap:6px;margin-top:4px"><span class="tag" style="padding:2px 8px;font-size:11px">${esc(o.transportadora)}</span>${c ? `<span class="cap num" style="font-size:11px;${alerta ? 'color:#ff6b6b' : ''}">${o.horasNovedad}h</span>` : ''}</div>

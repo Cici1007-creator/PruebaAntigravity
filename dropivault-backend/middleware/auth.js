@@ -1,11 +1,18 @@
 const { getSession } = require('../services/sessions');
 
 /**
- * Middleware que verifica la presencia y validez de la cookie de sesión
+ * Middleware que verifica la presencia y validez de la cookie o cabecera Authorization
  * Si la sesión no existe o expiró, devuelve HTTP 401 Unauthorized
  */
 function requireSession(req, res, next) {
-  const sessionId = req.cookies && req.cookies.dropivault_session;
+  let sessionId = req.cookies && req.cookies.dropivault_session;
+
+  if (!sessionId) {
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'] || '';
+    if (authHeader.startsWith('Bearer ')) {
+      sessionId = authHeader.slice(7).trim();
+    }
+  }
 
   if (!sessionId) {
     return res.status(401).json({
@@ -31,4 +38,3 @@ function requireSession(req, res, next) {
 module.exports = {
   requireSession
 };
-
