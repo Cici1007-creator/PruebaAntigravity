@@ -351,7 +351,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 <!-- ===== PANTALLA AUTH / INGRESO & LANDING PAGE ===== -->
 <div id="auth-screen">
   <header class="nav" id="nav-auth"><div class="wrap">
-    <div class="brand" onclick="location.reload()"><svg><use href="#logo"/></svg><span id="nav-brand-title">DropiVault</span></div>
+    <div class="brand" onclick="location.reload()"><span id="auth-logo-slot"><svg><use href="#logo"/></svg></span><span id="nav-brand-title">DropiVault</span></div>
     <div class="row">
       <button class="btn btn-ghost btn-sm" onclick="abrirModalPlanes()"><svg class="i" style="width:15px;height:15px"><use href="#i-spark"/></svg><span>Planes y Alianzas</span></button>
       <button class="btn btn-ghost btn-sm hide-s" onclick="abrirTour()"><svg class="i" style="width:15px;height:15px"><use href="#i-spark"/></svg>Tour guiado</button>
@@ -592,7 +592,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
 <!-- ===== DASHBOARD PRINCIPAL ===== -->
 <div id="app-dashboard" class="hidden">
   <header class="nav" id="nav-app"><div class="wrap">
-    <div class="brand" onclick="scrollTo(0,0)"><svg><use href="#logo"/></svg>
+    <div class="brand" onclick="scrollTo(0,0)"><span id="app-logo-slot"><svg><use href="#logo"/></svg></span>
       <div><span id="header-tienda">Mi Tienda</span> <span id="header-comunidad" class="brand-badge hide-s">Comunidad</span></div>
     </div>
     <div class="row">
@@ -1271,26 +1271,64 @@ tr:hover td{background:rgba(255,255,255,.03)}
   </div>
 </div>
 
-<!-- ===== MODAL: MARCA BLANCA / WHITE-LABEL SIMULATOR ===== -->
+<!-- ===== MODAL: MARCA BLANCA / WHITE-LABEL COMPLETO ===== -->
 <div id="modal-whitelabel" class="modal" onclick="if(event.target===this)cerrarModalWhiteLabel()">
-  <div class="card" style="max-width:500px;width:100%;padding:36px">
+  <div class="card" style="max-width:540px;width:100%;padding:36px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 class="h-sm">Simulador de Marca Blanca</h3>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="tag" style="background:rgba(99,102,241,0.2);color:#8b9eff">B2B WHITE-LABEL</span>
+        <h3 class="h-sm">Personalizador de Marca Blanca</h3>
+      </div>
       <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalWhiteLabel()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
     </div>
-    <p class="muted" style="font-size:13.5px;margin-bottom:20px">Mira cómo se transforma DropiVault al instante con la identidad corporativa de tu propia academia o comunidad.</p>
+    <p class="muted" style="font-size:13.5px;margin-bottom:20px">
+      Transforma toda la interfaz de DropiVault con la identidad corporativa de tu propia academia, comunidad o mentoría.
+    </p>
     
     <div style="display:grid;gap:16px">
+      <!-- 1. Logo de la Academia -->
       <div>
-        <label class="f">Nombre de tu Academia / Software</label>
-        <input id="wl-nombre" class="in" value="Imperio COD Pro" placeholder="Ej: Masters Academy">
+        <label class="f">Logo de tu Academia o Marca (.PNG transparente o .SVG)</label>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:6px">
+          <div id="wl-logo-preview" style="width:48px;height:48px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;overflow:hidden">
+            <svg style="width:24px;height:24px;opacity:0.4"><use href="#logo"/></svg>
+          </div>
+          <div style="flex:1">
+            <input type="file" id="wl-logo-file" accept="image/*" class="in" style="font-size:12px;padding:8px" onchange="cargarLogoArchivo(event)">
+          </div>
+        </div>
+        <p class="cap" style="margin-top:6px;font-size:11px;color:var(--slate)">O ingresa una URL web de tu logo:</p>
+        <input id="wl-logo-url" class="in" placeholder="https://miacademia.com/logo.png" style="font-size:12.5px" oninput="cargarLogoUrl(this.value)">
       </div>
+
+      <!-- 2. Nombre del Software -->
       <div>
-        <label class="f">Insignia de la Alianza</label>
+        <label class="f">Nombre de tu Software o Academia</label>
+        <input id="wl-nombre" class="in" value="Imperio COD Pro" placeholder="Ej: Masters Academy Vault">
+      </div>
+
+      <!-- 3. Insignia o Comunidad -->
+      <div>
+        <label class="f">Insignia / Eslogan de la Alianza</label>
         <input id="wl-insignia" class="in" value="Comunidad VIP" placeholder="Ej: Alumnos Dropi Elite">
       </div>
-      <button class="btn btn-primary" onclick="aplicarWhiteLabelEnVivo()">Aplicar Marca en Vivo</button>
-      <button type="button" class="btn btn-ghost" onclick="restablecerMarcaDefault()">Restablecer Marca Original</button>
+
+      <!-- 4. Color Acento de la Marca -->
+      <div>
+        <label class="f">Color Primario de tu Marca</label>
+        <div style="display:flex;gap:10px;margin-top:8px" id="wl-color-presets">
+          <button type="button" class="btn btn-sm" onclick="seleccionarColorMarca('#6366f1', 'rgba(99,102,241,0.3)')" style="background:#6366f1;color:#fff;border-radius:8px">Cobalto</button>
+          <button type="button" class="btn btn-sm" onclick="seleccionarColorMarca('#8b5cf6', 'rgba(139,92,246,0.3)')" style="background:#8b5cf6;color:#fff;border-radius:8px">Violeta</button>
+          <button type="button" class="btn btn-sm" onclick="seleccionarColorMarca('#10b981', 'rgba(16,185,129,0.3)')" style="background:#10b981;color:#fff;border-radius:8px">Esmeralda</button>
+          <button type="button" class="btn btn-sm" onclick="seleccionarColorMarca('#f59e0b', 'rgba(245,158,11,0.3)')" style="background:#f59e0b;color:#fff;border-radius:8px">Dorado</button>
+          <button type="button" class="btn btn-sm" onclick="seleccionarColorMarca('#ef4444', 'rgba(239,68,68,0.3)')" style="background:#ef4444;color:#fff;border-radius:8px">Carmesí</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button class="btn btn-primary" style="flex:1" onclick="aplicarWhiteLabelEnVivo()">Aplicar y Guardar Marca</button>
+        <button type="button" class="btn btn-ghost" onclick="restablecerMarcaDefault()">Restablecer Original</button>
+      </div>
     </div>
   </div>
 </div>
@@ -3036,29 +3074,130 @@ function mostrarPasoTour() {
 }
 
 // ==========================================
-// MARCA BLANCA (WHITE-LABEL)
+// SISTEMA MARCA BLANCA (WHITE-LABEL COMPLETO)
 // ==========================================
+const LS_WHITELABEL = 'dropivault.whitelabel.v2';
+let configuracionMarcaBlanca = {
+  activo: false,
+  nombre: 'DropiVault',
+  insignia: 'Comunidad',
+  logoBase64: null,
+  colorPrimario: null,
+  colorGlow: null
+};
+
 function abrirModalWhiteLabel() { $('modal-whitelabel').classList.add('open'); }
 function cerrarModalWhiteLabel() { $('modal-whitelabel').classList.remove('open'); }
+
+function cargarLogoArchivo(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const dataUrl = evt.target.result;
+    $('wl-logo-preview').innerHTML = `<img src="${dataUrl}" style="max-height:100%;max-width:100%;object-fit:contain">`;
+    configuracionMarcaBlanca.logoBase64 = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+function cargarLogoUrl(url) {
+  if (!url || !url.trim()) return;
+  configuracionMarcaBlanca.logoBase64 = url.trim();
+  $('wl-logo-preview').innerHTML = `<img src="${url.trim()}" style="max-height:100%;max-width:100%;object-fit:contain">`;
+}
+
+function seleccionarColorMarca(hex, glow) {
+  configuracionMarcaBlanca.colorPrimario = hex;
+  configuracionMarcaBlanca.colorGlow = glow;
+  document.documentElement.style.setProperty('--cobalt', hex);
+  document.documentElement.style.setProperty('--cobalt-glow', glow);
+  toast(`Color de marca seleccionado: ${hex}`);
+}
+
 function aplicarWhiteLabelEnVivo() {
   const nombre = $('wl-nombre').value.trim() || 'DropiVault';
   const insignia = $('wl-insignia').value.trim() || 'Comunidad';
   
+  configuracionMarcaBlanca.activo = true;
+  configuracionMarcaBlanca.nombre = nombre;
+  configuracionMarcaBlanca.insignia = insignia;
+
+  // Actualizar textos
   $('nav-brand-title').innerText = nombre;
-  $('header-tienda').innerText = nombre;
-  $('nav-active-store').innerText = nombre;
-  $('header-comunidad').innerText = insignia;
-  
+  if ($('header-tienda')) $('header-tienda').innerText = nombre;
+  if ($('nav-active-store')) $('nav-active-store').innerText = nombre;
+  if ($('header-comunidad')) $('header-comunidad').innerText = insignia;
+
+  // Actualizar logo si existe
+  if (configuracionMarcaBlanca.logoBase64) {
+    const imgHtml = `<img src="${configuracionMarcaBlanca.logoBase64}" style="max-height:28px;max-width:38px;object-fit:contain;border-radius:6px;vertical-align:middle">`;
+    if ($('auth-logo-slot')) $('auth-logo-slot').innerHTML = imgHtml;
+    if ($('app-logo-slot')) $('app-logo-slot').innerHTML = imgHtml;
+  }
+
+  // Guardar en localStorage
+  try {
+    localStorage.setItem(LS_WHITELABEL, JSON.stringify(configuracionMarcaBlanca));
+  } catch(e) {}
+
   cerrarModalWhiteLabel();
-  toast(`¡Marca Blanca aplicada! Ahora la app se llama '${nombre}'`);
+  toast(`¡Marca Blanca aplicada con éxito! Aplicación renombrada a '${nombre}'`);
 }
+
+function restaurarWhiteLabelGuardado() {
+  try {
+    const guardado = localStorage.getItem(LS_WHITELABEL);
+    if (!guardado) return;
+    const config = JSON.parse(guardado);
+    if (!config || !config.activo) return;
+
+    configuracionMarcaBlanca = config;
+    $('nav-brand-title').innerText = config.nombre || 'DropiVault';
+    if ($('header-tienda')) $('header-tienda').innerText = config.nombre || 'DropiVault';
+    if ($('nav-active-store')) $('nav-active-store').innerText = config.nombre || 'DropiVault';
+    if ($('header-comunidad')) $('header-comunidad').innerText = config.insignia || 'Comunidad';
+
+    if (config.logoBase64) {
+      const imgHtml = `<img src="${config.logoBase64}" style="max-height:28px;max-width:38px;object-fit:contain;border-radius:6px;vertical-align:middle">`;
+      if ($('auth-logo-slot')) $('auth-logo-slot').innerHTML = imgHtml;
+      if ($('app-logo-slot')) $('app-logo-slot').innerHTML = imgHtml;
+      if ($('wl-logo-preview')) $('wl-logo-preview').innerHTML = imgHtml;
+    }
+
+    if (config.colorPrimario) {
+      document.documentElement.style.setProperty('--cobalt', config.colorPrimario);
+      if (config.colorGlow) document.documentElement.style.setProperty('--cobalt-glow', config.colorGlow);
+    }
+  } catch(e) {}
+}
+
 function restablecerMarcaDefault() {
+  configuracionMarcaBlanca = {
+    activo: false,
+    nombre: 'DropiVault',
+    insignia: 'Comunidad',
+    logoBase64: null,
+    colorPrimario: null,
+    colorGlow: null
+  };
+  try { localStorage.removeItem(LS_WHITELABEL); } catch(e) {}
+
   $('nav-brand-title').innerText = 'DropiVault';
   $('header-tienda').innerText = sesionUsuario ? sesionUsuario.tienda : 'Mi Tienda';
   $('nav-active-store').innerText = sesionUsuario ? sesionUsuario.tienda : 'Mi Tienda';
   $('header-comunidad').innerText = sesionUsuario ? sesionUsuario.comunidad : 'Comunidad';
+
+  const defaultSvg = '<svg><use href="#logo"/></svg>';
+  if ($('auth-logo-slot')) $('auth-logo-slot').innerHTML = defaultSvg;
+  if ($('app-logo-slot')) $('app-logo-slot').innerHTML = defaultSvg;
+  if ($('wl-logo-preview')) $('wl-logo-preview').innerHTML = defaultSvg;
+
+  document.documentElement.style.setProperty('--cobalt', '#5266eb');
+  document.documentElement.style.setProperty('--cobalt-glow', 'rgba(82,102,235,.2)');
+
   cerrarModalWhiteLabel();
-  toast('Marca original restablecida');
+  toast('Marca original de DropiVault restablecida');
 }
 
 function irA(id) {
