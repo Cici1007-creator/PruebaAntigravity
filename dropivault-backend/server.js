@@ -167,7 +167,11 @@ try {
     }
   });
 
-  // 5. Webhook Dropi (Recepción de eventos en tiempo real)
+  // 5. Webhook Dropi (Recepción de eventos en tiempo real y verificación)
+  app.get('/api/webhooks/dropi', (req, res) => {
+    res.json({ ok: true, status: 'online', service: 'DropiVault Webhook Receiver' });
+  });
+
   app.post('/api/webhooks/dropi', (req, res) => {
     const event = req.body;
     const receivedAt = new Date().toISOString();

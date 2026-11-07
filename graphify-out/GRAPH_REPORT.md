@@ -1,7 +1,7 @@
 # Graph Report - PruebaAntigravity  (2026-11-06)
 
 ## Corpus Check
-- 16 files · ~32,819 words
+- 16 files · ~35,484 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 4 file(s) not represented in the graph (top: (none) 2, .example 1, .toml 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `94c32905`
+- Built from commit: `65a4df6d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

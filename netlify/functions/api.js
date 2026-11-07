@@ -413,12 +413,45 @@ exports.handler = async function (event, context) {
     }
   }
 
-  // 7. Webhook Dropi: POST /webhooks/dropi
-  if (path === '/webhooks/dropi' && method === 'POST') {
+  // 7. Webhook Dropi: Recepción y verificación (GET, POST, OPTIONS)
+  if (path === '/webhooks/dropi') {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ ok: true, recibido: true, timestamp: Date.now() })
+      body: JSON.stringify({
+        ok: true,
+        status: 'webhook_active',
+        service: 'DropiVault Live Sync',
+        recibido: true,
+        timestamp: Date.now()
+      })
+    };
+  }
+
+  // 7b. Webhook WhatsApp Meta: Verificación GET con challenge y recepción POST
+  if (path === '/webhooks/whatsapp') {
+    const params = event.queryStringParameters || {};
+    const mode = params['hub.mode'];
+    const token = params['hub.verify_token'];
+    const challenge = params['hub.challenge'];
+    const verifyToken = process.env.WEBHOOK_SECRET || 'dropivault_webhook_token_2026';
+
+    if (mode === 'subscribe' && token === verifyToken) {
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'text/plain' },
+        body: challenge || 'OK'
+      };
+    }
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        ok: true,
+        status: 'whatsapp_webhook_active',
+        timestamp: Date.now()
+      })
     };
   }
 

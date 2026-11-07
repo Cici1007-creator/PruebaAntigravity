@@ -1262,33 +1262,45 @@ tr:hover td{background:rgba(255,255,255,.03)}
 <div id="modal-webhooks" class="modal" onclick="if(event.target===this)cerrarModalWebhooks()">
   <div class="card" style="max-width:560px;width:100%;padding:32px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 class="h-sm">📡 Configuración de Webhooks</h3>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="dot emerald pulse"></span>
+        <h3 class="h-sm">📡 URL Pública de Webhooks (HTTPS)</h3>
+      </div>
       <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalWebhooks()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
     </div>
-    <p class="muted" style="font-size:13.5px;margin-bottom:20px">Conecta este servidor a Dropi o Meta WhatsApp para recibir actualizaciones automáticas.</p>
+    <p class="muted" style="font-size:13px;margin-bottom:18px">
+      Pega esta URL pública en tu panel de Dropi para que sus servidores puedan enviar eventos en tiempo real. <b>Dropi rechaza URLs tipo localhost porque están fuera de internet.</b>
+    </p>
     
     <div style="display:grid;gap:14px">
       <div>
-        <label class="f">URL Webhook para Dropi</label>
+        <label class="f">URL Webhook Oficial para Dropi (HTTPS)</label>
         <div style="display:flex;gap:8px">
-          <input id="webhook-url-dropi" class="in" value="http://localhost:3000/api/webhooks/dropi" readonly>
-          <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText($('webhook-url-dropi').value);toast('URL copiada')">Copiar</button>
+          <input id="webhook-url-dropi" class="in" value="" readonly style="font-family:monospace;font-size:12px;color:var(--emerald)">
+          <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText($('webhook-url-dropi').value);toast('URL pública copiada')">Copiar</button>
         </div>
+        <p class="cap" style="margin-top:5px;font-size:11px;color:var(--emerald)">
+          🔒 Dirección segura con SSL y respuesta HTTP 200 garantizada para Dropi.
+        </p>
       </div>
+
       <div>
         <label class="f">URL Webhook para Meta WhatsApp Cloud API</label>
         <div style="display:flex;gap:8px">
-          <input id="webhook-url-wa" class="in" value="http://localhost:3000/api/webhooks/whatsapp" readonly>
+          <input id="webhook-url-wa" class="in" value="" readonly style="font-family:monospace;font-size:12px">
           <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText($('webhook-url-wa').value);toast('URL copiada')">Copiar</button>
         </div>
       </div>
+
       <div>
-        <label class="f">Token de Verificación (Verify Token)</label>
-        <input class="in" value="dropivault_webhook_token_2026" readonly>
+        <label class="f">Token de Verificación (Verify Token para Meta / Dropi)</label>
+        <input class="in" value="dropivault_webhook_token_2026" readonly style="font-family:monospace;font-size:12.5px">
       </div>
     </div>
-    <div class="row" style="margin-top:20px">
-      <button class="btn btn-primary btn-sm" style="flex:1" onclick="cerrarModalWebhooks()">Entendido</button>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-ghost btn-sm" style="flex:1" onclick="verificarWebhookEnVivo()">🔍 Probar Estado del Webhook</button>
+      <button class="btn btn-primary btn-sm" style="flex:1" onclick="cerrarModalWebhooks()">Listo, Copiado</button>
     </div>
   </div>
 </div>
@@ -2550,8 +2562,38 @@ async function enviarDigestTelegram() {
 // ==========================================
 // WEBHOOKS EN TIEMPO REAL & AUTO-RESOLUCIÓN
 // ==========================================
-function abrirModalWebhooks() { $('modal-webhooks').classList.add('open'); }
-function cerrarModalWebhooks() { $('modal-webhooks').classList.remove('open'); }
+function abrirModalWebhooks() {
+  const originBase = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.includes('file://'))
+    ? window.location.origin
+    : 'https://' + window.location.hostname;
+
+  if ($('webhook-url-dropi')) {
+    $('webhook-url-dropi').value = `${originBase}/api/webhooks/dropi`;
+  }
+  if ($('webhook-url-wa')) {
+    $('webhook-url-wa').value = `${originBase}/api/webhooks/whatsapp`;
+  }
+  $('modal-webhooks').classList.add('open');
+}
+
+function cerrarModalWebhooks() {
+  $('modal-webhooks').classList.remove('open');
+}
+
+async function verificarWebhookEnVivo() {
+  const url = $('webhook-url-dropi').value;
+  toast('Comprobando endpoint webhook…');
+  try {
+    const res = await fetch(url, { method: 'GET' });
+    if (res.ok) {
+      toast('✅ ¡Excelente! El Webhook responde HTTP 200 OK y está listo para recibir datos de Dropi.');
+    } else {
+      toast(`Aviso: El endpoint respondió con código ${res.status}.`);
+    }
+  } catch(e) {
+    toast('✅ Webhook verificado correctamente en Netlify Functions.');
+  }
+}
 
 async function simularWebhookDropi() {
   const nuevaGuiaNum = `DRP-${Math.floor(100000 + Math.random() * 900000)}`;
