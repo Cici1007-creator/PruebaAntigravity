@@ -84,28 +84,19 @@ try {
     });
   });
 
-  // 1. Auth Login
+  // 1. Auth Login (Exclusivo con Token Oficial de Dropi)
   app.post('/api/auth/login', loginLimiter, async (req, res) => {
     try {
-      const { email, password, token, paisUrl, tienda, comunidad } = req.body;
+      const { email, token, paisUrl, tienda, comunidad } = req.body;
       const cleanPaisUrl = String(paisUrl || 'https://api.dropi.co').replace(/\/$/, '');
 
       if (!email || !tienda) {
         return res.status(400).json({ ok: false, error: 'Correo corporativo y nombre de tienda son requeridos' });
       }
 
-      let tokenFinal = token ? String(token).trim() : null;
-
-      if (password && String(password).trim()) {
-        const whiteBrandId = process.env.DROPI_WHITE_BRAND_ID || 'df3e6b0bb66ceaadca4f84cbc371fd66e04d20fe51fc414da8d1b84d31d178de';
-        try {
-          const authData = await dropiService.login(email.trim(), String(password).trim(), cleanPaisUrl, whiteBrandId);
-          tokenFinal = authData.token;
-        } catch (err) {
-          return res.status(401).json({ ok: false, error: err.message || 'Credenciales inválidas en Dropi' });
-        }
-      } else if (!tokenFinal) {
-        return res.status(400).json({ ok: false, error: 'Ingresa tu Token de integración o contraseña de Dropi' });
+      const tokenFinal = token ? String(token).trim() : null;
+      if (!tokenFinal) {
+        return res.status(400).json({ ok: false, error: 'Ingresa tu Token de integración de Dropi' });
       }
 
       const sessionId = createSession({

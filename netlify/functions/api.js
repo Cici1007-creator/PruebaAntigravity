@@ -161,11 +161,11 @@ exports.handler = async function (event, context) {
     };
   }
 
-  // 2. Auth Login: POST /auth/login
+  // 2. Auth Login: POST /auth/login (Exclusivo con Token Oficial de Dropi)
   if (path === '/auth/login' && method === 'POST') {
     try {
       const body = JSON.parse(event.body || '{}');
-      const { email, password, token, paisUrl, tienda, comunidad } = body;
+      const { email, token, paisUrl, tienda, comunidad } = body;
       const cleanPaisUrl = String(paisUrl || 'https://api.dropi.co').replace(/\/$/, '');
 
       if (!email || !tienda) {
@@ -176,65 +176,12 @@ exports.handler = async function (event, context) {
         };
       }
 
-      let dropiToken = token ? String(token).trim() : null;
-
-      // Autenticar con Dropi si se suministró contraseña
-      if (password && String(password).trim()) {
-        const loginEndpoints = [
-          `${cleanPaisUrl}/api/login`,
-          `${cleanPaisUrl}/login`
-        ];
-
-        let authSuccess = false;
-        let lastErr = null;
-
-        for (const url of loginEndpoints) {
-          try {
-            const dropiRes = await fetch(url, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              },
-              body: JSON.stringify({
-                email: email.trim(),
-                password: String(password).trim(),
-                white_brand_id: WHITE_BRAND_ID
-              })
-            });
-
-            const data = await dropiRes.json();
-            if (dropiRes.ok && data) {
-              const tok = data.token || (data.data && data.data.token) || data.jwt;
-              if (tok) {
-                dropiToken = tok;
-                authSuccess = true;
-                break;
-              }
-            }
-            if (data && (data.message || data.error)) {
-              lastErr = data.message || data.error;
-            }
-          } catch (e) {
-            lastErr = e.message;
-          }
-        }
-
-        if (!authSuccess || !dropiToken) {
-          return {
-            statusCode: 401,
-            headers,
-            body: JSON.stringify({
-              ok: false,
-              error: lastErr || 'Credenciales no válidas en Dropi. Por favor revisa tu correo y contraseña.'
-            })
-          };
-        }
-      } else if (!dropiToken) {
+      const dropiToken = token ? String(token).trim() : null;
+      if (!dropiToken) {
         return {
           statusCode: 400,
           headers,
-          body: JSON.stringify({ ok: false, error: 'Ingresa tu contraseña o Token de integración de Dropi' })
+          body: JSON.stringify({ ok: false, error: 'Ingresa tu Token de integración de Dropi (Mi Cuenta › Mis Integraciones)' })
         };
       }
 
@@ -247,7 +194,6 @@ exports.handler = async function (event, context) {
         paisUrl: cleanPaisUrl
       });
 
-      // Retornar cookie y respuesta JSON con sessionToken
       const cookieHeader = `dropivault_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`;
 
       return {
@@ -260,7 +206,7 @@ exports.handler = async function (event, context) {
           ok: true,
           tienda: tienda.trim(),
           comunidad: (comunidad || '').trim(),
-          modo: password ? 'credenciales_dropi' : 'token_dropi',
+          modo: 'token_dropi',
           sessionToken
         })
       };
@@ -268,7 +214,7 @@ exports.handler = async function (event, context) {
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ ok: false, error: 'Error procesando login: ' + err.message })
+        body: JSON.stringify({ ok: false, error: 'Error procesando autenticación: ' + err.message })
       };
     }
   }

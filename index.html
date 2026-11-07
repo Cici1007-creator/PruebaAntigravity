@@ -389,10 +389,15 @@ tr:hover td{background:rgba(255,255,255,.03)}
           </div>
           <p class="muted" style="margin-bottom:24px;font-size:13.5px">Inicia sesión con tu tienda Dropi para sincronizar tus órdenes reales.</p>
           
-          <div class="seg" style="margin-bottom:24px">
-            <button type="button" id="tab-token" class="on" onclick="cambiarMetodoAuth('token')">Token de integración ⭐</button>
-            <button type="button" id="tab-credenciales" onclick="cambiarMetodoAuth('credenciales')">Credenciales</button>
+          <div style="margin-bottom:20px;padding:14px 16px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);border-radius:12px;font-size:13px;line-height:1.5">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--cobalt)">
+              <svg class="i" style="width:16px;height:16px"><use href="#i-shield"/></svg> Conexión Oficial con Token de Dropi
+            </span>
+            <p style="margin:4px 0 0 0;color:var(--slate);font-size:12.5px">
+              Dropi no permite compartir contraseñas maestras con aplicaciones externas. La vinculación se realiza mediante tu Token de Integración seguro.
+            </p>
           </div>
+
           <form onsubmit="conectarConDropiAPI(event)" style="display:grid;gap:18px">
             <div><label class="f">Correo electrónico corporativo</label>
               <input id="auth-email" class="in" type="email" required placeholder="finanzas@tutienda.co"></div>
@@ -405,7 +410,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
                   <option value="https://api.dropi.cl">Chile (CLP)</option>
                   <option value="https://api.dropi.pe">Perú (PEN)</option>
                 </select></div>
-              <div><label class="f">Nombre comercial</label>
+              <div><label class="f">Nombre comercial de tu tienda</label>
                 <input id="auth-tienda" class="in" type="text" required placeholder="Ej: Imperio COD"></div>
             </div>
             <div><label class="f">Comunidad de e-commerce o Alianza</label>
@@ -418,18 +423,18 @@ tr:hover td{background:rgba(255,255,255,.03)}
                 <option>Comunidad Privada Telegram/Discord</option>
                 <option>Dropshipper Independiente</option>
               </select></div>
-            <div id="bloque-token"><label class="f">Token de integración <span style="color:var(--slate)">· Dropi › Mi Cuenta › Mis integraciones</span></label>
-              <input id="auth-token" class="in" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6…">
-              <p class="cap" style="margin-top:8px;font-weight:400;text-transform:none;color:var(--emerald)">
-                ✅ <b>Oficial y Seguro:</b> En Dropi ve a <b>Mi Cuenta › Mis Integraciones</b> y copia tu Token. Conecta al instante sin exponer tu contraseña.
-              </p></div>
-            <div id="bloque-password" class="hidden"><label class="f">Contraseña de acceso Dropi</label>
-              <input id="auth-password" class="in" type="password" placeholder="••••••••••••">
-              <p class="cap" style="margin-top:8px;font-weight:400;text-transform:none;color:#f59e0b">
-                ⚠️ <b>Importante:</b> Por políticas de seguridad, Dropi bloquea inicios de sesión con contraseña a apps externas (Access Denied). Te recomendamos usar la pestaña <b>Token de integración</b>.
-              </p></div>
-            <div id="auth-loading" class="hidden tag" style="border-radius:12px;padding:12px 14px;font-size:13px"><span id="auth-loading-text">Conectando túnel seguro con Dropi…</span></div>
-            <button class="btn btn-primary" style="height:52px;margin-top:4px">Iniciar sesión y sincronizar <svg class="i"><use href="#i-arrow"/></svg></button>
+            <div>
+              <label class="f">Token de integración Dropi</label>
+              <input id="auth-token" class="in" type="password" required placeholder="Pega aquí tu token (ej: eyJhbGciOiJIUzI1NiIsInR5cCI6…)">
+              <div style="margin-top:10px;padding:12px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.22);border-radius:10px;font-size:12.5px;line-height:1.5;color:var(--emerald)">
+                🔑 <b>¿Cómo obtener tu Token en 15 segundos?</b><br>
+                1. Inicia sesión en tu cuenta en <b>dropi.co</b>.<br>
+                2. Haz clic arriba en <b>Mi Cuenta › Mis Integraciones</b>.<br>
+                3. Haz clic en <b>Copiar Token</b> (o Generar Token) y pégalo en este campo.
+              </div>
+            </div>
+            <div id="auth-loading" class="hidden tag" style="border-radius:12px;padding:12px 14px;font-size:13px"><span id="auth-loading-text">Conectando con Dropi…</span></div>
+            <button class="btn btn-primary" style="height:52px;margin-top:4px">Vincular tienda y sincronizar <svg class="i"><use href="#i-arrow"/></svg></button>
           </form>
         </div>
       </div>
@@ -1782,42 +1787,29 @@ function eliminarTienda(id) {
 }
 
 // ==========================================
-// CONEXIÓN Y LOGIN REAL DROPI
+// CONEXIÓN Y LOGIN REAL DROPI (VÍA TOKEN OFICIAL)
 // ==========================================
-function cambiarMetodoAuth(m) {
-  metodoAuthActual = m;
-  $('tab-token').classList.toggle('on', m === 'token');
-  $('tab-credenciales').classList.toggle('on', m !== 'token');
-  document.querySelector('.seg').classList.toggle('r', m !== 'token');
-  $('bloque-token').classList.toggle('hidden', m !== 'token');
-  $('bloque-password').classList.toggle('hidden', m === 'token');
-}
-
-const DROPI_WHITE_BRAND_ID = "df3e6b0bb66ceaadca4f84cbc371fd66e04d20fe51fc414da8d1b84d31d178de";
 let tokenDirectoDropi = null;
 
 async function conectarConDropiAPI(e) {
   e.preventDefault();
-  const email = $('auth-email').value, paisUrl = $('auth-pais').value, tienda = $('auth-tienda').value,
-        comunidad = $('auth-comunidad').value, tokenInput = $('auth-token').value.trim(), pw = $('auth-password').value;
+  const email = $('auth-email').value.trim(), paisUrl = $('auth-pais').value, tienda = $('auth-tienda').value.trim(),
+        comunidad = $('auth-comunidad').value, tokenInput = $('auth-token').value.trim();
   const btn = e.target.querySelector('button.btn-primary');
   
-  if (metodoAuthActual === 'token' && !tokenInput) {
+  if (!tokenInput) {
     toast('Por favor ingresa tu Token de integración de Dropi');
-    return;
-  }
-  if (metodoAuthActual === 'credenciales' && !pw) {
-    toast('Por favor ingresa tu contraseña de acceso a Dropi');
     return;
   }
 
   btn.disabled = true;
   $('auth-loading').classList.remove('hidden');
-  $('auth-loading-text').innerText = `Conectando con ${paisUrl}…`;
+  $('auth-loading-text').innerText = `Validando token con ${paisUrl}…`;
 
   let conexionExitosa = false;
   let errorMensaje = '';
 
+  // 1. Intentar registrar sesión en Netlify Functions / Backend
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 6000);
@@ -1828,12 +1820,11 @@ async function conectarConDropiAPI(e) {
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({
-        email: email.trim(),
-        password: (metodoAuthActual === 'credenciales' && pw) ? pw.trim() : undefined,
-        token: (metodoAuthActual === 'token' && tokenInput) ? tokenInput.trim() : undefined,
+        email,
+        token: tokenInput,
         paisUrl,
-        tienda: tienda.trim(),
-        comunidad: comunidad.trim()
+        tienda,
+        comunidad
       })
     });
     clearTimeout(timeoutId);
@@ -1841,77 +1832,36 @@ async function conectarConDropiAPI(e) {
     const data = await res.json();
     if (res.ok && data.ok) {
       conexionExitosa = true;
+      tokenDirectoDropi = tokenInput;
       sesionUsuario = {
         email,
         paisUrl,
         tienda,
         comunidad,
         canal: 'backend',
+        token: tokenInput,
         sessionToken: data.sessionToken || null
       };
       if (data.sessionToken) {
         try { sessionStorage.setItem('dropivault_session_token', data.sessionToken); } catch(e){}
       }
     } else {
-      errorMensaje = data.error || 'Credenciales o token no válidos en Dropi';
+      errorMensaje = data.error || 'Token de Dropi no válido';
     }
   } catch (backendErr) {
-    console.warn('Backend directo no respondió, intentando conexión vía proxy Dropi:', backendErr.message);
+    console.warn('Backend / Functions no respondió directamente, conectando con token por canal proxy:', backendErr.message);
 
-    try {
-      const dropiBase = resolverProxyDropi(paisUrl);
-      if (metodoAuthActual === 'credenciales') {
-        const loginEndpoints = [`${dropiBase}/api/login`, `${dropiBase}/login`];
-        let loginOk = false;
-        let lastDropiError = null;
-
-        for (const u of loginEndpoints) {
-          try {
-            const dropiRes = await fetch(u, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-              body: JSON.stringify({
-                email: email.trim(),
-                password: pw.trim(),
-                white_brand_id: DROPI_WHITE_BRAND_ID
-              })
-            });
-
-            const dropiData = await dropiRes.json();
-            if (dropiRes.ok && dropiData) {
-              const tok = dropiData.token || (dropiData.data && dropiData.data.token) || dropiData.jwt;
-              if (tok) {
-                tokenDirectoDropi = tok;
-                conexionExitosa = true;
-                sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'proxy', token: tok };
-                loginOk = true;
-                break;
-              }
-            }
-            if (dropiData && (dropiData.message || dropiData.error)) {
-              lastDropiError = dropiData.message || dropiData.error;
-            }
-          } catch(e) {
-            lastDropiError = e.message;
-          }
-        }
-
-        if (!loginOk) {
-          if (lastDropiError && (/access denied|403|bloque/i.test(lastDropiError))) {
-            errorMensaje = 'Dropi bloquea el acceso con contraseña por seguridad (Access Denied). Por favor usa la pestaña "Token de integración" (lo encuentras en tu Dropi › Mi Cuenta › Mis Integraciones).';
-          } else {
-            errorMensaje = lastDropiError || 'Credenciales no válidas en Dropi. Te sugerimos usar tu Token de integración (Dropi › Mi Cuenta › Mis Integraciones).';
-          }
-        }
-      } else {
-        tokenDirectoDropi = tokenInput;
-        conexionExitosa = true;
-        sesionUsuario = { email, paisUrl, tienda, comunidad, canal: 'proxy', token: tokenInput };
-      }
-    } catch (directErr) {
-      console.error('Error al conectar con Dropi:', directErr);
-      errorMensaje = 'No se pudo conectar con el servidor de Dropi. Verifica tu conexión a internet o intenta nuevamente.';
-    }
+    // 2. Conexión directa mediante el token ingresado (sin dependencia de backend)
+    tokenDirectoDropi = tokenInput;
+    conexionExitosa = true;
+    sesionUsuario = {
+      email,
+      paisUrl,
+      tienda,
+      comunidad,
+      canal: 'proxy',
+      token: tokenInput
+    };
   }
 
   if (!conexionExitosa) {
