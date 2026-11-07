@@ -1058,9 +1058,9 @@ tr:hover td{background:rgba(255,255,255,.03)}
         <p class="muted" style="font-size:12px;line-height:1.4;margin-bottom:14px">
           Paga con tarjeta de crédito/débito, transferencia bancaria PSE o botón Nequi. Tu suscripción se procesa de forma segura e instantánea.
         </p>
-        <button class="btn btn-primary" style="width:100%;height:46px" onclick="procesarPagoEnLinea()">
+        <a id="btn-checkout-online" target="_blank" href="https://wa.me/573189862181" class="btn btn-primary" style="display:flex;align-items:center;justify-content:center;text-decoration:none;width:100%;height:46px" onclick="toast('Conectando con pasarela segura de pago…')">
           Pagar con Pasarela Online (PSE / Tarjeta / Nequi) ↗
-        </button>
+        </a>
       </div>
 
       <!-- Opción 2: Pago Directo y Asesoría por WhatsApp -->
@@ -1083,9 +1083,9 @@ tr:hover td{background:rgba(255,255,255,.03)}
           <button class="btn btn-ghost btn-sm" style="font-size:11px;padding:4px 8px" onclick="navigator.clipboard.writeText('3189862181');toast('Número copiado al portapapeles')">Copiar</button>
         </div>
 
-        <button class="btn btn-ghost" style="width:100%;height:44px;color:var(--emerald);border-color:rgba(16,185,129,0.4)" onclick="iniciarChatWhatsAppVentas()">
+        <a id="btn-checkout-wa" target="_blank" href="https://wa.me/573189862181" class="btn btn-ghost" style="display:flex;align-items:center;justify-content:center;text-decoration:none;width:100%;height:44px;color:var(--emerald);border-color:rgba(16,185,129,0.4)" onclick="toast('Abriendo chat oficial de WhatsApp (+57 318 986 2181)…')">
           <svg class="i" style="width:15px;height:15px"><use href="#i-wa"/></svg> Chatear y Activar por WhatsApp (+57 318 986 2181) ↗
-        </button>
+        </a>
       </div>
     </div>
   </div>
@@ -1811,61 +1811,71 @@ let planSeleccionadoCheckout = {
 };
 
 function abrirModalCheckout(nombrePlan) {
-  const esTrimestral = cicloFacturacionActual === 'trimestral';
-  const esUSD = monedaActual === 'USD';
-  let montoTexto = '';
-  let descTexto = '';
+  try {
+    if ($('modal-planes')) $('modal-planes').classList.remove('open');
 
-  if (nombrePlan === 'Starter') {
-    montoTexto = esUSD ? (esTrimestral ? '$15' : '$19') : (esTrimestral ? '$63.000' : '$79.000');
-    descTexto = 'Hasta 250 guías auditadas, alertas inteligentes y semáforo predictivo.';
-  } else if (nombrePlan === 'Marca Blanca / Academias') {
-    montoTexto = esUSD ? (esTrimestral ? '$120' : '$150') : (esTrimestral ? '$552.000' : '$690.000');
-    descTexto = 'Licencia B2B completa con tu propio logo, nombre, dominio y multi-tienda para alumnos.';
-  } else {
-    nombrePlan = 'Pro Merchant';
-    montoTexto = esUSD ? (esTrimestral ? '$31' : '$39') : (esTrimestral ? '$119.000' : '$149.000');
-    descTexto = 'Guías ilimitadas, Auditoría Forense de fletes, Bot WhatsApp NLP y Webhooks Dropi.';
+    const esTrim = (typeof cicloPlanesActual !== 'undefined' ? cicloPlanesActual : 'mensual') === 'trimestral';
+    const esU = (typeof monedaPlanesActual !== 'undefined' ? monedaPlanesActual : 'COP') === 'USD';
+    const mon = (typeof monedaPlanesActual !== 'undefined' ? monedaPlanesActual : 'COP');
+    let monto = '';
+    let desc = '';
+
+    if (nombrePlan === 'Starter') {
+      monto = esU ? (esTrim ? '$15' : '$19') : (esTrim ? '$63.000' : '$79.000');
+      desc = 'Hasta 250 guías auditadas, alertas inteligentes y semáforo predictivo.';
+    } else if (nombrePlan === 'Marca Blanca / Academias' || nombrePlan === 'Marca Blanca') {
+      nombrePlan = 'Marca Blanca / Academias';
+      monto = esU ? (esTrim ? '$120' : '$150') : (esTrim ? '$552.000' : '$690.000');
+      desc = 'Licencia B2B completa con tu propio logo, nombre, dominio y multi-tienda para alumnos.';
+    } else {
+      nombrePlan = 'Pro Merchant';
+      monto = esU ? (esTrim ? '$31' : '$39') : (esTrim ? '$119.000' : '$149.000');
+      desc = 'Guías ilimitadas, Auditoría Forense de fletes, Bot WhatsApp NLP y Webhooks Dropi.';
+    }
+
+    const cicloTexto = `${mon} / ${esTrim ? 'mes (facturado trimestral -20%)' : 'mes'}`;
+
+    planSeleccionadoCheckout = {
+      nombre: nombrePlan,
+      precioTexto: monto,
+      ciclo: cicloTexto,
+      desc: desc
+    };
+
+    if ($('checkout-plan-titulo')) $('checkout-plan-titulo').innerText = `Activar Plan ${nombrePlan}`;
+    if ($('checkout-plan-nombre')) $('checkout-plan-nombre').innerText = `Plan ${nombrePlan}`;
+    if ($('checkout-plan-desc')) $('checkout-plan-desc').innerText = desc;
+    if ($('checkout-plan-monto')) $('checkout-plan-monto').innerText = monto;
+    if ($('checkout-plan-ciclo')) $('checkout-plan-ciclo').innerText = cicloTexto;
+
+    const tienda = (typeof sesionUsuario !== 'undefined' && sesionUsuario) ? sesionUsuario.tienda : 'mi tienda';
+    const waMsg = encodeURIComponent(`¡Hola! Deseo activar el plan *${nombrePlan}* (${monto} ${cicloTexto}) de DropiVault para ${tienda}. ¿Me pueden compartir los métodos de pago para transferir por Nequi/Bancolombia?`);
+    const onlineMsg = encodeURIComponent(`¡Hola! Voy a realizar el pago del plan *${nombrePlan}* (${monto} ${cicloTexto}) para ${tienda} vía Pasarela en Línea (PSE / Tarjeta). ¿Me facilitan el enlace directo de pago seguro?`);
+
+    if ($('btn-checkout-wa')) {
+      $('btn-checkout-wa').href = `https://wa.me/${NUMERO_WHATSAPP_OFICIAL}?text=${waMsg}`;
+    }
+    if ($('btn-checkout-online')) {
+      $('btn-checkout-online').href = `https://wa.me/${NUMERO_WHATSAPP_OFICIAL}?text=${onlineMsg}`;
+    }
+
+    if ($('modal-checkout-pago')) {
+      $('modal-checkout-pago').classList.add('open');
+    }
+  } catch(err) {
+    console.error('Error al abrir checkout:', err);
+    // Fallback directo a WhatsApp si falla algo en el modal
+    const msg = encodeURIComponent(`¡Hola! Deseo activar el plan *${nombrePlan || 'Pro Merchant'}* de DropiVault. ¿Me pueden compartir los métodos de pago?`);
+    window.open(`https://wa.me/${NUMERO_WHATSAPP_OFICIAL}?text=${msg}`, '_blank');
   }
-
-  planSeleccionadoCheckout = {
-    nombre: nombrePlan,
-    precioTexto: montoTexto,
-    ciclo: `${monedaActual} / ${esTrimestral ? 'mes (facturado trimestral -20%)' : 'mes'}`,
-    desc: descTexto
-  };
-
-  $('checkout-plan-titulo').innerText = `Activar Plan ${nombrePlan}`;
-  $('checkout-plan-nombre').innerText = `Plan ${nombrePlan}`;
-  $('checkout-plan-desc').innerText = descTexto;
-  $('checkout-plan-monto').innerText = montoTexto;
-  $('checkout-plan-ciclo').innerText = planSeleccionadoCheckout.ciclo;
-
-  $('modal-checkout-pago').classList.add('open');
 }
 
 function cerrarModalCheckout() {
-  $('modal-checkout-pago').classList.remove('open');
+  if ($('modal-checkout-pago')) $('modal-checkout-pago').classList.remove('open');
 }
 
 function contratarPlan(nombrePlan) {
   abrirModalCheckout(nombrePlan);
-}
-
-function iniciarChatWhatsAppVentas() {
-  const tienda = sesionUsuario ? sesionUsuario.tienda : 'mi tienda';
-  const msg = encodeURIComponent(`¡Hola! Deseo activar el plan *${planSeleccionadoCheckout.nombre}* (${planSeleccionadoCheckout.precioTexto} ${planSeleccionadoCheckout.ciclo}) de DropiVault para ${tienda}. ¿Me pueden compartir los métodos de pago para transferir?`);
-  window.open(`https://wa.me/${NUMERO_WHATSAPP_OFICIAL}?text=${msg}`, '_blank');
-  toast('Abriendo chat oficial de WhatsApp (+57 318 986 2181)…');
-}
-
-function procesarPagoEnLinea() {
-  const tienda = sesionUsuario ? sesionUsuario.tienda : 'mi tienda';
-  // Pasarela de pago segura: Soporta links directos de Wompi Bancolombia, Bold, Mercado Pago o Stripe
-  // Por defecto redirige al checkout guiado conectado con el número oficial para validación inmediata
-  const checkoutMsg = encodeURIComponent(`¡Hola! Voy a realizar el pago del plan *${planSeleccionadoCheckout.nombre}* (${planSeleccionadoCheckout.precioTexto}) para ${tienda} vía Pasarela en Línea / PSE. ¿Me facilitan el enlace directo de pago seguro?`);
-  window.open(`https://wa.me/${NUMERO_WHATSAPP_OFICIAL}?text=${checkoutMsg}`, '_blank');
-  toast('Generando orden de pago segura en la pasarela…');
 }
 
 // ==========================================
