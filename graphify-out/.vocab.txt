@@ -1,6 +1,0 @@
-arithmetic
-basic
-script
-smoke
-test
-unittest
