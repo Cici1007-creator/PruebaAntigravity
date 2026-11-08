@@ -452,6 +452,14 @@ body.modo-demo-activo header.nav{top:42px!important}
               </div>
             </div>
             <div id="auth-loading" class="hidden tag" style="border-radius:12px;padding:12px 14px;font-size:13px"><span id="auth-loading-text">Conectando con Dropi…</span></div>
+            
+            <div style="margin:14px 0 12px;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;color:var(--slate)">
+              <input type="checkbox" id="auth-check-legal" required style="margin-top:3px;accent-color:var(--cobalt);cursor:pointer">
+              <label for="auth-check-legal" style="line-height:1.4;cursor:pointer">
+                Acepto los <a href="javascript:void(0)" onclick="abrirModalLegal('terminos')" style="color:var(--ivory);text-decoration:underline">Términos y condiciones</a> y la <a href="javascript:void(0)" onclick="abrirModalLegal('tratamiento')" style="color:var(--ivory);text-decoration:underline">Política de tratamiento de datos (Ley 1581)</a>.
+              </label>
+            </div>
+
             <button class="btn btn-primary" style="height:52px;margin-top:4px">Vincular tienda y sincronizar <svg class="i"><use href="#i-arrow"/></svg></button>
           </form>
           <div style="margin-top:14px;text-align:center">
@@ -597,9 +605,25 @@ body.modo-demo-activo header.nav{top:42px!important}
         </div>
       </div>
 
-
     </div>
   </section>
+
+  <!-- FOOTER LEGAL EN PANTALLA PRINCIPAL -->
+  <footer class="foot" style="border-top:1px solid var(--line);margin-top:20px">
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding:28px 0">
+      <div style="font-size:13px;color:var(--slate)">
+        DropiVault · Solución de tesorería y analítica operativa para dropshippers en Colombia.
+      </div>
+      <div class="row" style="gap:16px;flex-wrap:wrap;font-size:12.5px">
+        <a href="javascript:void(0)" onclick="abrirModalLegal('terminos')" style="color:var(--slate);text-decoration:underline">Términos y condiciones</a>
+        <a href="javascript:void(0)" onclick="abrirModalLegal('privacidad')" style="color:var(--slate);text-decoration:underline">Política de privacidad</a>
+        <a href="javascript:void(0)" onclick="abrirModalLegal('tratamiento')" style="color:var(--slate);text-decoration:underline">Tratamiento de datos (Ley 1581 de 2012)</a>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="borrarTodosMisDatosLocales()" style="color:#ef4444;border-color:rgba(239,68,68,0.25);font-size:11.5px">
+          🗑️ Borrar todos mis datos locales
+        </button>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <!-- ===== DASHBOARD PRINCIPAL ===== -->
@@ -1009,11 +1033,14 @@ body.modo-demo-activo header.nav{top:42px!important}
 
   </main>
 
-  <footer class="foot"><div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:24px 0">
+  <footer class="foot"><div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding:28px 0">
     <div style="font-size:13px;color:var(--slate)">DropiVault · Conexión directa vía token oficial de Dropi sin acceso a fondos ni permisos de retiro.</div>
-    <div class="row">
-      <button class="btn btn-ghost btn-sm" onclick="abrirModalPlanes()">Planes y Precios</button>
-      <button class="btn btn-ghost btn-sm" onclick="limpiarABlanco()">Restablecer a 0 (Limpiar datos)</button>
+    <div class="row" style="gap:14px;flex-wrap:wrap;font-size:12.5px">
+      <a href="javascript:void(0)" onclick="abrirModalLegal('terminos')" style="color:var(--slate);text-decoration:underline">Términos y condiciones</a>
+      <a href="javascript:void(0)" onclick="abrirModalLegal('privacidad')" style="color:var(--slate);text-decoration:underline">Política de privacidad</a>
+      <a href="javascript:void(0)" onclick="abrirModalLegal('tratamiento')" style="color:var(--slate);text-decoration:underline">Tratamiento de datos (Ley 1581)</a>
+      <button class="btn btn-ghost btn-sm" onclick="abrirModalPlanes()">Planes</button>
+      <button class="btn btn-ghost btn-sm" onclick="borrarTodosMisDatosLocales()" style="color:#ef4444;border-color:rgba(239,68,68,0.25)">🗑️ Borrar todos mis datos locales</button>
     </div>
   </div></footer>
 </div>
@@ -1026,6 +1053,30 @@ body.modo-demo-activo header.nav{top:42px!important}
   <button class="mob-btn" onclick="irA('seccion-novedades')"><svg class="i"><use href="#i-bell"/></svg><span>Novedades</span></button>
   <button class="mob-btn" onclick="abrirModalPlanes()"><svg class="i"><use href="#i-spark"/></svg><span>Planes</span></button>
 </nav>
+
+<!-- ===== MODAL DEDICADO: INFORMACIÓN LEGAL Y PROTECCIÓN DE DATOS (COLOMBIA) ===== -->
+<div id="modal-legal" class="modal" onclick="if(event.target===this)cerrarModalLegal()" role="dialog" aria-modal="true" aria-labelledby="modal-legal-titulo">
+  <div class="card apple-reveal visible" style="max-width:740px;width:100%;max-height:86vh;display:flex;flex-direction:column;padding:32px;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <div>
+        <span class="tag" style="background:rgba(82,102,235,0.15);color:var(--cobalt-light);margin-bottom:6px">MARCO LEGAL & PROTECCIÓN DE DATOS (COLOMBIA)</span>
+        <h3 class="h-sm" id="modal-legal-titulo" style="font-size:21px">Documento Legal</h3>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalLegal()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+    
+    <div id="modal-legal-body" style="overflow-y:auto;padding-right:8px;font-size:13.5px;line-height:1.6;color:var(--mist);display:grid;gap:12px">
+      <!-- Contenido inyectado dinámicamente -->
+    </div>
+
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div style="font-size:11.5px;color:var(--slate)">
+        ⚠️ <i>Aviso: Plantilla profesional con campos [COMPLETAR]. Se recomienda revisarla con un abogado antes de su uso definitivo.</i>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="cerrarModalLegal()">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== MODAL DEDICADO: PASARELA DE PAGO Y CHECKOUT OFICIAL ===== -->
 <div id="modal-checkout-pago" class="modal" onclick="if(event.target===this)cerrarModalCheckout()">
@@ -1497,6 +1548,138 @@ body.modo-demo-activo header.nav{top:42px!important}
      JAVASCRIPT MOTOR COMPLETO V2.7 (CON APPLE MOTION Y SCROLL GLOW)
      ============================================================ -->
 <script>
+// ==========================================
+// TEXTOS LEGALES Y CUMPLIMIENTO (COLOMBIA)
+// ==========================================
+const TEXTOS_LEGALES = {
+  terminos: `
+    <p><b>Última actualización:</b> [COMPLETAR: FECHA, ej. Noviembre de 2026]</p>
+    <p>Bienvenido a <b>DropiVault</b>, una plataforma de software desarrollada y operada por <b>[COMPLETAR: RAZÓN SOCIAL O NOMBRE DEL TITULAR]</b>, identificada con NIT/C.C. <b>[COMPLETAR: NIT O NÚMERO DE IDENTIFICACIÓN TRIBUTARIA]</b>, con domicilio en <b>[COMPLETAR: CIUDAD, COLOMBIA]</b> (en adelante, "EL PRESTADOR").</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">1. Objeto y Naturaleza del Servicio</h4>
+    <p>DropiVault es un software como servicio (SaaS) independiente de analítica operativa, auditoría forense de fletes y asistencia logística contraentrega (COD) para dropshippers de Dropi. <b>DropiVault NO es una entidad financiera, no custodia fondos, no realiza captación masiva ni maneja dineros o cuentas bancarias de los usuarios.</b> La conexión con Dropi se realiza exclusivamente mediante tokens de lectura suministrados por el propio usuario.</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">2. Responsabilidad de Credenciales</h4>
+    <p>El usuario es el único responsable de la custodia de su token de integración oficial y del resguardo de sus datos de acceso. DropiVault no solicita ni almacena contraseñas bancarias ni cuenta con facultades de retiro de fondos de la billetera Dropi.</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">3. Exclusión de Responsabilidad por Terceros</h4>
+    <p>EL PRESTADOR no se hace responsable por fallas técnicas, caídas de servicio, retrasos logísticos, siniestros o cobros de fletes aplicados por empresas transportadoras (Servientrega, Coordinadora, Envía, Inter Rapidísimo, Domina u otras), ni por interrupciones en la infraestructura tecnológica de Dropi o proveedores externos.</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">4. Suscripciones y Cancelaciones</h4>
+    <p>Los planes comerciales (Starter, Pro Merchant y Marca Blanca) se rigen por períodos prepagados convenidos. El usuario tiene derecho a cancelar la renovación de su servicio en cualquier momento sin cláusulas de permanencia forzosa.</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">5. Ley Aplicable y Jurisdicción</h4>
+    <p>Los presentes términos se rigen por las leyes de la República de Colombia. Cualquier diferencia será sometida a los jueces competentes de <b>[COMPLETAR: CIUDAD, COLOMBIA]</b>.</p>
+
+    <p style="margin-top:8px"><b>Contacto Legal:</b> [COMPLETAR: CORREO ELECTRÓNICO LEGAL] · Dirección: [COMPLETAR: DIRECCIÓN FÍSICA]</p>
+  `,
+
+  privacidad: `
+    <p><b>Última actualización:</b> [COMPLETAR: FECHA, ej. Noviembre de 2026]</p>
+    <p>En <b>DropiVault</b>, operado por <b>[COMPLETAR: RAZÓN SOCIAL / TITULAR]</b> (NIT: <b>[COMPLETAR: NIT]</b>), la privacidad y seguridad de tus datos comerciales y operativos es fundamental.</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">1. Datos Operativos Procesados</h4>
+    <p>Procesamos información de guías de despacho (número de guía, cliente destinatario, ciudad, dirección de entrega, estado logístico y valores de flete) con el propósito exclusivo de permitir la conciliación de tesorería, auditoría de sobrecostos y contacto de novedades por WhatsApp.</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">2. Tokens en Memoria Segura</h4>
+    <p>El token oficial de Dropi no se almacena de forma persistente en cookies no seguras ni en almacenamiento local permanente; vive únicamente en la memoria volátil durante la sesión abierta del usuario en el navegador.</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">3. No Comercialización de Bases de Datos</h4>
+    <p>Bajo ningún concepto vendemos, comercializamos, alquilamos ni transferimos las bases de datos de tus clientes compradores o de tus órdenes a terceros con fines publicitarios.</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">4. Control del Usuario sobre sus Datos</h4>
+    <p>El usuario dispone del botón "Borrar todos mis datos locales" en cualquier momento, el cual purga de inmediato toda la información temporal guardada en el navegador.</p>
+
+    <p style="margin-top:8px"><b>Canal de Privacidad:</b> [COMPLETAR: CORREO ELECTRÓNICO DE CONTACTO] · Domicilio: [COMPLETAR: CIUDAD, COLOMBIA]</p>
+  `,
+
+  tratamiento: `
+    <p><b>AVISO DE PRIVACIDAD Y POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES</b><br>
+    <i>En estricto cumplimiento de la Ley Estatutaria 1581 de 2012 y el Decreto 1377 de 2013 de la República de Colombia.</i></p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">1. Identificación del Responsable del Tratamiento</h4>
+    <p><b>Razón Social / Nombre:</b> [COMPLETAR: RAZÓN SOCIAL O NOMBRE COMPLETO]<br>
+    <b>NIT / Documento de Identidad:</b> [COMPLETAR: NIT O C.C.]<br>
+    <b>Domicilio Principal:</b> [COMPLETAR: CIUDAD, COLOMBIA]<br>
+    <b>Correo Electrónico de Contacto Legal:</b> [COMPLETAR: CORREO ELECTRÓNICO OFICIAL]<br>
+    <b>Teléfono:</b> [COMPLETAR: TELÉFONO DE CONTACTO]</p>
+
+    <h4 style="color:var(--ivory);margin-top:10px">2. Finalidades del Tratamiento de Datos</h4>
+    <p>Los datos de contacto y entrega de los compradores y remitentes serán tratados con las siguientes finalidades legítimas:</p>
+    <ul style="padding-left:20px;display:grid;gap:6px">
+      <li>Auditoría y conciliación de valores cobrados por concepto de fletes y recaudos contraentrega.</li>
+      <li>Gestión operativa de novedades de entrega y rectificación de nomenclaturas de dirección mediante mensajería WhatsApp.</li>
+      <li>Generación de reportes forenses y cartas formales de reclamo frente a transportadoras por discrepancia tarifaria.</li>
+      <li>Cumplimiento de deberes contables y requerimientos legales de autoridades colombianas.</li>
+    </ul>
+
+    <h4 style="color:var(--ivory);margin-top:10px">3. Derechos del Titular (Artículo 8 de la Ley 1581 de 2012)</h4>
+    <p>El titular de los datos personales cuenta con los derechos de:</p>
+    <ul style="padding-left:20px;display:grid;gap:6px">
+      <li>Conocer, actualizar y rectificar sus datos personales frente a los Responsables del Tratamiento.</li>
+      <li>Solicitar prueba de la autorización otorgada, salvo cuando la ley expresamente la exceptúe.</li>
+      <li>Ser informado sobre el uso que se le ha dado a sus datos personales.</li>
+      <li>Presentar quejas ante la Superintendencia de Industria y Comercio (SIC) por presuntas infracciones a la ley.</li>
+      <li>Revocar la autorización y/o solicitar la supresión del dato en los casos legalmente procedentes.</li>
+    </ul>
+
+    <h4 style="color:var(--ivory);margin-top:10px">4. Canales para Consultas y Reclamos de Hábeas Data</h4>
+    <p>Para ejercer los derechos de acceso, consulta, rectificación o supresión, el titular puede enviar una comunicación formal al correo: <b>[COMPLETAR: CORREO ELECTRÓNICO OFICIAL]</b>. Las consultas serán resueltas en un término máximo de diez (10) días hábiles y los reclamos en quince (15) días hábiles conforme a los artículos 14 y 15 de la Ley 1581 de 2012.</p>
+  `
+};
+
+function abrirModalLegal(tipo) {
+  const modal = $('modal-legal');
+  const tit = $('modal-legal-titulo');
+  const body = $('modal-legal-body');
+  if (!modal || !tit || !body) return;
+
+  if (tipo === 'terminos') {
+    tit.innerText = 'Términos y Condiciones de Uso';
+    body.innerHTML = TEXTOS_LEGALES.terminos;
+  } else if (tipo === 'privacidad') {
+    tit.innerText = 'Política de Privacidad';
+    body.innerHTML = TEXTOS_LEGALES.privacidad;
+  } else if (tipo === 'tratamiento') {
+    tit.innerText = 'Tratamiento de Datos Personales (Ley 1581 de 2012)';
+    body.innerHTML = TEXTOS_LEGALES.tratamiento;
+  }
+  modal.classList.add('open');
+}
+
+function cerrarModalLegal() {
+  const modal = $('modal-legal');
+  if (modal) modal.classList.remove('open');
+}
+
+function borrarTodosMisDatosLocales() {
+  const confirmacion = confirm(
+    '¿Estás seguro de que deseas borrar todos tus datos locales de DropiVault?\n\n' +
+    'Se eliminarán de tu navegador: órdenes cacheadas, configuraciones de marca blanca, tiendas guardadas y tokens temporales.\n\n' +
+    'Esta acción es irreversible.'
+  );
+  if (!confirmacion) return;
+
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch(e) {
+    console.error('Error al limpiar almacenamiento:', e);
+  }
+
+  tokenDirectoDropi = null;
+  sesionUsuario = null;
+  ordenesTotales = [];
+  ordenesEnNovedad = [];
+  capitalRecuperado = 0;
+  modoDemoActivo = false;
+
+  toast('Todos tus datos locales han sido borrados con éxito.');
+  setTimeout(() => {
+    location.reload();
+  }, 500);
+}
+
 // ==========================================
 // CONFIGURACIÓN GLOBAL DE LA APLICACIÓN
 // ==========================================
@@ -2117,6 +2300,13 @@ let tokenDirectoDropi = null;
 
 async function conectarConDropiAPI(e) {
   e.preventDefault();
+
+  const checkLegal = $('auth-check-legal');
+  if (checkLegal && !checkLegal.checked) {
+    toast('Debes aceptar los términos y la política de tratamiento de datos para continuar');
+    return;
+  }
+
   const email = $('auth-email').value.trim(), paisUrl = $('auth-pais').value, tienda = $('auth-tienda').value.trim(),
         comunidad = $('auth-comunidad').value, tokenInput = $('auth-token').value.trim();
   const btn = e.target.querySelector('button.btn-primary');
@@ -3666,7 +3856,7 @@ async function cerrarSesion() {
 
 // Eventos de teclado y scroll
 addEventListener('scroll', () => ['nav-auth', 'nav-app'].forEach(n => { const el = $(n); if (el) el.classList.toggle('solid', scrollY > 20); }), { passive: true });
-addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarEditar(); cerrarModalPlantillasWA(); cerrarTour(); cerrarModalWhiteLabel(); cerrarModalMultiTienda(); cerrarModalDigest(); cerrarModalCartaReclamo(); cerrarModalWebhooks(); cerrarModalPlanes(); } });
+addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarEditar(); cerrarModalPlantillasWA(); cerrarTour(); cerrarModalWhiteLabel(); cerrarModalMultiTienda(); cerrarModalDigest(); cerrarModalCartaReclamo(); cerrarModalWebhooks(); cerrarModalPlanes(); cerrarModalLegal(); } });
 
 // Iniciar aplicación
 document.addEventListener('DOMContentLoaded', initApp);
