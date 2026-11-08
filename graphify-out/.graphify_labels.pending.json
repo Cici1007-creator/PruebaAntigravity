@@ -1,19 +1,13 @@
 {
   "0": "test_script.py",
-  "1": "server.js",
-  "2": "temp_script_0.js",
+  "1": "package.json",
+  "2": "server.js",
   "3": "🛡️ DropiVault Backend · Motor de Inteligencia y Auditoría para Dropi",
   "4": "sessions.js",
   "5": "dropi.js",
-  "6": "toast",
+  "6": "dependencies",
   "7": "update_resilient_dropi.py",
-  "8": "initApp",
-  "9": "actualizarPreciosPlanes",
-  "10": "baseLista",
-  "11": "cambiarPasoTour",
-  "12": "actualizarPreviewWA",
-  "13": "aplicarWhiteLabelEnVivo",
-  "14": "setNum",
-  "15": "abrirModalCheckout",
-  "16": "abrirModalDigest"
+  "8": "api.js",
+  "9": "audit.js",
+  "10": "whatsapp.js"
 }

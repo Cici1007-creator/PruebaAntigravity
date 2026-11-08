@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https: http://localhost:3000 ws: wss:;">
 <title>DropiVault · Tesorería, Novedades COD y Automatizaciones Pro</title>
 <meta name="theme-color" content="#171721">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2054,9 +2055,9 @@ async function conectarConDropiAPI(e) {
         token: tokenInput,
         sessionToken: data.sessionToken || null
       };
-      if (data.sessionToken) {
-        try { sessionStorage.setItem('dropivault_session_token', data.sessionToken); } catch(e){}
-      }
+      // TODO (Seguridad): El token vive exclusivamente en memoria durante la sesión activa.
+      // En una arquitectura de producción, las credenciales de Dropi deben residir en un backend seguro (ej. base de datos cifrada)
+      // y la sesión en el navegador debe gestionarse mediante cookies HTTP-only, SameSite=Strict y Secure para neutralizar cualquier riesgo de robo por XSS.
     } else {
       errorMensaje = data.error || 'Token de Dropi no válido';
     }
@@ -2118,9 +2119,8 @@ async function sincronizarDesdeDropiAPI() {
   if (sesionUsuario.canal === 'backend') {
     try {
       const headers = { 'Content-Type': 'application/json' };
-      const sessTok = sesionUsuario.sessionToken || (function() {
-        try { return sessionStorage.getItem('dropivault_session_token'); } catch(e){ return null; }
-      })();
+      // Token estrictamente en memoria (no persistido en storage del cliente)
+      const sessTok = sesionUsuario ? sesionUsuario.sessionToken : null;
       if (sessTok) {
         headers['Authorization'] = `Bearer ${sessTok}`;
       }
@@ -2749,7 +2749,7 @@ function generarReportePDF() {
     const ef = d.total > 0 ? Math.round(d.ent / d.total * 100) : 0;
     return `
       <tr style="border-bottom:1px solid #e5e7eb">
-        <td style="padding:6px 8px;font-weight:600">${nombre}</td>
+        <td style="padding:6px 8px;font-weight:600">${esc(nombre)}</td>
         <td style="padding:6px 8px">${d.total}</td>
         <td style="padding:6px 8px;color:#059669">${d.ent}</td>
         <td style="padding:6px 8px;color:#dc2626">${d.nov}</td>
@@ -2760,9 +2760,9 @@ function generarReportePDF() {
 
   $('pdf-tabla-anomalias').innerHTML = anomaliasFletesDetectadas.slice(0, 10).map(a => `
     <tr style="border-bottom:1px solid #e5e7eb">
-      <td style="padding:6px 8px;font-weight:600">${a.guia}</td>
-      <td style="padding:6px 8px">${a.ciudad}</td>
-      <td style="padding:6px 8px">${a.transportadora}</td>
+      <td style="padding:6px 8px;font-weight:600">${esc(a.guia)}</td>
+      <td style="padding:6px 8px">${esc(a.ciudad)}</td>
+      <td style="padding:6px 8px">${esc(a.transportadora)}</td>
       <td style="padding:6px 8px">${cop.format(a.fleteCobrado)}</td>
       <td style="padding:6px 8px">${cop.format(a.fleteEsperado)}</td>
       <td style="padding:6px 8px;font-weight:700;color:#d97706">+${cop.format(a.saldoFavor)}</td>
@@ -3071,7 +3071,7 @@ function renderizarTabla(anim = true) {
       <td class="cap" style="max-width:200px;text-transform:none;${c && o.resp ? 'color:var(--ivory)' : ''}">${esc(c ? (o.resp || o.solucion || 'Esperando respuesta') : (o.solucion || '—'))}</td>
       <td>
         <div class="row" style="gap:6px">
-          <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${region.pref}${o.telefono}?text=${msg}"><svg class="i" style="width:14px;height:14px"><use href="#i-wa"/></svg>WA</a>
+          <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${encodeURIComponent(String(region.pref || '').replace(/[^\d]/g, ''))}${encodeURIComponent(String(o.telefono || '').replace(/[^\d]/g, ''))}?text=${msg}"><svg class="i" style="width:14px;height:14px"><use href="#i-wa"/></svg>WA</a>
           ${c ? `<button class="btn btn-emerald btn-sm" onclick="resolverGuia(${ix})">Resolver</button>` : ''}
           <button class="btn btn-quiet btn-sm btn-icon" onclick="abrirEditar(${ix})" aria-label="Editar"><svg class="i" style="width:15px;height:15px"><use href="#i-edit"/></svg></button>
         </div>
@@ -3281,22 +3281,67 @@ let configuracionMarcaBlanca = {
 function abrirModalWhiteLabel() { $('modal-whitelabel').classList.add('open'); }
 function cerrarModalWhiteLabel() { $('modal-whitelabel').classList.remove('open'); }
 
+// Validación y renderizado seguro de logotipos (Prevención XSS)
+function esUrlLogoSegura(url) {
+  if (typeof url !== 'string') return false;
+  const u = url.trim().toLowerCase();
+  return u.startsWith('https://') || u.startsWith('data:image/');
+}
+
+function renderizarLogoEnSlot(containerId, src, esPreview = false) {
+  const container = $(containerId);
+  if (!container) return;
+  if (!esUrlLogoSegura(src)) {
+    container.innerHTML = '<svg><use href="#logo"/></svg>';
+    return;
+  }
+  container.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = 'Logo de Marca';
+  if (esPreview) {
+    img.style.maxHeight = '100%';
+    img.style.maxWidth = '100%';
+    img.style.objectFit = 'contain';
+  } else {
+    img.style.maxHeight = '28px';
+    img.style.maxWidth = '38px';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '6px';
+    img.style.verticalAlign = 'middle';
+  }
+  container.appendChild(img);
+}
+
 function cargarLogoArchivo(e) {
   const file = e.target.files[0];
   if (!file) return;
+  if (!file.type || !file.type.startsWith('image/')) {
+    toast('El archivo debe ser una imagen válida (.png, .svg, .jpg, .webp)');
+    return;
+  }
   const reader = new FileReader();
   reader.onload = function(evt) {
     const dataUrl = evt.target.result;
-    $('wl-logo-preview').innerHTML = `<img src="${dataUrl}" style="max-height:100%;max-width:100%;object-fit:contain">`;
-    configuracionMarcaBlanca.logoBase64 = dataUrl;
+    if (esUrlLogoSegura(dataUrl)) {
+      configuracionMarcaBlanca.logoBase64 = dataUrl;
+      renderizarLogoEnSlot('wl-logo-preview', dataUrl, true);
+    } else {
+      toast('Formato de imagen no permitido');
+    }
   };
   reader.readAsDataURL(file);
 }
 
 function cargarLogoUrl(url) {
   if (!url || !url.trim()) return;
-  configuracionMarcaBlanca.logoBase64 = url.trim();
-  $('wl-logo-preview').innerHTML = `<img src="${url.trim()}" style="max-height:100%;max-width:100%;object-fit:contain">`;
+  const u = url.trim();
+  if (!esUrlLogoSegura(u)) {
+    toast('La URL del logo debe comenzar por https:// o data:image/');
+    return;
+  }
+  configuracionMarcaBlanca.logoBase64 = u;
+  renderizarLogoEnSlot('wl-logo-preview', u, true);
 }
 
 function seleccionarColorMarca(hex, glow) {
@@ -3321,11 +3366,10 @@ function aplicarWhiteLabelEnVivo() {
   if ($('nav-active-store')) $('nav-active-store').innerText = nombre;
   if ($('header-comunidad')) $('header-comunidad').innerText = insignia;
 
-  // Actualizar logo si existe
-  if (configuracionMarcaBlanca.logoBase64) {
-    const imgHtml = `<img src="${configuracionMarcaBlanca.logoBase64}" style="max-height:28px;max-width:38px;object-fit:contain;border-radius:6px;vertical-align:middle">`;
-    if ($('auth-logo-slot')) $('auth-logo-slot').innerHTML = imgHtml;
-    if ($('app-logo-slot')) $('app-logo-slot').innerHTML = imgHtml;
+  // Actualizar logo si existe (mediante DOM sanitizado)
+  if (configuracionMarcaBlanca.logoBase64 && esUrlLogoSegura(configuracionMarcaBlanca.logoBase64)) {
+    renderizarLogoEnSlot('auth-logo-slot', configuracionMarcaBlanca.logoBase64);
+    renderizarLogoEnSlot('app-logo-slot', configuracionMarcaBlanca.logoBase64);
   }
 
   // Guardar en localStorage
@@ -3350,11 +3394,10 @@ function restaurarWhiteLabelGuardado() {
     if ($('nav-active-store')) $('nav-active-store').innerText = config.nombre || 'DropiVault';
     if ($('header-comunidad')) $('header-comunidad').innerText = config.insignia || 'Comunidad';
 
-    if (config.logoBase64) {
-      const imgHtml = `<img src="${config.logoBase64}" style="max-height:28px;max-width:38px;object-fit:contain;border-radius:6px;vertical-align:middle">`;
-      if ($('auth-logo-slot')) $('auth-logo-slot').innerHTML = imgHtml;
-      if ($('app-logo-slot')) $('app-logo-slot').innerHTML = imgHtml;
-      if ($('wl-logo-preview')) $('wl-logo-preview').innerHTML = imgHtml;
+    if (config.logoBase64 && esUrlLogoSegura(config.logoBase64)) {
+      renderizarLogoEnSlot('auth-logo-slot', config.logoBase64);
+      renderizarLogoEnSlot('app-logo-slot', config.logoBase64);
+      renderizarLogoEnSlot('wl-logo-preview', config.logoBase64, true);
     }
 
     if (config.colorPrimario) {
@@ -3421,6 +3464,10 @@ function descargarPlantilla() {
 }
 
 async function cerrarSesion() {
+  // Limpieza estricta de credenciales en memoria
+  tokenDirectoDropi = null;
+  sesionUsuario = null;
+  try { sessionStorage.removeItem('dropivault_session_token'); } catch(e) {}
   try {
     await fetch(`${API}/api/auth/logout`, {
       method: 'POST',
