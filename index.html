@@ -300,6 +300,11 @@ tr:hover td{background:rgba(255,255,255,.03)}
 @keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes toastOut{to{opacity:0;transform:translateY(10px);filter:blur(3px)}}
 @keyframes kpiFlash{0%{color:#8b9eff;transform:scale(1.04)}100%{color:inherit;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+body.modo-demo-activo{padding-top:42px!important}
+body.modo-demo-activo #demo-banner{display:flex!important}
+body.modo-demo-activo header.nav{top:42px!important}
+.spinner{display:inline-block;width:28px;height:28px;border:3px solid rgba(82,102,235,0.2);border-top-color:var(--cobalt);border-radius:50%;animation:spin .8s linear infinite}
 
 .kpi-flash{animation:kpiFlash .7s var(--apple-ease) both}
 #badge-novedades{animation:floatBadge 3.6s ease-in-out infinite}
@@ -321,6 +326,17 @@ tr:hover td{background:rgba(255,255,255,.03)}
 </style>
 </head>
 <body>
+<!-- ===== BARRA FIJA SUPERIOR: MODO DEMO ===== -->
+<aside id="demo-banner" class="hidden" role="alert" aria-label="Modo demo activo" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg, #f59e0b, #d97706);color:#0f172a;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.35)">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:15px">⚠️</span>
+    <span>MODO DEMO · Datos de ejemplo ficticios</span>
+    <span style="font-weight:400;opacity:0.9;font-size:12px;margin-left:4px" class="hide-s">— Navegación simulada en memoria (sin llamadas a APIs ni almacenamiento local)</span>
+  </div>
+  <button type="button" class="btn btn-sm" style="background:#0f172a;color:#fff;border:none;font-weight:600;padding:5px 14px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:6px" onclick="salirModoDemo()">
+    <span>Salir del Demo</span> ✕
+  </button>
+</aside>
 
 <!-- BARRA DE PROGRESO DE SCROLL ESTILO APPLE (TOP GLOW LINE) -->
 <div id="scroll-progress"></div>
@@ -354,6 +370,7 @@ tr:hover td{background:rgba(255,255,255,.03)}
   <header class="nav" id="nav-auth"><div class="wrap">
     <div class="brand" onclick="location.reload()"><span id="auth-logo-slot"><svg><use href="#logo"/></svg></span><span id="nav-brand-title">DropiVault</span></div>
     <div class="row">
+      <button class="btn btn-ghost btn-sm" onclick="activarModoDemo()"><span style="margin-right:4px">🧪</span><span>Ver Demo</span></button>
       <button class="btn btn-ghost btn-sm" onclick="abrirModalPlanes()"><svg class="i" style="width:15px;height:15px"><use href="#i-spark"/></svg><span>Planes y Alianzas</span></button>
       <button class="btn btn-ghost btn-sm hide-s" onclick="abrirTour()"><svg class="i" style="width:15px;height:15px"><use href="#i-spark"/></svg>Tour guiado</button>
       <span class="tag line"><svg class="i" style="width:14px;height:14px"><use href="#i-lock"/></svg>Lectura segura Dropi</span>
@@ -437,6 +454,11 @@ tr:hover td{background:rgba(255,255,255,.03)}
             <div id="auth-loading" class="hidden tag" style="border-radius:12px;padding:12px 14px;font-size:13px"><span id="auth-loading-text">Conectando con Dropi…</span></div>
             <button class="btn btn-primary" style="height:52px;margin-top:4px">Vincular tienda y sincronizar <svg class="i"><use href="#i-arrow"/></svg></button>
           </form>
+          <div style="margin-top:14px;text-align:center">
+            <button type="button" class="btn btn-ghost" style="width:100%;height:44px;font-size:13.5px;color:var(--mist);border-color:rgba(255,255,255,0.14)" onclick="activarModoDemo()">
+              🧪 Ver demo con datos de ejemplo
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1516,6 +1538,94 @@ function resolverProxyDropi(paisUrl) {
 // DATO BASE: Arranca completamente en 0 / vacío por defecto a menos que haya guardado previo
 let ordenesTotales = [], ordenesEnNovedad = [];
 let capitalRecuperado = 0;
+let modoDemoActivo = false;
+
+// 25 ÓRDENES FICTICIAS VARIADAS PARA MODO DEMO
+const ORDENES_DEMO_FICTICIAS = [
+  { guia: "CO-9021481", cliente: "Valentina Gómez", telefono: "3124567890", ciudad: "Bogotá", direccion: "Cra 15 # 85-32 Apto 401", producto: "Smartwatch Ultra Pro T900", estado: "ENTREGADO", motivo: "", total: 149000, costoProveedor: 45000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado a satisfacción" },
+  { guia: "SE-4581290", cliente: "Carlos Mario Restrepo", telefono: "3004829102", ciudad: "Medellín", direccion: "Calle 10 # 43E-12 Int 201", producto: "Depiladora Láser IPL Pro", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Falta número de interior o torre", total: 189000, costoProveedor: 55000, flete: 29500, transportadora: "Servientrega", horasNovedad: 42, solucion: "" },
+  { guia: "EN-3190284", cliente: "Andrés Felipe Caicedo", telefono: "3187219043", ciudad: "Cali", direccion: "Av 6N # 24N-15 Casa 3", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 14200, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado en portería" },
+  { guia: "IR-8920194", cliente: "Luz Marina De la Hoz", telefono: "3019842103", ciudad: "Barranquilla", direccion: "Cra 51B # 82-140 Apto 7B", producto: "Lámpara Solar LED de Pared", estado: "NO CONTESTA LLAMADA", motivo: "Teléfono apagado en 2 intentos", total: 119000, costoProveedor: 32000, flete: 14800, transportadora: "Inter Rapidísimo", horasNovedad: 38, solucion: "" },
+  { guia: "CO-7719204", cliente: "Jhonatan Jaimes", telefono: "3209841284", ciudad: "Cúcuta", direccion: "Calle 11 # 4-28 Centro", producto: "Set Cuchillos Acero Damasco", estado: "DEVOLUCION", motivo: "Rehusado: cliente no tenía dinero", total: 139000, costoProveedor: 38000, flete: 34000, transportadora: "Coordinadora", horasNovedad: 0, solucion: "En bodega origen" },
+  { guia: "CO-6481029", cliente: "Silvia Juliana Prada", telefono: "3158920194", ciudad: "Bucaramanga", direccion: "Cra 27 # 36-14 Apto 502", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 15500, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Recibido con comprobante" },
+  { guia: "EN-5019284", cliente: "Mateo Cardona Ríos", telefono: "3148920184", ciudad: "Pereira", direccion: "Cra 7 # 19-28 Manzana 4 Casa 12", producto: "Smartwatch Ultra Pro T900", estado: "SOLICITA ENTREGA EN OTRA FECHA", motivo: "Viaje de trabajo, recibe el viernes", total: 149000, costoProveedor: 45000, flete: 14200, transportadora: "Envía", horasNovedad: 18, solucion: "" },
+  { guia: "SE-9910283", cliente: "Dayana Paternina", telefono: "3059841029", ciudad: "Cartagena", direccion: "Bocagrande Cra 3 # 7-19 Edif Bahía", producto: "Depiladora Láser IPL Pro", estado: "ENTREGADO", motivo: "", total: 189000, costoProveedor: 55000, flete: 16500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Entregado a recepcionista" },
+  { guia: "IR-1192840", cliente: "Germán Osorio", telefono: "3167829104", ciudad: "Manizales", direccion: "Av Santander # 54-10 Casa esquinera", producto: "Lámpara Solar LED de Pared", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Nomenclatura no visible", total: 119000, costoProveedor: 32000, flete: 27800, transportadora: "Inter Rapidísimo", horasNovedad: 48, solucion: "" },
+  { guia: "CO-3391028", cliente: "Paula Andrea Varón", telefono: "3119842019", ciudad: "Ibagué", direccion: "Calle 60 # 9-45 Urbanización Vergel", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado en residencia" },
+  { guia: "SE-8820193", cliente: "Héctor Fabio Rincón", telefono: "3218940192", ciudad: "Villavicencio", direccion: "Cra 40 # 25-10 Barrio Barzal", producto: "Set Cuchillos Acero Damasco", estado: "DEVOLUCION", motivo: "Cliente desistió de la compra", total: 139000, costoProveedor: 38000, flete: 17500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Retorno a bodega" },
+  { guia: "EN-7729104", cliente: "Santiago Morales", telefono: "3109842104", ciudad: "Bogotá", direccion: "Calle 127 # 19-40 Torre B 804", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 14200, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado con pago en efectivo" },
+  { guia: "CO-5510293", cliente: "Ana Milena Campo", telefono: "3028941029", ciudad: "Santa Marta", direccion: "Calle 22 # 3-18 El Rodadero", producto: "Smartwatch Ultra Pro T900", estado: "CLIENTE AUSENTE EN SEGUNDA VISITA", motivo: "No había nadie para recibir el paquete", total: 149000, costoProveedor: 45000, flete: 16000, transportadora: "Coordinadora", horasNovedad: 22, solucion: "" },
+  { guia: "IR-6629104", cliente: "Mariana Londoño", telefono: "3048920193", ciudad: "Medellín", direccion: "Circular 4 # 72-15 Laureles", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 13800, transportadora: "Inter Rapidísimo", horasNovedad: 0, solucion: "Entregado a titular" },
+  { guia: "SE-2291048", cliente: "Diego Fernando Lasso", telefono: "3178920194", ciudad: "Cali", direccion: "Cra 100 # 16-20 Ciudad Jardín", producto: "Depiladora Láser IPL Pro", estado: "ZONA DE DIFÍCIL ACCESO", motivo: "Transportadora solicita reclamar en oficina", total: 189000, costoProveedor: 55000, flete: 31200, transportadora: "Servientrega", horasNovedad: 50, solucion: "" },
+  { guia: "EN-4410294", cliente: "Katia Vengoechea", telefono: "3008920193", ciudad: "Barranquilla", direccion: "Calle 84 # 52-30 Apto 302", producto: "Lámpara Solar LED de Pared", estado: "ENTREGADO", motivo: "", total: 119000, costoProveedor: 32000, flete: 14500, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado con firma" },
+  { guia: "CO-1102948", cliente: "Álvaro Guerrero", telefono: "3189201948", ciudad: "Pasto", direccion: "Cra 25 # 18-40 Barrio Maridíaz", producto: "Set Cuchillos Acero Damasco", estado: "ENTREGADO", motivo: "", total: 139000, costoProveedor: 38000, flete: 16800, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado a satisfacción" },
+  { guia: "IR-4491028", cliente: "Yurley Bautista", telefono: "3128940192", ciudad: "Cúcuta", direccion: "Av 0 # 10-55 La Riviera", producto: "Mini Proyector Portátil HD", estado: "NO CONTESTA LLAMADA", motivo: "Buzón de mensajes activo", total: 229000, costoProveedor: 78000, flete: 15000, transportadora: "Inter Rapidísimo", horasNovedad: 14, solucion: "" },
+  { guia: "SE-3381029", cliente: "Néstor Raúl Flórez", telefono: "3168920194", ciudad: "Bucaramanga", direccion: "Calle 48 # 33-19 Cabecera", producto: "Smartwatch Ultra Pro T900", estado: "ENTREGADO", motivo: "", total: 149000, costoProveedor: 45000, flete: 14500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Entregado en portería" },
+  { guia: "DM-9901924", cliente: "Camilo Torres", telefono: "3138920194", ciudad: "Bogotá", direccion: "Cra 7 # 45-20 Chapinero", producto: "Organizador Giratorio 360", estado: "DEVOLUCION", motivo: "Cliente cambió de domicilio", total: 95000, costoProveedor: 26000, flete: 15500, transportadora: "Domina", horasNovedad: 0, solucion: "Devuelto a origen" },
+  { guia: "CO-8819204", cliente: "Laura Marcela Echeverry", telefono: "3148920102", ciudad: "Pereira", direccion: "Av Circunvalar # 12-40", producto: "Depiladora Láser IPL Pro", estado: "ENTREGADO", motivo: "", total: 189000, costoProveedor: 55000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado exitosamente" },
+  { guia: "EN-6610294", cliente: "Jaime Maestre", telefono: "3158940192", ciudad: "Valledupar", direccion: "Cra 9 # 14-30 Barrio Novalito", producto: "Lámpara Solar LED de Pared", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Falta número de casa y sector", total: 119000, costoProveedor: 32000, flete: 26900, transportadora: "Envía", horasNovedad: 40, solucion: "" },
+  { guia: "IR-5510293", cliente: "Gina Paola Burgos", telefono: "3018920194", ciudad: "Montería", direccion: "Calle 29 # 4-15 Pasaje del Sol", producto: "Set Cuchillos Acero Damasco", estado: "ENTREGADO", motivo: "", total: 139000, costoProveedor: 38000, flete: 14800, transportadora: "Inter Rapidísimo", horasNovedad: 0, solucion: "Entregado a cliente" },
+  { guia: "CO-4401928", cliente: "Sebastián Henao", telefono: "3108920194", ciudad: "Armenia", direccion: "Cra 14 # 9N-20 Barrio Granada", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado y cobrado COD" },
+  { guia: "SE-7710294", cliente: "Claudia Patricia Perdomo", telefono: "3178940192", ciudad: "Neiva", direccion: "Calle 10 # 5-28 Centro", producto: "Smartwatch Ultra Pro T900", estado: "SOLICITA ENTREGA EN OTRA DIRECCIÓN", motivo: "Cliente pide llevar a su oficina", total: 149000, costoProveedor: 45000, flete: 15000, transportadora: "Servientrega", horasNovedad: 12, solucion: "" }
+];
+
+function activarModoDemo() {
+  modoDemoActivo = true;
+  document.body.classList.add('modo-demo-activo');
+  const banner = $('demo-banner');
+  if (banner) banner.classList.remove('hidden');
+
+  sesionUsuario = {
+    email: 'demo@dropivault.co',
+    tienda: 'Imperio COD (Demo)',
+    comunidad: 'Academia Dropshipping',
+    canal: 'demo',
+    paisUrl: 'https://api.dropi.co',
+    token: 'DEMO_TOKEN_MODO_PRUEBA'
+  };
+
+  ordenesTotales = JSON.parse(JSON.stringify(ORDENES_DEMO_FICTICIAS));
+  capitalRecuperado = 0;
+
+  if ($('header-tienda')) $('header-tienda').innerText = sesionUsuario.tienda;
+  if ($('nav-active-store')) $('nav-active-store').innerText = sesionUsuario.tienda;
+  if ($('header-comunidad')) $('header-comunidad').innerText = sesionUsuario.comunidad;
+  if ($('file-label')) $('file-label').innerText = 'Modo Demo (25 órdenes ficticias cargadas)';
+
+  $('auth-screen').classList.add('leaving');
+  setTimeout(() => {
+    $('auth-screen').classList.add('hidden');
+    $('auth-screen').classList.remove('leaving');
+    $('app-dashboard').classList.remove('hidden');
+    requestAnimationFrame(() => {
+      $('app-dashboard').classList.add('visible');
+      initAppleMotionEngine();
+    });
+    scrollTo(0, 0);
+    refrescar();
+    toast('🧪 Modo Demo activado con 25 órdenes de ejemplo');
+  }, 350);
+}
+
+function salirModoDemo() {
+  modoDemoActivo = false;
+  document.body.classList.remove('modo-demo-activo');
+  const banner = $('demo-banner');
+  if (banner) banner.classList.add('hidden');
+
+  ordenesTotales = [];
+  ordenesEnNovedad = [];
+  capitalRecuperado = 0;
+  sesionUsuario = null;
+
+  $('app-dashboard').classList.remove('visible');
+  $('app-dashboard').classList.add('hidden');
+  $('auth-screen').classList.remove('hidden');
+  scrollTo(0, 0);
+
+  refrescar();
+  toast('Saliste del Modo Demo. La bóveda quedó limpia.');
+}
 let tonoWAActual = 'amable';
 
 // Multi-Tienda
@@ -1682,6 +1792,7 @@ function toast(m) {
 }
 
 function guardar() {
+  if (typeof modoDemoActivo !== 'undefined' && modoDemoActivo) return; // En modo demo NO se guarda en localStorage
   try {
     localStorage.setItem(LS, JSON.stringify({
       o: ordenesTotales,
@@ -2107,9 +2218,65 @@ async function conectarConDropiAPI(e) {
   sincronizarDesdeDropiAPI();
 }
 
+function mostrarEstadoCargandoSincronizacion(cargando) {
+  const tbody = $('tabla-novedades');
+  const rankCont = $('transportadoras-ranking');
+  const alertCont = $('alertas-inteligentes');
+  const auditTbody = $('tabla-anomalias-flete');
+
+  if (cargando) {
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="8" style="padding:48px 24px;text-align:center">
+        <div class="spinner" style="margin-bottom:12px"></div>
+        <div style="font-weight:600;font-size:15px;color:var(--ivory)">Sincronizando con Dropi en tiempo real…</div>
+        <p class="muted" style="font-size:13px;margin-top:4px">Consultando guías, estados de entrega y sobrecostos de fletes.</p>
+      </td></tr>`;
+    }
+    if (rankCont) {
+      rankCont.innerHTML = `<div style="padding:32px;text-align:center"><div class="spinner" style="width:22px;height:22px;margin-bottom:8px"></div><div class="muted" style="font-size:12.5px">Analizando transportadoras…</div></div>`;
+    }
+    if (alertCont) {
+      alertCont.innerHTML = `<div class="muted" style="text-align:center;padding:24px;font-size:13px">Calculando alertas logísticas y riesgos…</div>`;
+    }
+    if (auditTbody) {
+      auditTbody.innerHTML = `<tr><td colspan="8" style="padding:24px;text-align:center" class="muted"><div class="spinner" style="width:18px;height:18px;vertical-align:middle;margin-right:8px"></div> Auditando fletes cobrados…</td></tr>`;
+    }
+  }
+}
+
+function mostrarEstadoErrorSincronizacion(errorMsg) {
+  const tbody = $('tabla-novedades');
+  if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:48px 24px">
+      <div style="font-size:36px;margin-bottom:12px">⚠️</div>
+      <div style="font-weight:600;color:var(--ivory);font-size:16px">No fue posible sincronizar órdenes desde Dropi</div>
+      <p class="muted" style="margin:8px auto 20px;max-width:480px;font-size:13.5px;line-height:1.5">
+        ${esc(errorMsg || 'La conexión con la API de Dropi no respondió o el token ingresado requiere verificación.')}
+      </p>
+      <div class="row" style="justify-content:center;gap:12px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="sincronizarDesdeDropiAPI()">
+          <svg class="i" style="width:14px;height:14px"><use href="#i-refresh"/></svg> Reintentar conexión
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="activarModoDemo()">
+          🧪 Probar con datos Demo
+        </button>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+          📂 Cargar archivo Excel
+          <input type="file" accept=".xlsx,.xls,.csv" onchange="procesarExcel(event)" style="display:none">
+        </label>
+      </div>
+    </td></tr>`;
+  }
+}
+
 async function sincronizarDesdeDropiAPI() {
+  if (typeof modoDemoActivo !== 'undefined' && modoDemoActivo) {
+    toast('Estás en Modo Demo. No se conecta a APIs de Dropi.');
+    return;
+  }
   if (!sesionUsuario) return;
   $('file-label').innerText = 'Consultando órdenes en Dropi…';
+  mostrarEstadoCargandoSincronizacion(true);
   await new Promise(r => setTimeout(r, 300));
 
   let ordenesRecibidas = null;
@@ -2207,9 +2374,10 @@ async function sincronizarDesdeDropiAPI() {
       toast(`¡Sincronizado con Dropi! ${ordenesTotales.length} órdenes reales cargadas.`);
     }
   } else {
-    toast(errorMsg || 'Aviso: No se pudieron extraer órdenes de Dropi. Puedes cargar tu archivo .xlsx.');
+    toast(errorMsg || 'Aviso: No se pudieron extraer órdenes de Dropi.');
     $('file-label').innerText = 'Sube tu reporte Excel exportado de Dropi';
-    ordenesTotales = cargarGuardado() || [];
+    mostrarEstadoErrorSincronizacion(errorMsg);
+    return;
   }
 
   refrescar();
@@ -3034,10 +3202,17 @@ function renderizarTabla(anim = true) {
   const tbody = $('tabla-novedades'); if (!tbody) return;
 
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:48px" class="muted">
-      <div style="font-size:28px;margin-bottom:8px">📥</div>
-      <div style="font-weight:550;color:var(--ivory);font-size:16px">No hay órdenes para mostrar</div>
-      <p style="margin-top:4px;font-size:13.5px">Importa un archivo Excel o sincroniza con tu cuenta Dropi para ver el balance.</p>
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:48px 24px" class="muted">
+      <div style="font-size:36px;margin-bottom:10px">📦</div>
+      <div style="font-weight:600;color:var(--ivory);font-size:16px">No hay órdenes para mostrar en esta vista</div>
+      <p style="margin:6px auto 18px;max-width:440px;font-size:13.5px">Importa un archivo Excel o explora todas las funciones con datos ficticios.</p>
+      <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="activarModoDemo()">🧪 Cargar datos de Demo</button>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+          📂 Subir Excel
+          <input type="file" accept=".xlsx,.xls,.csv" onchange="procesarExcel(event)" style="display:none">
+        </label>
+      </div>
     </td></tr>`;
     return;
   }
@@ -3135,6 +3310,16 @@ async function iniciarColaWhatsApp() {
       .replace(/{direccion}/g, o.direccion)
       .replace(/{ciudad}/g, o.ciudad)
       .replace(/{tienda}/g, sesionUsuario ? sesionUsuario.tienda : 'Nuestra Tienda');
+
+    if (typeof modoDemoActivo !== 'undefined' && modoDemoActivo) {
+      o.wa = true;
+      o.resp = 'Esperando respuesta del cliente';
+      enviados++;
+      await new Promise(r => setTimeout(r, 450));
+      bar.style.width = `${Math.round((i+1) / lista.length * 100)}%`;
+      renderizarTabla(false);
+      continue;
+    }
 
     try {
       const waRes = await fetch(`${API}/api/whatsapp/send`, {
