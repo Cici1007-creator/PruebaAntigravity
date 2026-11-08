@@ -651,8 +651,24 @@ body.modo-demo-activo header.nav{top:42px!important}
     </div>
   </div></header>
 
-  <main class="wrap" style="padding-top:32px">
+  <main class="wrap" style="padding-top:28px">
     
+    <!-- BARRA DE FILTRO POR RANGO DE FECHAS -->
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;background:rgba(255,255,255,0.02);border:1px solid var(--line);border-radius:14px;padding:12px 18px">
+      <div class="row" style="gap:10px;flex-wrap:wrap">
+        <span class="cap" style="color:var(--ivory);font-size:12px;font-weight:500">📅 Rango de auditoría:</span>
+        <div class="tabs" id="tabs-filtro-fechas">
+          <button type="button" class="on" onclick="cambiarFiltroFecha('todo', this)">Todo</button>
+          <button type="button" onclick="cambiarFiltroFecha('30d', this)">30 días</button>
+          <button type="button" onclick="cambiarFiltroFecha('7d', this)">7 días</button>
+          <button type="button" onclick="cambiarFiltroFecha('hoy', this)">Hoy</button>
+        </div>
+      </div>
+      <div id="filtro-fecha-contador" class="tag line" style="font-size:12px;color:var(--mist)">
+        Mostrando todas las órdenes
+      </div>
+    </div>
+
     <!-- TARJETA HERO: CAPITAL RECUPERADO DE NOVEDADES Y AUDITORÍA FORENSE -->
     <section class="sec" style="padding-bottom:24px">
       <div class="grid g-2">
@@ -887,6 +903,42 @@ body.modo-demo-activo header.nav{top:42px!important}
       </div>
     </section>
 
+    <!-- BLOQUE: RENTABILIDAD Y DESEMPEÑO POR PRODUCTO -->
+    <section class="sec" id="seccion-productos">
+      <div class="card apple-reveal">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="cap">Análisis de Catálogo</div>
+            <h3 class="h-sm" style="font-size:22px;margin-top:4px">📦 Rentabilidad por Producto</h3>
+            <p class="muted" style="margin-top:6px;font-size:13.5px">
+              Control unitario de facturación bruta, utilidad neta real y tasa de devolución por cada producto.
+            </p>
+          </div>
+          <span class="tag" style="background:rgba(82,102,235,0.15);color:var(--cobalt-light)">
+            <svg class="i" style="width:14px;height:14px"><use href="#i-spark"/></svg>Margen Real
+          </span>
+        </div>
+
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Unidades</th>
+                <th>Facturación Bruta</th>
+                <th>Costo Proveedor</th>
+                <th>Fletes Totales</th>
+                <th>Utilidad Neta</th>
+                <th>% Devolución</th>
+                <th>Diagnóstico</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-rentabilidad-productos"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <!-- BLOQUE: AUDITORÍA FORENSE DE FLETES (RECLAMOS) -->
     <section class="sec" id="seccion-auditoria">
       <div class="card apple-reveal">
@@ -898,7 +950,10 @@ body.modo-demo-activo header.nav{top:42px!important}
               Detección algorítmica de sobreprecios en fletes, exceso de peso volumétrico y cobros dobles en devoluciones indebidas.
             </p>
           </div>
-          <div class="row">
+          <div class="row" style="gap:8px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="abrirModalTarifasFlete()">
+              ⚙️ Configurar tarifas de flete
+            </button>
             <button class="btn btn-amber btn-sm" onclick="abrirModalCartaReclamo()">
               <svg class="i"><use href="#i-edit"/></svg>Copiar Carta de Reclamo
             </button>
@@ -1053,6 +1108,74 @@ body.modo-demo-activo header.nav{top:42px!important}
   <button class="mob-btn" onclick="irA('seccion-novedades')"><svg class="i"><use href="#i-bell"/></svg><span>Novedades</span></button>
   <button class="mob-btn" onclick="abrirModalPlanes()"><svg class="i"><use href="#i-spark"/></svg><span>Planes</span></button>
 </nav>
+
+<!-- ===== MODAL DEDICADO: CONFIGURAR TARIFAS BASE DE FLETE ===== -->
+<div id="modal-tarifas" class="modal" onclick="if(event.target===this)cerrarModalTarifasFlete()" role="dialog" aria-modal="true" aria-labelledby="modal-tarifas-titulo">
+  <div class="card apple-reveal visible" style="max-width:540px;width:100%;padding:32px;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+      <div>
+        <span class="tag" style="background:rgba(245,158,11,0.15);color:var(--amber);margin-bottom:6px">AUDITORÍA FORENSE & RECLAMOS</span>
+        <h3 class="h-sm" id="modal-tarifas-titulo" style="font-size:20px">Configurar Tarifas de Flete</h3>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="cerrarModalTarifasFlete()" aria-label="Cerrar"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button>
+    </div>
+
+    <!-- AVISO OBLIGATORIO DE TRANSPARENCIA -->
+    <div style="padding:12px 14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;font-size:12.5px;color:var(--amber);line-height:1.45;margin-bottom:18px">
+      ℹ️ <b>Las tarifas son tuyas; verifícalas con tu contrato.</b><br>
+      Ajusta los valores promedio que pactaste con cada transportadora para que el motor detecte sobrecostos reales.
+    </div>
+
+    <form onsubmit="guardarTarifasFleteFormulario(event)" style="display:grid;gap:12px">
+      <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="f">Servientrega ($ COP)</label>
+          <input type="number" id="tarifa-servientrega" class="in num" required>
+        </div>
+        <div>
+          <label class="f">Coordinadora ($ COP)</label>
+          <input type="number" id="tarifa-coordinadora" class="in num" required>
+        </div>
+      </div>
+
+      <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="f">Inter Rapidísimo ($ COP)</label>
+          <input type="number" id="tarifa-inter" class="in num" required>
+        </div>
+        <div>
+          <label class="f">Envía ($ COP)</label>
+          <input type="number" id="tarifa-envia" class="in num" required>
+        </div>
+      </div>
+
+      <div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="f">Domina ($ COP)</label>
+          <input type="number" id="tarifa-domina" class="in num" required>
+        </div>
+        <div>
+          <label class="f">Otras Transportadoras ($ COP)</label>
+          <input type="number" id="tarifa-otras" class="in num" required>
+        </div>
+      </div>
+
+      <div>
+        <label class="f">Umbral de tolerancia de sobrecosto (hoy es 1.45)</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="number" step="0.05" min="1.0" max="3.0" id="tarifa-umbral" class="in num" style="flex:1" required>
+          <span class="tag line" id="tarifa-umbral-badge" style="font-size:11px">+45% exceso</span>
+        </div>
+        <p class="cap" style="margin-top:4px;color:var(--slate)">Un umbral de 1.45 significa que se reportará anomalía si el flete excede en más de un 45% la tarifa pactada.</p>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <button type="submit" class="btn btn-primary" style="flex:1">Guardar y Re-auditar</button>
+        <button type="button" class="btn btn-ghost" onclick="restablecerTarifasSugeridas()">Valores Sugeridos</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- ===== MODAL DEDICADO: INFORMACIÓN LEGAL Y PROTECCIÓN DE DATOS (COLOMBIA) ===== -->
 <div id="modal-legal" class="modal" onclick="if(event.target===this)cerrarModalLegal()" role="dialog" aria-modal="true" aria-labelledby="modal-legal-titulo">
@@ -1722,34 +1845,139 @@ function resolverProxyDropi(paisUrl) {
 let ordenesTotales = [], ordenesEnNovedad = [];
 let capitalRecuperado = 0;
 let modoDemoActivo = false;
+let filtroFechaActual = 'todo';
 
-// 25 ÓRDENES FICTICIAS VARIADAS PARA MODO DEMO
+// Configuración de tarifas base de flete para auditoría forense
+const LS_TARIFAS = 'dropivault.tarifas.v1';
+const TARIFAS_DEFAULT = {
+  tarifas: {
+    'Servientrega': 14500,
+    'Coordinadora': 15200,
+    'Inter Rapidísimo': 13800,
+    'Envía': 14200,
+    'Domina': 14000,
+    'Otras': 14500
+  },
+  umbralTolerancia: 1.45
+};
+let configuracionTarifas = JSON.parse(JSON.stringify(TARIFAS_DEFAULT));
+
+function cargarConfiguracionTarifas() {
+  try {
+    const raw = localStorage.getItem(LS_TARIFAS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.tarifas) configuracionTarifas = parsed;
+    }
+  } catch(e) {}
+}
+
+function guardarConfiguracionTarifas() {
+  if (typeof modoDemoActivo !== 'undefined' && modoDemoActivo) return;
+  try {
+    localStorage.setItem(LS_TARIFAS, JSON.stringify(configuracionTarifas));
+  } catch(e) {}
+}
+
+function normalizarFechaOrden(val) {
+  if (!val) return new Date().toISOString().split('T')[0];
+  if (typeof val === 'number') {
+    const d = new Date((val - (25567 + 2)) * 86400 * 1000);
+    return !isNaN(d.getTime()) ? d.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+  }
+  const str = String(val).trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.substring(0, 10);
+  const parts = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if (parts) {
+    return `${parts[3]}-${parts[2].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
+  }
+  const parsed = new Date(str);
+  return !isNaN(parsed.getTime()) ? parsed.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+}
+
+function obtenerOrdenesFiltradasPorFecha() {
+  if (filtroFechaActual === 'todo') return ordenesTotales;
+  const hoyStr = new Date().toISOString().split('T')[0];
+  const ahora = new Date();
+
+  return ordenesTotales.filter(o => {
+    if (!o.fecha) return true;
+    const fStr = String(o.fecha).substring(0, 10);
+    if (filtroFechaActual === 'hoy') return fStr === hoyStr;
+
+    const fObj = new Date(fStr);
+    if (isNaN(fObj.getTime())) return true;
+    const diffDias = (ahora - fObj) / (1000 * 60 * 60 * 24);
+
+    if (filtroFechaActual === '7d') return diffDias >= 0 && diffDias <= 7.5;
+    if (filtroFechaActual === '30d') return diffDias >= 0 && diffDias <= 30.5;
+    return true;
+  });
+}
+
+function cambiarFiltroFecha(rango, btnEl) {
+  filtroFechaActual = rango;
+  if (btnEl) {
+    const parent = btnEl.closest('.tabs');
+    if (parent) {
+      parent.querySelectorAll('button').forEach(b => b.classList.remove('on'));
+      btnEl.classList.add('on');
+    }
+  }
+  refrescar();
+  const nombres = { 'todo': 'todo el historial', '30d': 'últimos 30 días', '7d': 'últimos 7 días', 'hoy': 'hoy' };
+  toast(`Filtro aplicado: ${nombres[rango] || rango}`);
+}
+
+function actualizarContadorFiltroFecha() {
+  const el = $('filtro-fecha-contador');
+  if (!el) return;
+  const filtradas = obtenerOrdenesFiltradasPorFecha();
+  if (filtroFechaActual === 'todo') {
+    el.innerText = `${filtradas.length} órdenes en total`;
+  } else {
+    el.innerText = `${filtradas.length} de ${ordenesTotales.length} órdenes`;
+  }
+}
+
+// Helper de fechas relativas para dataset demo
+function _fDemo(diasAtras) {
+  const d = new Date(Date.now() - (diasAtras * 86400000));
+  return d.toISOString().split('T')[0];
+}
+
+// 25 ÓRDENES FICTICIAS VARIADAS PARA MODO DEMO (Con fechas Hoy, 7d y 30d)
 const ORDENES_DEMO_FICTICIAS = [
-  { guia: "CO-9021481", cliente: "Valentina Gómez", telefono: "3124567890", ciudad: "Bogotá", direccion: "Cra 15 # 85-32 Apto 401", producto: "Smartwatch Ultra Pro T900", estado: "ENTREGADO", motivo: "", total: 149000, costoProveedor: 45000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado a satisfacción" },
-  { guia: "SE-4581290", cliente: "Carlos Mario Restrepo", telefono: "3004829102", ciudad: "Medellín", direccion: "Calle 10 # 43E-12 Int 201", producto: "Depiladora Láser IPL Pro", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Falta número de interior o torre", total: 189000, costoProveedor: 55000, flete: 29500, transportadora: "Servientrega", horasNovedad: 42, solucion: "" },
-  { guia: "EN-3190284", cliente: "Andrés Felipe Caicedo", telefono: "3187219043", ciudad: "Cali", direccion: "Av 6N # 24N-15 Casa 3", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 14200, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado en portería" },
-  { guia: "IR-8920194", cliente: "Luz Marina De la Hoz", telefono: "3019842103", ciudad: "Barranquilla", direccion: "Cra 51B # 82-140 Apto 7B", producto: "Lámpara Solar LED de Pared", estado: "NO CONTESTA LLAMADA", motivo: "Teléfono apagado en 2 intentos", total: 119000, costoProveedor: 32000, flete: 14800, transportadora: "Inter Rapidísimo", horasNovedad: 38, solucion: "" },
-  { guia: "CO-7719204", cliente: "Jhonatan Jaimes", telefono: "3209841284", ciudad: "Cúcuta", direccion: "Calle 11 # 4-28 Centro", producto: "Set Cuchillos Acero Damasco", estado: "DEVOLUCION", motivo: "Rehusado: cliente no tenía dinero", total: 139000, costoProveedor: 38000, flete: 34000, transportadora: "Coordinadora", horasNovedad: 0, solucion: "En bodega origen" },
-  { guia: "CO-6481029", cliente: "Silvia Juliana Prada", telefono: "3158920194", ciudad: "Bucaramanga", direccion: "Cra 27 # 36-14 Apto 502", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 15500, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Recibido con comprobante" },
-  { guia: "EN-5019284", cliente: "Mateo Cardona Ríos", telefono: "3148920184", ciudad: "Pereira", direccion: "Cra 7 # 19-28 Manzana 4 Casa 12", producto: "Smartwatch Ultra Pro T900", estado: "SOLICITA ENTREGA EN OTRA FECHA", motivo: "Viaje de trabajo, recibe el viernes", total: 149000, costoProveedor: 45000, flete: 14200, transportadora: "Envía", horasNovedad: 18, solucion: "" },
-  { guia: "SE-9910283", cliente: "Dayana Paternina", telefono: "3059841029", ciudad: "Cartagena", direccion: "Bocagrande Cra 3 # 7-19 Edif Bahía", producto: "Depiladora Láser IPL Pro", estado: "ENTREGADO", motivo: "", total: 189000, costoProveedor: 55000, flete: 16500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Entregado a recepcionista" },
-  { guia: "IR-1192840", cliente: "Germán Osorio", telefono: "3167829104", ciudad: "Manizales", direccion: "Av Santander # 54-10 Casa esquinera", producto: "Lámpara Solar LED de Pared", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Nomenclatura no visible", total: 119000, costoProveedor: 32000, flete: 27800, transportadora: "Inter Rapidísimo", horasNovedad: 48, solucion: "" },
-  { guia: "CO-3391028", cliente: "Paula Andrea Varón", telefono: "3119842019", ciudad: "Ibagué", direccion: "Calle 60 # 9-45 Urbanización Vergel", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado en residencia" },
-  { guia: "SE-8820193", cliente: "Héctor Fabio Rincón", telefono: "3218940192", ciudad: "Villavicencio", direccion: "Cra 40 # 25-10 Barrio Barzal", producto: "Set Cuchillos Acero Damasco", estado: "DEVOLUCION", motivo: "Cliente desistió de la compra", total: 139000, costoProveedor: 38000, flete: 17500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Retorno a bodega" },
-  { guia: "EN-7729104", cliente: "Santiago Morales", telefono: "3109842104", ciudad: "Bogotá", direccion: "Calle 127 # 19-40 Torre B 804", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 14200, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado con pago en efectivo" },
-  { guia: "CO-5510293", cliente: "Ana Milena Campo", telefono: "3028941029", ciudad: "Santa Marta", direccion: "Calle 22 # 3-18 El Rodadero", producto: "Smartwatch Ultra Pro T900", estado: "CLIENTE AUSENTE EN SEGUNDA VISITA", motivo: "No había nadie para recibir el paquete", total: 149000, costoProveedor: 45000, flete: 16000, transportadora: "Coordinadora", horasNovedad: 22, solucion: "" },
-  { guia: "IR-6629104", cliente: "Mariana Londoño", telefono: "3048920193", ciudad: "Medellín", direccion: "Circular 4 # 72-15 Laureles", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 13800, transportadora: "Inter Rapidísimo", horasNovedad: 0, solucion: "Entregado a titular" },
-  { guia: "SE-2291048", cliente: "Diego Fernando Lasso", telefono: "3178920194", ciudad: "Cali", direccion: "Cra 100 # 16-20 Ciudad Jardín", producto: "Depiladora Láser IPL Pro", estado: "ZONA DE DIFÍCIL ACCESO", motivo: "Transportadora solicita reclamar en oficina", total: 189000, costoProveedor: 55000, flete: 31200, transportadora: "Servientrega", horasNovedad: 50, solucion: "" },
-  { guia: "EN-4410294", cliente: "Katia Vengoechea", telefono: "3008920193", ciudad: "Barranquilla", direccion: "Calle 84 # 52-30 Apto 302", producto: "Lámpara Solar LED de Pared", estado: "ENTREGADO", motivo: "", total: 119000, costoProveedor: 32000, flete: 14500, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado con firma" },
-  { guia: "CO-1102948", cliente: "Álvaro Guerrero", telefono: "3189201948", ciudad: "Pasto", direccion: "Cra 25 # 18-40 Barrio Maridíaz", producto: "Set Cuchillos Acero Damasco", estado: "ENTREGADO", motivo: "", total: 139000, costoProveedor: 38000, flete: 16800, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado a satisfacción" },
-  { guia: "IR-4491028", cliente: "Yurley Bautista", telefono: "3128940192", ciudad: "Cúcuta", direccion: "Av 0 # 10-55 La Riviera", producto: "Mini Proyector Portátil HD", estado: "NO CONTESTA LLAMADA", motivo: "Buzón de mensajes activo", total: 229000, costoProveedor: 78000, flete: 15000, transportadora: "Inter Rapidísimo", horasNovedad: 14, solucion: "" },
-  { guia: "SE-3381029", cliente: "Néstor Raúl Flórez", telefono: "3168920194", ciudad: "Bucaramanga", direccion: "Calle 48 # 33-19 Cabecera", producto: "Smartwatch Ultra Pro T900", estado: "ENTREGADO", motivo: "", total: 149000, costoProveedor: 45000, flete: 14500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Entregado en portería" },
-  { guia: "DM-9901924", cliente: "Camilo Torres", telefono: "3138920194", ciudad: "Bogotá", direccion: "Cra 7 # 45-20 Chapinero", producto: "Organizador Giratorio 360", estado: "DEVOLUCION", motivo: "Cliente cambió de domicilio", total: 95000, costoProveedor: 26000, flete: 15500, transportadora: "Domina", horasNovedad: 0, solucion: "Devuelto a origen" },
-  { guia: "CO-8819204", cliente: "Laura Marcela Echeverry", telefono: "3148920102", ciudad: "Pereira", direccion: "Av Circunvalar # 12-40", producto: "Depiladora Láser IPL Pro", estado: "ENTREGADO", motivo: "", total: 189000, costoProveedor: 55000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado exitosamente" },
-  { guia: "EN-6610294", cliente: "Jaime Maestre", telefono: "3158940192", ciudad: "Valledupar", direccion: "Cra 9 # 14-30 Barrio Novalito", producto: "Lámpara Solar LED de Pared", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Falta número de casa y sector", total: 119000, costoProveedor: 32000, flete: 26900, transportadora: "Envía", horasNovedad: 40, solucion: "" },
-  { guia: "IR-5510293", cliente: "Gina Paola Burgos", telefono: "3018920194", ciudad: "Montería", direccion: "Calle 29 # 4-15 Pasaje del Sol", producto: "Set Cuchillos Acero Damasco", estado: "ENTREGADO", motivo: "", total: 139000, costoProveedor: 38000, flete: 14800, transportadora: "Inter Rapidísimo", horasNovedad: 0, solucion: "Entregado a cliente" },
-  { guia: "CO-4401928", cliente: "Sebastián Henao", telefono: "3108920194", ciudad: "Armenia", direccion: "Cra 14 # 9N-20 Barrio Granada", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado y cobrado COD" },
-  { guia: "SE-7710294", cliente: "Claudia Patricia Perdomo", telefono: "3178940192", ciudad: "Neiva", direccion: "Calle 10 # 5-28 Centro", producto: "Smartwatch Ultra Pro T900", estado: "SOLICITA ENTREGA EN OTRA DIRECCIÓN", motivo: "Cliente pide llevar a su oficina", total: 149000, costoProveedor: 45000, flete: 15000, transportadora: "Servientrega", horasNovedad: 12, solucion: "" }
+  // Hoy (8 órdenes)
+  { fecha: _fDemo(0), guia: "CO-9021481", cliente: "Valentina Gómez", telefono: "3124567890", ciudad: "Bogotá", direccion: "Cra 15 # 85-32 Apto 401", producto: "Smartwatch Ultra Pro T900", estado: "ENTREGADO", motivo: "", total: 149000, costoProveedor: 45000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado a satisfacción" },
+  { fecha: _fDemo(0), guia: "SE-4581290", cliente: "Carlos Mario Restrepo", telefono: "3004829102", ciudad: "Medellín", direccion: "Calle 10 # 43E-12 Int 201", producto: "Depiladora Láser IPL Pro", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Falta número de interior o torre", total: 189000, costoProveedor: 55000, flete: 29500, transportadora: "Servientrega", horasNovedad: 42, solucion: "" },
+  { fecha: _fDemo(0), guia: "EN-3190284", cliente: "Andrés Felipe Caicedo", telefono: "3187219043", ciudad: "Cali", direccion: "Av 6N # 24N-15 Casa 3", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 14200, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado en portería" },
+  { fecha: _fDemo(0), guia: "IR-8920194", cliente: "Luz Marina De la Hoz", telefono: "3019842103", ciudad: "Barranquilla", direccion: "Cra 51B # 82-140 Apto 7B", producto: "Lámpara Solar LED de Pared", estado: "NO CONTESTA LLAMADA", motivo: "Teléfono apagado en 2 intentos", total: 119000, costoProveedor: 32000, flete: 14800, transportadora: "Inter Rapidísimo", horasNovedad: 38, solucion: "" },
+  { fecha: _fDemo(0), guia: "CO-7719204", cliente: "Jhonatan Jaimes", telefono: "3209841284", ciudad: "Cúcuta", direccion: "Calle 11 # 4-28 Centro", producto: "Set Cuchillos Acero Damasco", estado: "DEVOLUCION", motivo: "Rehusado: cliente no tenía dinero", total: 139000, costoProveedor: 38000, flete: 34000, transportadora: "Coordinadora", horasNovedad: 0, solucion: "En bodega origen" },
+  { fecha: _fDemo(0), guia: "CO-6481029", cliente: "Silvia Juliana Prada", telefono: "3158920194", ciudad: "Bucaramanga", direccion: "Cra 27 # 36-14 Apto 502", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 15500, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Recibido con comprobante" },
+  { fecha: _fDemo(0), guia: "EN-5019284", cliente: "Mateo Cardona Ríos", telefono: "3148920184", ciudad: "Pereira", direccion: "Cra 7 # 19-28 Manzana 4 Casa 12", producto: "Smartwatch Ultra Pro T900", estado: "SOLICITA ENTREGA EN OTRA FECHA", motivo: "Viaje de trabajo, recibe el viernes", total: 149000, costoProveedor: 45000, flete: 14200, transportadora: "Envía", horasNovedad: 18, solucion: "" },
+  { fecha: _fDemo(0), guia: "SE-9910283", cliente: "Dayana Paternina", telefono: "3059841029", ciudad: "Cartagena", direccion: "Bocagrande Cra 3 # 7-19 Edif Bahía", producto: "Depiladora Láser IPL Pro", estado: "ENTREGADO", motivo: "", total: 189000, costoProveedor: 55000, flete: 16500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Entregado a recepcionista" },
+  
+  // Últimos 7 días (9 órdenes)
+  { fecha: _fDemo(2), guia: "IR-1192840", cliente: "Germán Osorio", telefono: "3167829104", ciudad: "Manizales", direccion: "Av Santander # 54-10 Casa esquinera", producto: "Lámpara Solar LED de Pared", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Nomenclatura no visible", total: 119000, costoProveedor: 32000, flete: 27800, transportadora: "Inter Rapidísimo", horasNovedad: 48, solucion: "" },
+  { fecha: _fDemo(2), guia: "CO-3391028", cliente: "Paula Andrea Varón", telefono: "3119842019", ciudad: "Ibagué", direccion: "Calle 60 # 9-45 Urbanización Vergel", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado en residencia" },
+  { fecha: _fDemo(3), guia: "SE-8820193", cliente: "Héctor Fabio Rincón", telefono: "3218940192", ciudad: "Villavicencio", direccion: "Cra 40 # 25-10 Barrio Barzal", producto: "Set Cuchillos Acero Damasco", estado: "DEVOLUCION", motivo: "Cliente desistió de la compra", total: 139000, costoProveedor: 38000, flete: 17500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Retorno a bodega" },
+  { fecha: _fDemo(4), guia: "EN-7729104", cliente: "Santiago Morales", telefono: "3109842104", ciudad: "Bogotá", direccion: "Calle 127 # 19-40 Torre B 804", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 14200, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado con pago en efectivo" },
+  { fecha: _fDemo(4), guia: "CO-5510293", cliente: "Ana Milena Campo", telefono: "3028941029", ciudad: "Santa Marta", direccion: "Calle 22 # 3-18 El Rodadero", producto: "Smartwatch Ultra Pro T900", estado: "CLIENTE AUSENTE EN SEGUNDA VISITA", motivo: "No había nadie para recibir el paquete", total: 149000, costoProveedor: 45000, flete: 16000, transportadora: "Coordinadora", horasNovedad: 22, solucion: "" },
+  { fecha: _fDemo(5), guia: "IR-6629104", cliente: "Mariana Londoño", telefono: "3048920193", ciudad: "Medellín", direccion: "Circular 4 # 72-15 Laureles", producto: "Organizador Giratorio 360", estado: "ENTREGADO", motivo: "", total: 95000, costoProveedor: 26000, flete: 13800, transportadora: "Inter Rapidísimo", horasNovedad: 0, solucion: "Entregado a titular" },
+  { fecha: _fDemo(5), guia: "SE-2291048", cliente: "Diego Fernando Lasso", telefono: "3178920194", ciudad: "Cali", direccion: "Cra 100 # 16-20 Ciudad Jardín", producto: "Depiladora Láser IPL Pro", estado: "ZONA DE DIFÍCIL ACCESO", motivo: "Transportadora solicita reclamar en oficina", total: 189000, costoProveedor: 55000, flete: 31200, transportadora: "Servientrega", horasNovedad: 50, solucion: "" },
+  { fecha: _fDemo(6), guia: "EN-4410294", cliente: "Katia Vengoechea", telefono: "3008920193", ciudad: "Barranquilla", direccion: "Calle 84 # 52-30 Apto 302", producto: "Lámpara Solar LED de Pared", estado: "ENTREGADO", motivo: "", total: 119000, costoProveedor: 32000, flete: 14500, transportadora: "Envía", horasNovedad: 0, solucion: "Entregado con firma" },
+  { fecha: _fDemo(6), guia: "CO-1102948", cliente: "Álvaro Guerrero", telefono: "3189201948", ciudad: "Pasto", direccion: "Cra 25 # 18-40 Barrio Maridíaz", producto: "Set Cuchillos Acero Damasco", estado: "ENTREGADO", motivo: "", total: 139000, costoProveedor: 38000, flete: 16800, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado a satisfacción" },
+  
+  // Últimos 30 días (8 órdenes)
+  { fecha: _fDemo(12), guia: "IR-4491028", cliente: "Yurley Bautista", telefono: "3128940192", ciudad: "Cúcuta", direccion: "Av 0 # 10-55 La Riviera", producto: "Mini Proyector Portátil HD", estado: "NO CONTESTA LLAMADA", motivo: "Buzón de mensajes activo", total: 229000, costoProveedor: 78000, flete: 15000, transportadora: "Inter Rapidísimo", horasNovedad: 14, solucion: "" },
+  { fecha: _fDemo(14), guia: "SE-3381029", cliente: "Néstor Raúl Flórez", telefono: "3168920194", ciudad: "Bucaramanga", direccion: "Calle 48 # 33-19 Cabecera", producto: "Smartwatch Ultra Pro T900", estado: "ENTREGADO", motivo: "", total: 149000, costoProveedor: 45000, flete: 14500, transportadora: "Servientrega", horasNovedad: 0, solucion: "Entregado en portería" },
+  { fecha: _fDemo(16), guia: "DM-9901924", cliente: "Camilo Torres", telefono: "3138920194", ciudad: "Bogotá", direccion: "Cra 7 # 45-20 Chapinero", producto: "Organizador Giratorio 360", estado: "DEVOLUCION", motivo: "Cliente cambió de domicilio", total: 95000, costoProveedor: 26000, flete: 15500, transportadora: "Domina", horasNovedad: 0, solucion: "Devuelto a origen" },
+  { fecha: _fDemo(19), guia: "CO-8819204", cliente: "Laura Marcela Echeverry", telefono: "3148920102", ciudad: "Pereira", direccion: "Av Circunvalar # 12-40", producto: "Depiladora Láser IPL Pro", estado: "ENTREGADO", motivo: "", total: 189000, costoProveedor: 55000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado exitosamente" },
+  { fecha: _fDemo(22), guia: "EN-6610294", cliente: "Jaime Maestre", telefono: "3158940192", ciudad: "Valledupar", direccion: "Cra 9 # 14-30 Barrio Novalito", producto: "Lámpara Solar LED de Pared", estado: "DIRECCIÓN ERRADA O INCOMPLETA", motivo: "Falta número de casa y sector", total: 119000, costoProveedor: 32000, flete: 26900, transportadora: "Envía", horasNovedad: 40, solucion: "" },
+  { fecha: _fDemo(24), guia: "IR-5510293", cliente: "Gina Paola Burgos", telefono: "3018920194", ciudad: "Montería", direccion: "Calle 29 # 4-15 Pasaje del Sol", producto: "Set Cuchillos Acero Damasco", estado: "ENTREGADO", motivo: "", total: 139000, costoProveedor: 38000, flete: 14800, transportadora: "Inter Rapidísimo", horasNovedad: 0, solucion: "Entregado a cliente" },
+  { fecha: _fDemo(26), guia: "CO-4401928", cliente: "Sebastián Henao", telefono: "3108920194", ciudad: "Armenia", direccion: "Cra 14 # 9N-20 Barrio Granada", producto: "Mini Proyector Portátil HD", estado: "ENTREGADO", motivo: "", total: 229000, costoProveedor: 78000, flete: 15200, transportadora: "Coordinadora", horasNovedad: 0, solucion: "Entregado y cobrado COD" },
+  { fecha: _fDemo(28), guia: "SE-7710294", cliente: "Claudia Patricia Perdomo", telefono: "3178940192", ciudad: "Neiva", direccion: "Calle 10 # 5-28 Centro", producto: "Smartwatch Ultra Pro T900", estado: "SOLICITA ENTREGA EN OTRA DIRECCIÓN", motivo: "Cliente pide llevar a su oficina", total: 149000, costoProveedor: 45000, flete: 15000, transportadora: "Servientrega", horasNovedad: 12, solucion: "" }
 ];
 
 function activarModoDemo() {
@@ -1847,7 +2075,7 @@ const cop = { format: n => fmt.format(n) };
 let tab = 'criticas', fq = '', ft = 'Todas', editIx = -1;
 const LS = 'dropivault.v2';
 const TR = ['Servientrega', 'Coordinadora', 'Inter Rapidísimo', 'Envía'];
-const COLS = ['NÚMERO DE GUÍA', 'NOMBRE CLIENTE', 'TELÉFONO', 'CIUDAD DESTINO', 'DIRECCIÓN', 'TRANSPORTADORA', 'PRODUCTO', 'STATUS', 'NOVEDAD', 'TOTAL DE LA ORDEN', 'PRECIO PROVEEDOR', 'PRECIO FLETE'];
+const COLS = ['FECHA', 'NÚMERO DE GUÍA', 'NOMBRE CLIENTE', 'TELÉFONO', 'CIUDAD DESTINO', 'DIRECCIÓN', 'TRANSPORTADORA', 'PRODUCTO', 'STATUS', 'NOVEDAD', 'TOTAL DE LA ORDEN', 'PRECIO PROVEEDOR', 'PRECIO FLETE'];
 const crit = ["NOVEDAD", "ERRADA", "NO CONTESTA", "CERRADO", "FALLIDO"];
 const esCritica = o => !/ENTREGADO|DEVOL/.test(o.estado) && crit.some(p => o.estado.includes(p) || String(o.motivo).toUpperCase().includes(p));
 const TABS = { criticas: esCritica, entregadas: o => o.estado.includes('ENTREGADO'), devoluciones: o => o.estado.includes('DEVOL'), todas: () => true };
@@ -2551,6 +2779,7 @@ async function sincronizarDesdeDropiAPI() {
   if (ordenesRecibidas) {
     ordenesTotales = ordenesRecibidas.map((o, i) => ({
       ...o,
+      fecha: normalizarFechaOrden(o.fecha || o.created_at || o.createdAt || o.date),
       transportadora: o.transportadora || TR[i % TR.length],
       horasNovedad: Number(o.horasNovedad || 0),
       solucion: o.solucion || ''
@@ -2582,6 +2811,7 @@ function procesarExcel(ev) {
       const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
       const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "" });
       ordenesTotales = rows.map((r, i) => ({
+        fecha: normalizarFechaOrden(r["FECHA"] || r["FECHA CREACIÓN"] || r["FECHA DE CREACION"] || r["DATE"] || r["CREATION DATE"]),
         guia: r["NÚMERO DE GUÍA"] || r["GUIA"] || r["ID"] || `DRP-${i+1000}`,
         cliente: r["NOMBRE CLIENTE"] || r["CLIENTE"] || "Cliente Dropi",
         telefono: String(r["TELÉFONO"] || r["TELEFONO"] || "3000000000").replace(/\D/g, ''),
@@ -2607,10 +2837,12 @@ function procesarExcel(ev) {
 }
 
 function refrescar() {
-  ordenesEnNovedad = ordenesTotales.filter(esCritica);
-  $('total-ordenes-badge').innerText = `${ordenesTotales.length} órdenes`;
+  const ordenesFiltradas = obtenerOrdenesFiltradasPorFecha();
+  ordenesEnNovedad = ordenesFiltradas.filter(esCritica);
+  $('total-ordenes-badge').innerText = `${ordenesFiltradas.length} órdenes`;
   $('badge-novedades').innerText = `${ordenesEnNovedad.length} críticas`;
   
+  actualizarContadorFiltroFecha();
   recalcularKPIs();
   renderizarTabla();
   renderizarGraficas();
@@ -2618,6 +2850,7 @@ function refrescar() {
   renderizarAlertasInteligentes();
   calcularRiesgoPreDespacho();
   ejecutarAuditoriaFletes();
+  renderizarRentabilidadProductos();
   guardar();
   initAppleMotionEngine();
 }
@@ -2640,18 +2873,21 @@ function setNum(id, to, fmt) {
 
 function recalcularKPIs() {
   const ads = Number($('input-ads').value || 0);
-  const fact = ordenesTotales.reduce((a, o) => a + o.total, 0);
-  const fletes = ordenesEnNovedad.reduce((a, o) => a + o.flete, 0);
-  const recaudo = ordenesEnNovedad.reduce((a, o) => a + o.total, 0);
+  const ordenesFiltradas = obtenerOrdenesFiltradasPorFecha();
+  const novedadesFiltradas = ordenesFiltradas.filter(esCritica);
+
+  const fact = ordenesFiltradas.reduce((a, o) => a + o.total, 0);
+  const fletes = novedadesFiltradas.reduce((a, o) => a + o.flete, 0);
+  const recaudo = novedadesFiltradas.reduce((a, o) => a + o.total, 0);
   
   setNum('kpi-facturacion', fact, cop.format);
-  $('kpi-facturacion-sub').innerText = `${ordenesTotales.length} órdenes totales`;
+  $('kpi-facturacion-sub').innerText = `${ordenesFiltradas.length} órdenes en el período`;
 
   setNum('kpi-riesgo', fletes, cop.format);
-  $('kpi-riesgo-sub').innerText = `${ordenesEnNovedad.length} guías · ${cop.format(recaudo)} en recaudo`;
+  $('kpi-riesgo-sub').innerText = `${novedadesFiltradas.length} críticas · ${cop.format(recaudo)} en recaudo`;
 
-  const ent = ordenesTotales.filter(o => o.estado.includes("ENTREGADO")),
-        dev = ordenesTotales.filter(o => o.estado.includes("DEVOLUCION"));
+  const ent = ordenesFiltradas.filter(o => o.estado.includes("ENTREGADO")),
+        dev = ordenesFiltradas.filter(o => o.estado.includes("DEVOLUCION"));
   const cer = ent.length + dev.length, ef = cer > 0 ? Math.round(ent.length / cer * 100) : 0;
   
   setNum('kpi-efectividad', ef, v => `${Math.round(v)}%`);
@@ -2659,7 +2895,7 @@ function recalcularKPIs() {
 
   const bruta = ent.reduce((a, o) => a + (o.total - o.costoProveedor - o.flete), 0);
   const perd = dev.reduce((a, o) => a + o.flete, 0);
-  setNum('kpi-utilidad', ordenesTotales.length > 0 ? (bruta - perd - ads) : 0, cop.format);
+  setNum('kpi-utilidad', ordenesFiltradas.length > 0 ? (bruta - perd - ads) : 0, cop.format);
 
   setNum('kpi-recuperado', capitalRecuperado, cop.format);
 }
@@ -2743,38 +2979,34 @@ function copiarMensajeConfirmacionPrevia() {
 let anomaliasFletesDetectadas = [];
 
 function ejecutarAuditoriaFletes() {
-  const TARIFAS_BASE = {
-    'Servientrega': 14500,
-    'Coordinadora': 15200,
-    'Inter Rapidísimo': 13800,
-    'Envía': 14200,
-    'Otras': 14500
-  };
+  cargarConfiguracionTarifas();
+  const TARIFAS_BASE = configuracionTarifas.tarifas || TARIFAS_DEFAULT.tarifas;
+  const UMBRAL = Number(configuracionTarifas.umbralTolerancia) || 1.45;
 
   anomaliasFletesDetectadas = [];
   let totalReclamable = 0;
 
-  ordenesTotales.forEach(o => {
+  const ordenes = obtenerOrdenesFiltradasPorFecha();
+
+  ordenes.forEach(o => {
     const transportadora = o.transportadora || 'Servientrega';
-    const baseEsperada = TARIFAS_BASE[transportadora] || TARIFAS_BASE['Otras'];
+    const baseEsperada = TARIFAS_BASE[transportadora] || TARIFAS_BASE['Otras'] || 14500;
     const fleteCobrado = Number(o.flete || 0);
 
-    if (fleteCobrado > (baseEsperada * 1.45)) {
+    if (fleteCobrado > (baseEsperada * UMBRAL)) {
       const sobrecosto = Math.round(fleteCobrado - baseEsperada);
       anomaliasFletesDetectadas.push({
         guia: o.guia,
         cliente: o.cliente,
         ciudad: o.ciudad,
         transportadora,
-        motivo: 'Exceso de peso volumétrico no justificado',
+        motivo: `Sobrecosto volumétrico (+${Math.round(((fleteCobrado / baseEsperada) - 1) * 100)}% s/tarifa)`,
         fleteCobrado,
         fleteEsperado: baseEsperada,
         saldoFavor: sobrecosto
       });
       totalReclamable += sobrecosto;
-    }
-
-    if (o.estado.includes('DEVOL') && fleteCobrado > (baseEsperada * 1.8)) {
+    } else if (o.estado.includes('DEVOL') && fleteCobrado > (baseEsperada * 1.8)) {
       const sobrecosto = Math.round(fleteCobrado - (baseEsperada * 1.2));
       if (!anomaliasFletesDetectadas.some(a => a.guia === o.guia)) {
         anomaliasFletesDetectadas.push({
@@ -2815,6 +3047,130 @@ function ejecutarAuditoriaFletes() {
       <td class="num" style="color:#fbbf24;font-weight:600">+${cop.format(a.saldoFavor)}</td>
     </tr>
   `).join('');
+}
+
+// ==========================================
+// MODAL CONFIGURAR TARIFAS DE FLETE (USUARIO)
+// ==========================================
+function abrirModalTarifasFlete() {
+  cargarConfiguracionTarifas();
+  const t = configuracionTarifas.tarifas || TARIFAS_DEFAULT.tarifas;
+  $('tarifa-servientrega').value = t['Servientrega'] || 14500;
+  $('tarifa-coordinadora').value = t['Coordinadora'] || 15200;
+  $('tarifa-inter').value = t['Inter Rapidísimo'] || 13800;
+  $('tarifa-envia').value = t['Envía'] || 14200;
+  $('tarifa-domina').value = t['Domina'] || 14000;
+  $('tarifa-otras').value = t['Otras'] || 14500;
+
+  const umb = configuracionTarifas.umbralTolerancia || 1.45;
+  $('tarifa-umbral').value = umb;
+  $('tarifa-umbral-badge').innerText = `+${Math.round((umb - 1) * 100)}% exceso`;
+
+  $('modal-tarifas').classList.add('open');
+}
+
+function cerrarModalTarifasFlete() {
+  $('modal-tarifas').classList.remove('open');
+}
+
+function guardarTarifasFleteFormulario(e) {
+  e.preventDefault();
+  configuracionTarifas = {
+    tarifas: {
+      'Servientrega': Number($('tarifa-servientrega').value) || 14500,
+      'Coordinadora': Number($('tarifa-coordinadora').value) || 15200,
+      'Inter Rapidísimo': Number($('tarifa-inter').value) || 13800,
+      'Envía': Number($('tarifa-envia').value) || 14200,
+      'Domina': Number($('tarifa-domina').value) || 14000,
+      'Otras': Number($('tarifa-otras').value) || 14500
+    },
+    umbralTolerancia: Number($('tarifa-umbral').value) || 1.45
+  };
+
+  guardarConfiguracionTarifas();
+  cerrarModalTarifasFlete();
+  ejecutarAuditoriaFletes();
+  toast('Tarifas de flete y umbral guardados con éxito. Auditoría actualizada.');
+}
+
+function restablecerTarifasSugeridas() {
+  configuracionTarifas = JSON.parse(JSON.stringify(TARIFAS_DEFAULT));
+  guardarConfiguracionTarifas();
+  abrirModalTarifasFlete();
+  ejecutarAuditoriaFletes();
+  toast('Tarifas restablecidas a valores base sugeridos');
+}
+
+// ==========================================
+// RENTABILIDAD POR PRODUCTO
+// ==========================================
+function renderizarRentabilidadProductos() {
+  const tbody = $('tabla-rentabilidad-productos');
+  if (!tbody) return;
+
+  const ordenes = obtenerOrdenesFiltradasPorFecha();
+
+  if (ordenes.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px 20px" class="muted">
+      Sin órdenes de productos en este período seleccionado.
+    </td></tr>`;
+    return;
+  }
+
+  const mapProd = {};
+  ordenes.forEach(o => {
+    const prod = (o.producto || 'Producto General').trim();
+    if (!mapProd[prod]) {
+      mapProd[prod] = {
+        unidades: 0,
+        facturacion: 0,
+        costoProveedor: 0,
+        fleteTotal: 0,
+        utilidad: 0,
+        entregadas: 0,
+        devoluciones: 0,
+        novedades: 0
+      };
+    }
+    const m = mapProd[prod];
+    m.unidades++;
+    m.facturacion += Number(o.total || 0);
+    m.costoProveedor += Number(o.costoProveedor || 0);
+    m.fleteTotal += Number(o.flete || 0);
+    const utilOrden = Number(o.total || 0) - Number(o.costoProveedor || 0) - Number(o.flete || 0);
+    m.utilidad += utilOrden;
+
+    if (o.estado.includes('ENTREGADO')) m.entregadas++;
+    else if (o.estado.includes('DEVOL')) m.devoluciones++;
+    else if (esCritica(o)) m.novedades++;
+  });
+
+  const arrProd = Object.entries(mapProd).map(([nombre, d]) => {
+    const pctDev = d.unidades > 0 ? Math.round((d.devoluciones / d.unidades) * 100) : 0;
+    return { nombre, ...d, pctDev };
+  }).sort((a, b) => b.facturacion - a.facturacion);
+
+  tbody.innerHTML = arrProd.map(p => {
+    const badgeColor = p.pctDev <= 10 ? 'emerald' : (p.pctDev <= 20 ? 'amber' : 'crimson');
+    const badgeTxt = p.pctDev <= 10 ? 'Alta rentabilidad' : (p.pctDev <= 20 ? 'Margen regular' : 'Alerta devolución');
+
+    return `
+      <tr>
+        <td><b>${esc(p.nombre)}</b></td>
+        <td class="num">${p.unidades} uds</td>
+        <td class="num mono">${cop.format(p.facturacion)}</td>
+        <td class="num mono muted">${cop.format(p.costoProveedor)}</td>
+        <td class="num mono muted">${cop.format(p.fleteTotal)}</td>
+        <td class="num mono" style="font-weight:600;color:${p.utilidad >= 0 ? '#34d399' : '#f87171'}">${cop.format(p.utilidad)}</td>
+        <td>
+          <span class="tag ${badgeColor}" style="font-size:11.5px">
+            ${p.pctDev}%
+          </span>
+        </td>
+        <td><span class="tag line" style="font-size:11px">${badgeTxt}</span></td>
+      </tr>
+    `;
+  }).join('');
 }
 
 function abrirModalCartaReclamo() {
@@ -3151,10 +3507,11 @@ function generarReportePDF() {
 let chartDonutInstance = null, chartLineInstance = null;
 
 function renderizarGraficas() {
-  const ent = ordenesTotales.filter(o => o.estado.includes("ENTREGADO")).length;
-  const nov = ordenesEnNovedad.length;
-  const dev = ordenesTotales.filter(o => o.estado.includes("DEVOLUCION")).length;
-  const total = ordenesTotales.length || 1;
+  const ordenes = obtenerOrdenesFiltradasPorFecha();
+  const ent = ordenes.filter(o => o.estado.includes("ENTREGADO")).length;
+  const nov = ordenes.filter(esCritica).length;
+  const dev = ordenes.filter(o => o.estado.includes("DEVOLUCION")).length;
+  const total = ordenes.length || 1;
 
   $('leg-entregadas').innerText = `${ent} (${Math.round(ent / total * 100)}%)`;
   $('leg-criticas').innerText = `${nov} (${Math.round(nov / total * 100)}%)`;
@@ -3193,12 +3550,12 @@ function renderizarGraficas() {
     const labels = [], dataUtil = [], dataFact = [];
     const paso = Math.max(1, Math.floor(ordenesTotales.length / 6));
     
-    if (ordenesTotales.length === 0) {
+    if (ordenes.length === 0) {
       labels.push('Inicio', 'Lote 1', 'Lote 2', 'Actual');
       dataUtil.push(0, 0, 0, 0);
       dataFact.push(0, 0, 0, 0);
     } else {
-      ordenesTotales.forEach((o, i) => {
+      ordenes.forEach((o, i) => {
         const ganancia = o.estado.includes('ENTREGADO') ? (o.total - o.costoProveedor - o.flete) : (o.estado.includes('DEVOL') ? -o.flete : 0);
         acumUtil += ganancia;
         acumFact += o.total;
@@ -3258,13 +3615,14 @@ function renderizarGraficas() {
 // ==========================================
 function renderizarRankingTransportadoras() {
   const cont = $('transportadoras-ranking'); if (!cont) return;
-  if (ordenesTotales.length === 0) {
+  const ordenes = obtenerOrdenesFiltradasPorFecha();
+  if (ordenes.length === 0) {
     cont.innerHTML = `<div class="muted" style="text-align:center;padding:24px;font-size:13.5px">Sin órdenes cargadas. Importa un lote para comparar transportadoras.</div>`;
     return;
   }
 
   const map = {};
-  ordenesTotales.forEach(o => {
+  ordenes.forEach(o => {
     const t = o.transportadora || 'Otras';
     if (!map[t]) map[t] = { total: 0, entregadas: 0, novedades: 0, devoluciones: 0 };
     map[t].total++;
@@ -3369,7 +3727,8 @@ function renderizarAlertasInteligentes() {
 // ==========================================
 const baseLista = () => {
   const k = norm(fq);
-  return ordenesTotales.filter(o => (ft === 'Todas' || o.transportadora === ft) && (!k || [o.guia, o.cliente, o.telefono, o.ciudad].some(v => norm(v).includes(k))));
+  const ordenes = obtenerOrdenesFiltradasPorFecha();
+  return ordenes.filter(o => (ft === 'Todas' || o.transportadora === ft) && (!k || [o.guia, o.cliente, o.telefono, o.ciudad].some(v => norm(v).includes(k))));
 };
 const vista = () => baseLista().filter(TABS[tab]);
 
@@ -3831,7 +4190,8 @@ function exportarVista() {
 
 function descargarPlantilla() {
   if (typeof XLSX === 'undefined') return toast('SheetJS no disponible.');
-  const ws = XLSX.utils.aoa_to_sheet([COLS, ['DRP-10001', 'Carlos Gómez', '3001234567', 'Medellín', 'Cra 45 # 50-12', 'Servientrega', 'Corrector Postura Pro', 'NOVEDAD', 'DIRECCIÓN INCOMPLETA', 89900, 22000, 14500]]);
+  const hoyFechaStr = new Date().toISOString().split('T')[0];
+  const ws = XLSX.utils.aoa_to_sheet([COLS, [hoyFechaStr, 'DRP-10001', 'Carlos Gómez', '3001234567', 'Medellín', 'Cra 45 # 50-12', 'Servientrega', 'Corrector Postura Pro', 'NOVEDAD', 'DIRECCIÓN INCOMPLETA', 89900, 22000, 14500]]);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Plantilla');
   XLSX.writeFile(wb, 'plantilla_dropivault.xlsx');
@@ -3856,7 +4216,7 @@ async function cerrarSesion() {
 
 // Eventos de teclado y scroll
 addEventListener('scroll', () => ['nav-auth', 'nav-app'].forEach(n => { const el = $(n); if (el) el.classList.toggle('solid', scrollY > 20); }), { passive: true });
-addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarEditar(); cerrarModalPlantillasWA(); cerrarTour(); cerrarModalWhiteLabel(); cerrarModalMultiTienda(); cerrarModalDigest(); cerrarModalCartaReclamo(); cerrarModalWebhooks(); cerrarModalPlanes(); cerrarModalLegal(); } });
+addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarEditar(); cerrarModalPlantillasWA(); cerrarTour(); cerrarModalWhiteLabel(); cerrarModalMultiTienda(); cerrarModalDigest(); cerrarModalCartaReclamo(); cerrarModalWebhooks(); cerrarModalPlanes(); cerrarModalLegal(); cerrarModalTarifasFlete(); } });
 
 // Iniciar aplicación
 document.addEventListener('DOMContentLoaded', initApp);
